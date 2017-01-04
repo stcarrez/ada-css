@@ -38,6 +38,9 @@ package CSS.Core.Properties is
    function Get_Property (List : in CSSProperty_List;
                           Name : in String) return CSSProperty;
 
+   --  Get the number of properties in the list.
+   function Get_Length (List : in CSSProperty_List) return Natural;
+
    --  Append the CSS property with the value to the list.
    procedure Append (List  : in out CSSProperty_List;
                      Name  : in CSSProperty_Name;
