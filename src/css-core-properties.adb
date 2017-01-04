@@ -23,10 +23,12 @@ package body CSS.Core.Properties is
       new Ada.Unchecked_Deallocation (CSSInternal_Property_Array,
                                       CSSInternal_Property_Array_Access);
 
+   --  ------------------------------
    --  Get the property with the given name from the list.
    --  If the property is defined several times, the last value
    --  that was inserted is returned.
    --  Raises the <tt>NO_PROPERTY</tt> exception if the property was not found.
+   --  ------------------------------
    function Get_Property (List : in CSSProperty_List;
                           Name : in String) return CSSProperty is
    begin
@@ -45,7 +47,21 @@ package body CSS.Core.Properties is
       raise NO_PROPERTY with "CSS property '" & Name & "' not found";
    end Get_Property;
 
+   --  ------------------------------
+   --  Get the number of properties in the list.
+   --  ------------------------------
+   function Get_Length (List : in CSSProperty_List) return Natural is
+   begin
+      if List.Properties = null then
+         return 0;
+      else
+         return List.Properties'Length;
+      end if;
+   end Get_Length;
+
+   --  ------------------------------
    --  Append the CSS property with the value to the list.
+   --  ------------------------------
    procedure Append (List  : in out CSSProperty_List;
                      Name  : in CSSProperty_Name;
                      Value : in CSSProperty_Value;
@@ -62,10 +78,12 @@ package body CSS.Core.Properties is
       New_List (New_List'Last).Value := Value;
       New_List (New_List'Last).Line  := Line;
       Free (List.Properties);
-      
+      List.Properties := New_List;
    end Append;
 
+   --  ------------------------------
    --  Release the memory used by the property list.
+   --  ------------------------------
    overriding
    procedure Finalize (List : in out CSSProperty_List) is
    begin
