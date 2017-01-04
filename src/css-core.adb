@@ -15,7 +15,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-
+with Ada.Unchecked_Deallocation;
 package body CSS.Core is
 
    --  ------------------------------
@@ -72,6 +72,19 @@ package body CSS.Core is
       return "";
    end Get_Href;
 
+   function Create_Property_Name (Sheet : in Stylesheet;
+                                  Name  : in String) return CSSProperty_Name is
+      Pos : constant String_Map.Cursor := Sheet.Strings.Find (Name'Unrestricted_Access);
+      Res : CSSProperty_Name;
+   begin
+      if String_Map.Has_Element (Pos) then
+         return String_Map.Element (Pos);
+      end if;
+      Res := new String '(Name);
+      Sheet.Strings.Insert (Res.all'Access, Res);
+      return Res;
+   end Create_Property_Name;
+
    --  ------------------------------
    --  Get the parent rule.  Returns null when there is no parent.
    --  ------------------------------
@@ -95,5 +108,26 @@ package body CSS.Core is
    begin
       return Rule.Loc;
    end Get_Location;
+
+   overriding
+   procedure Finalize (Sheet : in out Stylesheet) is
+      procedure Free is
+        new Ada.Unchecked_Deallocation (String, CSSProperty_Name);
+      procedure Free is
+         new Ada.Unchecked_Deallocation (String_Map.Map, String_Map_Access);
+   begin
+      if Sheet.Strings /= null then
+         while not Sheet.Strings.Is_Empty loop
+            declare
+               Pos : String_Map.Cursor := Sheet.Strings.First;
+               S   : CSSProperty_Name := String_Map.Element (Pos);
+            begin
+               Sheet.Strings.Delete (Pos);
+               Free (S);
+            end;
+         end loop;
+         Free (Sheet.Strings);
+      end if;
+   end Finalize;
 
 end CSS.Core;
