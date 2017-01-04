@@ -16,6 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with CSS.Core.Tests;
+with CSS.Core.Properties.Tests;
 package body CSS.Testsuite is
 
    Tests : aliased Util.Tests.Test_Suite;
@@ -24,6 +25,7 @@ package body CSS.Testsuite is
       Ret : constant Util.Tests.Access_Test_Suite := Tests'Access;
    begin
       CSS.Core.Tests.Add_Tests (Ret);
+      CSS.Core.Properties.Tests.Add_Tests (Ret);
       return Ret;
    end Suite;
 
