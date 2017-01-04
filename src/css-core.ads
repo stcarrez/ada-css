@@ -22,6 +22,9 @@ private with Ada.Finalization;
 --  (See https://drafts.csswg.org/cssom/ or https://www.w3.org/TR/2016/WD-cssom-1-20160317/)
 package CSS.Core is
 
+   type CSSProperty_Name is access all String;
+   type CSSProperty_Value is access all String;
+
    --  The <tt>Location</tt> type describes the source code location of a CSS rule.
    type Location is private;
 
