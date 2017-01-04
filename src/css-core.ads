@@ -15,7 +15,9 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
+with Util.Strings;
 private with Ada.Finalization;
+private with Ada.Containers.Hashed_Maps;
 
 --  The API implemented by the <tt>CSS.Core</tt> package and child packages try to
 --  follow the IDL specification defined in the W3C CSS Object Model (CSSOM)
@@ -23,7 +25,7 @@ private with Ada.Finalization;
 package CSS.Core is
 
    type CSSProperty_Name is access all String;
-   type CSSProperty_Value is access all String;
+   subtype CSSProperty_Value is CSSProperty_Name;
 
    --  The <tt>Location</tt> type describes the source code location of a CSS rule.
    type Location is private;
@@ -51,6 +53,9 @@ package CSS.Core is
    --  Get the href attribute (stylesheet location).
    function Get_Href (Sheet : in Stylesheet) return String;
 
+   function Create_Property_Name (Sheet : in Stylesheet;
+                                  Name  : in String) return CSSProperty_Name;
+
    type CSSRule_Type is (STYLE_RULE, CHARSET_RULE, IMPORT_RULE, MEDIA_RULE,
                          FONT_FACE_RULE, PAGE_RULE, MARGIN_RULE, NAMESPACE_RULE);
 
@@ -75,14 +80,27 @@ package CSS.Core is
 
 private
 
+   type String_Access is access all String;
+
+   package String_Map is new Ada.Containers.Hashed_Maps
+     (Key_Type        => Util.Strings.Name_Access,
+      Element_Type    => CSSProperty_Name,
+      Hash            => Util.Strings.Hash,
+      Equivalent_Keys => Util.Strings.Equivalent_Keys);
+   type String_Map_Access is access all String_Map.Map;
+
    type Location is record
       Sheet : Stylesheet_Access;
       Line  : Natural := 0;
    end record;
 
    type Stylesheet is new Ada.Finalization.Limited_Controlled with record
-      Loc : Location;
+      Loc     : Location;
+      Strings : String_Map_Access := new String_Map.Map;
    end record;
+
+   overriding
+   procedure Finalize (Sheet : in out Stylesheet);
 
    type CSSRule is abstract limited new Ada.Finalization.Limited_Controlled with record
       Loc    : Location;
