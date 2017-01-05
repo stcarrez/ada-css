@@ -94,6 +94,9 @@ setup: obj/css/static lib/css/static
 obj/css/static lib/css/static:
 	$(MKDIR) -p $@
 
+tools:
+	$(GNATMAKE) -m -p -Pcss_tools $(MAKE_ARGS)
+
 # Not intended for manual invocation.
 # Invoked if automatic builds are enabled.
 # Analyzes only on those sources that have changed.
@@ -238,3 +241,5 @@ prepare-release:
 	# ${SVN} update
 	# ${SVN} info > CHANGES
 	# ${SVN} log -v > ChangeLog
+
+.PHONY: tools
