@@ -68,5 +68,5 @@ AC_SUBST(UTIL_DIR)
 AM_UTIL_CHECK_INSTALL
 
 AC_OUTPUT(
-Makefile cssada.gpr css_tests.gpr
+Makefile cssada.gpr css_tests.gpr css_tools.gpr
 )
