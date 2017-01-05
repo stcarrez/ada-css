@@ -73,23 +73,29 @@ css_block :
    ;
 
 css_declaration_list :
-     css_declaration_list css_declaration
+     css_declaration_list css_declaration ';'
    |
      css_declaration ';'
+          { Error (3, "CSS Declaration"); }
    |
      error ';'
+          { Error (4, "Found error rule"); }
    ;
 
 css_declaration :
      ident_token ':' css_value_list important
    |
      ident_token ':' css_value_list
+          { Error(2, "CSS rule");
+     }
+
+    
    |
      ident_token ':' important
    ;
 
 css_value_list :
-     css_value_list ',' css_value
+     css_value_list css_value
    |
      css_value
    ;
