@@ -101,6 +101,24 @@ obj/css/static lib/css/static:
 autobuild:
 	$(GNATMAKE) $(MAKE_ARGS) -gnatc -c -k  -P "$(GPRPATH)"
 
+# Development targets that requires ayacc and aflex to be installed.
+# Do not call these unless you modify the lex/yacc grammar.
+parser:	
+	cd src/parser && \
+	   ayacc -n 256 -s -d -v -e .ada css-parser-parser.y && \
+	   gnatchop -w css-parser-parser.ada && \
+	   rm -f css-parser-parser.ada
+	#-rm -f src/parser/css-parser-lexer_io.ads
+	#-rm -f src/parser/css-parser-lexer_io.adb
+	-rm -f src/parser/css-parser-parser.verbose
+
+lexer:
+	cd src/parser; \
+	aflex -dms -L css-parser-lexer.l
+	cd src/parser && \
+	  gnatchop -w css-parser-lexer.ada && \
+	  rm -f css-parser-lexer.ada
+
 # Clean the root project of all build products.
 clean:
 	-$(GNATCLEAN) -q -P "$(GPRPATH)" -XCSS_LIBRARY_TYPE=static
