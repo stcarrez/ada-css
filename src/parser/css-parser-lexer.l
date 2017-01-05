@@ -6,12 +6,13 @@
 WS      [ \t\f]+
 NOT_WS  [^ \t\f\n]
 ESCSEQ      \\([^\n]|[0-9]{1,3})
+NUM     [0-9]+
 
 %%
 
 [ \t]+			{ null; }
-
-\n		{ Line_Number := Line_Number + 1; }
+\r              null;
+\n		        Line_Number := Line_Number + 1;
 \:              return ':';
 \@              return '@';
 \{              return '{';
@@ -62,9 +63,19 @@ ESCSEQ      \\([^\n]|[0-9]{1,3})
 		   --    yylval.low := MAT.Types.Uint64'Value (YYText);
 		   return T_NUMBER;
 }
+{NUM}     { return T_NUMBER; }
+{NUM}"%"  return T_UNIT;
+{NUM}"em" return T_UNIT;
+{NUM}"px"   { return T_UNIT;   }
 [0-9]+		{
 		   --        yylval.low := MAT.Types.Uint64'Value (YYText);
 		   return T_NUMBER;
+		}
+.[0-9]+	{
+		   return T_REAL;
+		}
+.[0-9]+em	{
+		   return T_REAL;
 		}
 [0-9]+\.[0-9]+	{
                    --  yylval.low := MAT.Types.Uint64 (MAT.Types.Tick_Value (YYText));
@@ -85,7 +96,7 @@ toggle\(         { return T_TOGGLE; }
 [A-Za-z_][-A-Za-z0-9_]*	{
 		  return T_NAME;
 		}
-.               { Error (Line_Number, "illegal character"); }
+.               { Error (Line_Number, "illegal character '" & YYText & "'"); }
 
 %%
 with CSS.Parser.Parser_Tokens;
