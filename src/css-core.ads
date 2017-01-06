@@ -16,6 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Util.Strings;
+private with CSS.Comments;
 private with Ada.Finalization;
 private with Ada.Containers.Hashed_Maps;
 
@@ -95,16 +96,18 @@ private
    end record;
 
    type Stylesheet is new Ada.Finalization.Limited_Controlled with record
-      Loc     : Location;
-      Strings : String_Map_Access := new String_Map.Map;
+      Loc      : Location;
+      Strings  : String_Map_Access := new String_Map.Map;
+      Comments : CSS.Comments.CSSComment_List;
    end record;
 
    overriding
    procedure Finalize (Sheet : in out Stylesheet);
 
    type CSSRule is abstract limited new Ada.Finalization.Limited_Controlled with record
-      Loc    : Location;
-      Parent : CSSRule_Access;
+      Loc      : Location;
+      Parent   : CSSRule_Access;
+      Comments : CSS.Comments.CSSComment_List;
    end record;
 
 end CSS.Core;
