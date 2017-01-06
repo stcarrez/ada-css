@@ -16,7 +16,15 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Ada.Text_IO;
+with CSS.Parser.Parser;
 package body CSS.Parser is
+
+   procedure Load (Path  : in String;
+                   Sheet : in CSS.Core.Stylesheet_Access) is
+      Res : Integer := CSS.Parser.Parser.Parse (Path);
+   begin
+      null;
+   end Load;
 
    procedure Error (Line    : in Natural;
                     Message : in String) is
