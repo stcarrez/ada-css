@@ -15,8 +15,11 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-
+with CSS.Core;
 package CSS.Parser is
+
+   procedure Load (Path  : in String;
+                   Sheet : in CSS.Core.Stylesheet_Access);
 
 private
 
