@@ -17,6 +17,7 @@
 -----------------------------------------------------------------------
 with CSS.Core.Tests;
 with CSS.Core.Properties.Tests;
+with CSS.Comments.Tests;
 package body CSS.Testsuite is
 
    Tests : aliased Util.Tests.Test_Suite;
@@ -24,6 +25,7 @@ package body CSS.Testsuite is
    function Suite return Util.Tests.Access_Test_Suite is
       Ret : constant Util.Tests.Access_Test_Suite := Tests'Access;
    begin
+      CSS.Comments.Tests.Add_Tests (Ret);
       CSS.Core.Tests.Add_Tests (Ret);
       CSS.Core.Properties.Tests.Add_Tests (Ret);
       return Ret;
