@@ -23,6 +23,7 @@ with Ada.Containers;
 with Util.Streams.Texts;
 with Util.Streams.Buffered;
 with CSS.Parser.Parser;
+with CSS.Parser.Lexer;
 with Ada.Exceptions;
 with GNAT.Traceback.Symbolic;
 with CSS.Parser.Lexer_dfa;
@@ -34,7 +35,7 @@ procedure CssTools is
    Count  : constant Natural := Ada.Command_Line.Argument_Count;
 
 begin
-   CSS.Parser.Lexer_dfa.aflex_debug := True;
+   CSS.Parser.Lexer_dfa.aflex_debug := False;
 
    if Count = 0 then
       Ada.Text_IO.Put_Line ("Usage: csstools file...");
@@ -50,7 +51,8 @@ begin
          Ada.Text_IO.Put_Line ("Result: " & Integer'Image (Res));
       end;
    end loop;
-   
+   Ada.Text_IO.Put_Line ("Comments: ");
+   Ada.Text_IO.Put_Line (Ada.Strings.Unbounded.To_String (CSS.Parser.Lexer.Current_Comment));
 exception
    when E : others =>
       Ada.Text_IO.Put_Line (GNAT.Traceback.Symbolic.Symbolic_Traceback (E));
