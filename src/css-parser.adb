@@ -26,6 +26,24 @@ package body CSS.Parser is
       null;
    end Load;
 
+   procedure Set_Value (Into  : in out YYstype;
+                        Value : in String;
+                        Kind  : in Value_Type) is
+   begin
+      Into.Unit := U_NONE;
+      Into.Kind := Kind;
+      Ada.Strings.Unbounded.Set_Unbounded_String (Into.Value, Value);
+   end Set_Value;
+
+   procedure Set_Value (Into  : in out YYstype;
+                        Value : in String;
+                        Unit  : in Unit_Type) is
+   begin
+      Into.Unit := Unit;
+      Into.Kind := V_NUMBER;
+      Ada.Strings.Unbounded.Set_Unbounded_String (Into.Value, Value);
+   end Set_Value;
+
    procedure Error (Line    : in Natural;
                     Message : in String) is
       L : constant String := Natural'Image (Line);
