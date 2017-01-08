@@ -23,7 +23,7 @@ package body CSS.Parser.Parser is
       pragma Unreferenced (Message);
    begin
       error_count := error_count + 1;
-      Error (CSS.Parser.Lexer.Line_Number, Message);
+      Error (CSS.Parser.Lexer_Dfa.yylineno, Message);
    end yyerror;
 
    function Parse (Content : in String) return Integer is
@@ -300,15 +300,109 @@ begin
 
                 case yy.rule_id is
 
-when 19 => -- #line 79
- Error (3, "CSS Declaration"); 
+when 29 => -- #line 148
+ Error (20, "Found media_list"); 
 
-when 20 => -- #line 82
- Error (4, "Found error rule"); 
+when 31 => -- #line 155
+ Error (10, "Found medium (spaces)"); 
 
-when 22 => -- #line 89
- Error(2, "CSS rule");
-     
+when 32 => -- #line 158
+ Error (10, "Found medium"); 
+
+when 46 => -- #line 204
+ Error (12, "Invalid CSS rule"); 
+
+when 49 => -- #line 213
+ Error (13, "Invalid CSS selector component"); 
+
+when 72 => -- #line 282
+ Error (23, "Found element name"); 
+
+when 94 => -- #line 344
+ Error (100, "Rule without ';'"); 
+
+when 99 => -- #line 359
+ Error (4, "Property found"); 
+
+when 104 => -- #line 378
+ 
+yyval := 
+yy.value_stack(yy.tos-1); 
+
+when 105 => -- #line 381
+ 
+yyval := 
+yy.value_stack(yy.tos-1); 
+
+when 106 => -- #line 384
+ 
+yyval := 
+yy.value_stack(yy.tos-1); 
+
+when 107 => -- #line 387
+ 
+yyval := 
+yy.value_stack(yy.tos-1); 
+
+when 108 => -- #line 390
+ 
+yyval := 
+yy.value_stack(yy.tos-1); 
+
+when 109 => -- #line 393
+ 
+yyval := 
+yy.value_stack(yy.tos-1); 
+
+when 110 => -- #line 396
+ 
+yyval := 
+yy.value_stack(yy.tos-1); 
+
+when 111 => -- #line 399
+ 
+yyval := 
+yy.value_stack(yy.tos-1); 
+
+when 112 => -- #line 407
+ 
+yyval := 
+yy.value_stack(yy.tos); 
+
+when 113 => -- #line 410
+ 
+yyval := 
+yy.value_stack(yy.tos); 
+
+when 114 => -- #line 413
+ 
+yyval := 
+yy.value_stack(yy.tos-1); 
+
+when 115 => -- #line 416
+ 
+yyval := 
+yy.value_stack(yy.tos-1); 
+
+when 116 => -- #line 419
+ 
+yyval := 
+yy.value_stack(yy.tos-1); 
+
+when 117 => -- #line 422
+ 
+yyval := 
+yy.value_stack(yy.tos); 
+
+when 118 => -- #line 425
+ 
+yyval := 
+yy.value_stack(yy.tos); 
+
+when 120 => -- #line 434
+ 
+yyval := 
+yy.value_stack(yy.tos-1); 
 
                     when others => null;
                 end case;
@@ -338,5 +432,11 @@ when 22 => -- #line 89
 
 
 end yyparse;
+
+   --  Set or clear the parser debug flag.
+   -- procedure Set_Debug (Flag : in Boolean) is
+   -- begin
+   --   yy.DEBUG := Flag;
+   -- end Set_Debug;
 
 end CSS.Parser.Parser;

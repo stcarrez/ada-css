@@ -4,4 +4,7 @@ package CSS.Parser.Parser is
 
    function Parse (Content : in String) return Integer;
 
+   --  Set or clear the parser debug flag.
+   --  procedure Set_Debug (Flag : in Boolean);
+
 end CSS.Parser.Parser;

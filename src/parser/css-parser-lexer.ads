@@ -2,6 +2,7 @@
 --           It is useless to modify it. Change the ".Y" & ".L" files instead.
 
 
+with Ada.Strings.Unbounded;
 with CSS.Parser.Parser_Tokens;
 package CSS.Parser.Lexer is
 
@@ -9,6 +10,6 @@ package CSS.Parser.Lexer is
 
    function YYLex return Token;
 
-   Line_Number : Natural := 0;
+   Current_Comment : Ada.Strings.Unbounded.Unbounded_String;
 
 end CSS.Parser.Lexer;
