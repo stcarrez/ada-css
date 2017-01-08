@@ -15,11 +15,32 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
+with Ada.Strings.Unbounded;
 with CSS.Core;
 package CSS.Parser is
 
+   type Unit_Type is (U_NONE, U_PX, U_EX, U_EM, U_CM, U_MM, U_IN, U_PI, U_PC, U_PT,
+                      U_DEG, U_RAD, U_GRAD,
+                      U_MS, U_SEC, U_HZ, U_KHZ);
+
+   type Value_Type is (V_NONE, V_STRING, V_URL, V_NUMBER, V_IDENT, V_FUNCTION);
+
    procedure Load (Path  : in String;
                    Sheet : in CSS.Core.Stylesheet_Access);
+
+   type YYstype is record
+      Unit  : Unit_Type := U_NONE;
+      Kind  : Value_Type := V_NONE;
+      Value : Ada.Strings.Unbounded.Unbounded_String;
+   end record;
+
+   procedure Set_Value (Into  : in out YYstype;
+                        Value : in String;
+                        Kind  : in Value_Type);
+
+   procedure Set_Value (Into  : in out YYstype;
+                        Value : in String;
+                        Unit  : in Unit_Type);
 
 private
 
