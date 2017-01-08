@@ -2,15 +2,22 @@
 %token T_NAME
 %token T_CLASS
 %token T_IDENT
+%token T_ATKEYWORD
+%token T_ATIMPORT T_ATMEDIA
 %token T_NUMBER T_REAL T_UNIT
-%token T_COLOR
 %token T_STRING
 %token T_URL
+%token T_URI
+%token T_LENGTH
+%token T_EMS
+%token T_EXS
+%token T_TIME
+%token T_FREQ
 %token T_CALC
 %token T_TOGGLE
 %token T_ATTR
 %token T_UNIT
-%token T_IMPORTANT
+%token T_IMPORTANT_SYM
 %token '(' ')'
 %token '[' ']'
 %token '@'
@@ -21,161 +28,411 @@
 %token '%'
 %token '<'
 %token '>'
+%token T_IMPORT_SYM
+%token T_CHARSET_SYM
+%token T_MEDIA_SYM
+%token T_PAGE
+%token S
+%token T_CDO T_CDC
+%token T_HASH
+%token T_FUNCTION
+%token T_ANGLE
+%token T_INCLUDES
+%token T_PAGE_SYM
+%token T_PERCENTAGE
+%token T_DASHMATCH
+%token T_DIMENSION
+%token T_BAD_STRING
+%token T_BAD_URI
+%token T_NOT
+%token T_PREFIXMATCH
+%token T_SUFFIXMATCH
+%token T_SUBSTRINGMATCH
 
 {
-   subtype yystype is Integer;
+   subtype yystype is CSS.Parser.YYstype;
 }
 
 %%
 
-css_rules :
-     css_rules css_rule
-   |
-     css_rule
-   ;
+--    [S|CDO|CDC]* [ import [ CDO S* | CDC S* ]* ]*
+--    [ [ ruleset | media | page ] [ CDO S* | CDC S* ]* ]*
+--    charset_list spaces_or_comments import_list stylesheet_rules
+stylesheet :
+    stylesheet_rules
+  ;
 
-css_rule :
-     css_selectors css_block
-   ;
+stylesheet_rules :
+    stylesheet_rules stylesheet_rule
+  |
+    stylesheet_rule
+  ;
 
-css_selectors :
-     css_selectors ',' css_selector
-   |
-     css_selector
-   |
-     --  Empty
-   ;
+stylesheet_rule :
+    ruleset
+  |
+    media
+  |
+    page
+  |
+    spaces_or_comments
+  ;
 
-css_selector :
-     css_selector '>' css_selector
-   |
-     css_selector '*' css_selector
-   |
-     css_selector '+' css_selector
-   |
-     css_selector css_selector
-   |
-     T_NAME T_CLASS
-   |
-     T_NAME T_IDENT
-   |
-     T_NAME
-   |
-     T_CLASS
-   |
-     T_IDENT
-   ;
+charset_list :
+    charset_list charset
+  |
+    charset
+  |
+    --  Empty
+  ;
 
-css_block :
-     '{' css_declaration_list '}'
-   |
-     '{' error '}'
-   ;
+charset :
+    T_CHARSET_SYM T_STRING ';' spaces
+  ;
 
-css_declaration_list :
-     css_declaration_list css_declaration ';'
-   |
-     css_declaration ';'
-          { Error (3, "CSS Declaration"); }
-   |
-     error ';'
-          { Error (4, "Found error rule"); }
-   ;
+import_list :
+    import_list spaces_or_comments import
+  |
+    import
+  ;
 
-css_declaration :
-     ident_token ':' css_value_list important
-   |
-     ident_token ':' css_value_list
-          { Error(2, "CSS rule");
-     }
+spaces_or_comments :
+    spaces_or_comments space_or_comment
+  |
+    space_or_comment
+  ;
 
-    
-   |
-     ident_token ':' important
-   ;
+space_or_comment :
+    T_CDO
+  |
+    T_CDC
+  |
+    spaces
+  ;
 
-css_value_list :
-     css_value_list css_value
-   |
-     css_value
-   ;
+spaces :
+    spaces S
+  |
+    S
+  |
+    --  Empty
+  ;
 
-css_value :
-     css_calc
-   |
-     css_toggle
-   |
-     css_attr
-   |
-     T_NUMBER
-   |
-     T_REAL
-   |
-     T_UNIT
-   |
-     T_COLOR
-   |
-     T_NAME
-   |
+force_spaces :
+    force_spaces S
+  |
+    S
+  ;
+
+--    [STRING|URI] S* media_list? ';' S*
+import :
+     T_IMPORT_SYM spaces string_or_uri spaces media_list ';'
+  |
+     T_IMPORT_SYM spaces string_or_uri spaces ';'
+  ;
+
+string_or_uri :
      T_STRING
-   |
-     T_URL T_STRING ')'
-   ;
-
-css_calc :
-     T_CALC css_calc_sum ')'
-   |
-     T_CALC css_calc_sum error
-   ;
-
-css_calc_sum :
-     css_calc_sum '+' css_calc_product
-   |
-     css_calc_sum '-' css_calc_product
-   |
-     css_calc_product
-   ;
-   
-css_calc_product :
-     css_calc_product '*' css_calc_value
   |
-     css_calc_product '/' css_calc_value
-  |
-     css_calc_value
+     T_URI
   ;
 
-css_calc_value :
-     css_calc
-  |
-     T_NUMBER
-  |
-     T_UNIT
-  ;
-     
-css_toggle :
-     T_TOGGLE css_toggle_values ')'
+-- MEDIA_SYM S* media_list '{' S* ruleset* '}' S*
+media :
+     T_MEDIA_SYM spaces media_list '{' spaces ruleset '}' spaces
   ;
 
-css_toggle_values :
-     css_toggle_values ',' css_value
+--  medium [ COMMA S* medium]*
+media_list :
+     media_list ',' medium
+         { Error (20, "Found media_list"); }
   |
-     css_value
+     medium
   ;
 
-css_attr :
-     T_ATTR T_NAME T_UNIT ',' css_value_list ')'
+medium :
+     T_IDENT force_spaces
+        { Error (10, "Found medium (spaces)"); }
+  |
+     T_IDENT
+        { Error (10, "Found medium"); }
+  ;
+
+--    '{' spaces declaration? [ ';' spaces declaration? ]* '}' spaces
+page
+  : T_PAGE_SYM spaces pseudo_page
+    '{' spaces declaration_list '}' spaces
+  ;
+
+declaration_list :
+    declaration_list ';' spaces declaration
+  |
+    declaration
+  ;
+
+pseudo_page
+  : ':' T_IDENT spaces
+  |
+    --  Empty
+  ;
+operator :
+    '/' spaces
+  |
+    ',' spaces
+  ;
+
+combinator :
+    '+' spaces
+  |
+    '>' spaces
+  |
+    '~' spaces
+  ;
+
+unary_operator :
+     '-'
+  |
+     '+'
+  ;
+
+--    ruleset ruleset
+--  |
+ruleset :
+    selector_list '{' spaces declaration_list '}' spaces
+  |
+    selector_list '{' spaces error '}' spaces
+       { Error (12, "Invalid CSS rule"); }
+  ;
+
+selector_list :
+    selector_list ',' spaces selector
+  |
+    selector
+  |
+    error
+       { Error (13, "Invalid CSS selector component"); }
+  ;
+
+--  : simple_selector [ combinator selector | spaces [ combinator? selector ]? ]?
+selector :
+     selector combinator simple_selector_seq
+  |
+     selector simple_selector_seq
+  |
+     simple_selector_seq
+  ;
+
+sel :
+--    combinator selector spaces combinator selector
+--  |
+    combinator selector
+  ;
+
+simple_selector_seq :
+    type_selector
+    element_name simple_selector_list
+  |
+    simple_selector_list
+  |
+    element_name spaces
+  ;
+
+simple_selector_list :
+     simple_selector_list term_selector
  |
-     T_ATTR T_NAME T_UNIT ')'
+     term_selector
   ;
 
+term_selector :
+     T_HASH spaces
+  |
+     T_CLASS spaces
+  |
+     attrib spaces
+  |
+     pseudo spaces
+  |
+     T_NOT negation_arg spaces ')' spaces
+  ;
 
-ident_token:
-     T_NAME
-   ;
+negation_arg :
+    type_selector
+  |
+    universal
+  |
+    T_HASH
+  |
+    T_CLASS
+  |
+    attrib
+  |
+    pseudo
+  ;
 
-important :
-     '!' T_IMPORTANT
-   ;
+universal :
+    '*'
+  ;
+
+type_selector :
+    element_name
+  ;
+
+element_name :
+    T_IDENT
+        { Error (23, "Found element name"); }
+  |
+    '*'
+  ;
+
+--   '[' spaces IDENT spaces [ [ '=' | INCLUDES | DASHMATCH ] spaces
+--    [ IDENT | STRING ] spaces ]? ']'
+attrib :
+     '[' spaces T_IDENT spaces attrib_sel ']'
+  ;
+
+attrib_sel :
+     attrib_sel attrib_sel
+  |
+     attrib_op spaces T_IDENT spaces
+  |
+     attrib_op spaces T_STRING spaces
+  ;
+
+attrib_op :
+     '='
+  |
+     T_INCLUDES
+  |
+     T_DASHMATCH
+  |
+     T_PREFIXMATCH
+  |
+     T_SUFFIXMATCH
+  |
+     T_SUBSTRINGMATCH
+  |
+     --  Empty
+  ;
+
+--    ':' [ T_IDENT | T_FUNCTION spaces [T_IDENT spaces ]? ')' ]
+pseudo :
+    ':' ':' T_IDENT
+  |
+    ':' T_IDENT
+  |
+    ':' T_FUNCTION spaces pseudo_params ')'
+  ;
+
+pseudo_params :
+    pseudo_params T_IDENT spaces
+  |
+    pseudo_params '+' pseudo_value
+  |
+    pseudo_value
+  ;
+
+pseudo_value :
+    num_value
+  |
+    T_IDENT spaces
+  ;
+ 
+declaration_list :
+    declaration_list declaration ';' spaces
+  |
+    declaration_list declaration
+       { Error (100, "Rule without ';'"); }
+  |
+    declaration ';' spaces
+  ;
+
+declaration :
+     property ':' spaces expr prio
+  |
+     property ':' spaces expr
+  |
+     property ':' error
+  ;
+
+property :
+      T_IDENT spaces
+          { Error (4, "Property found"); }
+  ;
+
+prio :
+     T_IMPORTANT_SYM spaces
+  ;
+
+expr :
+    expr operator term
+  |
+    expr term
+  |
+    term
+  ;
+
+--    [ NUMBER S* | PERCENTAGE S* | LENGTH S* | EMS S* | EXS S* | ANGLE S* |
+--      TIME S* | FREQ S* ]
+num_value :
+      T_NUMBER spaces
+        { $$ := $1; }
+  |
+      T_PERCENTAGE spaces
+        { $$ := $1; }
+  |
+      T_LENGTH spaces
+        { $$ := $1; }
+  |
+      T_EMS spaces
+        { $$ := $1; }
+  |
+      T_EXS spaces
+        { $$ := $1; }
+  |
+      T_ANGLE spaces
+        { $$ := $1; }
+  |
+      T_TIME spaces
+        { $$ := $1; }
+  |
+      T_FREQ spaces
+        { $$ := $1; }
+  ;
+
+--  : unary_operator? term_value
+--    [ NUMBER S* | PERCENTAGE S* | LENGTH S* | EMS S* | EXS S* | ANGLE S* |
+--      TIME S* | FREQ S* ]
+term :
+     unary_operator num_value
+        { $$ := $2; }
+  |
+     num_value
+        { $$ := $1; }
+  |
+     T_STRING spaces
+        { $$ := $1; }
+  |
+     T_IDENT spaces
+        { $$ := $1; }
+  |
+     T_URI spaces
+        { $$ := $1; }
+  |
+     hexcolor
+        { $$ := $1; }
+  |
+     function
+        { $$ := $1; }
+  ;
+
+function :
+     T_FUNCTION spaces expr ')' spaces
+  ;
+
+hexcolor :
+     T_HASH spaces
+        { $$ := $1; }
+  ;
 
 %%
 package CSS.Parser.Parser is
@@ -183,6 +440,9 @@ package CSS.Parser.Parser is
    error_count : Natural := 0;
 
    function Parse (Content : in String) return Integer;
+
+   --  Set or clear the parser debug flag.
+   --  procedure Set_Debug (Flag : in Boolean);
 
 end CSS.Parser.Parser;
 
@@ -210,7 +470,7 @@ package body CSS.Parser.Parser is
       pragma Unreferenced (Message);
    begin
       error_count := error_count + 1;
-      Error (CSS.Parser.Lexer.Line_Number, Message);
+      Error (CSS.Parser.Lexer_Dfa.yylineno, Message);
    end yyerror;
 
    function Parse (Content : in String) return Integer is
@@ -222,5 +482,11 @@ package body CSS.Parser.Parser is
    end Parse;
 
 ##%procedure_parse
+
+   --  Set or clear the parser debug flag.
+   -- procedure Set_Debug (Flag : in Boolean) is
+   -- begin
+   --   yy.DEBUG := Flag;
+   -- end Set_Debug;
 
 end CSS.Parser.Parser;
