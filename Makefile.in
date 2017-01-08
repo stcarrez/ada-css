@@ -5,7 +5,7 @@ CSS_LIBRARY_TYPE=static
 
 # You may edit this makefile as long as you keep these original 
 # target names defined.
-MODE=distrib
+MODE=debug
 GNATMAKE=@GNATMAKE@
 GNATCLEAN=gnatclean
 GPRINSTALL=@GPRINSTALL@
@@ -117,7 +117,7 @@ parser:
 
 lexer:
 	cd src/parser; \
-	aflex -dms -L css-parser-lexer.l
+	aflex -ms -L css-parser-lexer.l
 	cd src/parser && \
 	  gnatchop -w css-parser-lexer.ada && \
 	  rm -f css-parser-lexer.ada
