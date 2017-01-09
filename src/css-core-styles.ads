@@ -24,6 +24,7 @@ package CSS.Core.Styles is
    type CSSStyleRule is new CSS.Core.CSSRule with record
       Style : CSSStyle_Declaration;
    end record;
+   type CSSStyleRule_Access is access all CSSStyleRule'Class;
 
    --  Get the type that identifies the rule.
    overriding
