@@ -1,0 +1,1 @@
+P::first-letter, * > div, * + dl > dt > p a:visited p:nth-of-type(n+2):nth-last-of-type(n+2) { font-size: 200%; font-weight: bold; float: left }
