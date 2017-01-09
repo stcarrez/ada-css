@@ -179,11 +179,11 @@ package body CSS.Parser is
       Set_Type (Into, TYPE_PROPERTY, Ident.Line, Ident.Column);
       Into.Node := new Parser_Node_Type '(Kind        => TYPE_PROPERTY,
                                           Ref_Counter => ONE,
-                                          Name        => Ident.Node.Name,
-                                          Value       => Value.Node.Value,
+                                          Name        => Ident.Node,
+                                          Value       => Value.Node,
                                           Prio        => Prio);
-      Util.Concurrent.Counters.Increment (Ident.Node.Name.Ref_Counter);
-      Util.Concurrent.Counters.Increment (Value.Node.Value.Ref_Counter);
+      Util.Concurrent.Counters.Increment (Ident.Node.Ref_Counter);
+      Util.Concurrent.Counters.Increment (Value.Node.Ref_Counter);
    end Set_Property;
 
    --  ------------------------------
