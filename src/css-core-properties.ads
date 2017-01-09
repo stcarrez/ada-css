@@ -47,6 +47,10 @@ package CSS.Core.Properties is
                      Value : in CSSProperty_Value;
                      Line  : in Natural := 0);
 
+   --  Iterate over the list of properties and call the <tt>Process</tt> procedure.
+   procedure Iterate (List    : in CSSProperty_List;
+                      Process : not null access procedure (Prop : in CSSProperty));
+
 private
 
    type CSSInternal_Property is record
