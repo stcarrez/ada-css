@@ -4553,13 +4553,13 @@ Text_IO.Put_Line ("End of comment error!"); ENTER(INITIAL);
              return T_PREFIXMATCH; 
 
          when 33 => 
-             CSS.Parser.Set_Value (yylval, YYText, V_STRING); return T_STRING; 
+             Set_String (yylval, YYText, yylineno, yylinecol); return T_STRING; 
 
          when 34 => 
-             CSS.Parser.Set_Value (yylval, YYText, V_STRING); return T_BAD_STRING; 
+             Set_String (yylval, YYText, yylineno, yylinecol); return T_BAD_STRING; 
 
          when 35 => 
-             CSS.Parser.Set_Value (yylval, YYText, V_IDENT); return T_IDENT; 
+             Set_Ident (yylval, YYText, yylineno, yylinecol); return T_IDENT; 
 
          when 36 => 
              return T_IMPORT_SYM; 
@@ -4574,85 +4574,85 @@ Text_IO.Put_Line ("End of comment error!"); ENTER(INITIAL);
              return T_CHARSET_SYM; 
 
          when 40 => 
-             CSS.Parser.Set_Value (yyval, YYText, V_IDENT); return T_ATKEYWORD; 
+             Set_Ident (yyval, YYText, yylineno, yylinecol); return T_ATKEYWORD; 
 
          when 41 => 
             return T_IMPORTANT_SYM; 
 
          when 42 => 
-             CSS.Parser.Set_Value (yylval, YYText, U_EM); return T_EMS; 
+             Set_Number (yylval, YYText, U_EM, yylineno, yylinecol); return T_EMS; 
 
          when 43 => 
-             CSS.Parser.Set_Value (yylval, YYText, U_EX); return T_EXS; 
+             Set_Number (yylval, YYText, U_EX, yylineno, yylinecol); return T_EXS; 
 
          when 44 => 
-             CSS.Parser.Set_Value (yylval, YYText, U_PX); return T_LENGTH; 
+             Set_Number (yylval, YYText, U_PX, yylineno, yylinecol); return T_LENGTH; 
 
          when 45 => 
-             CSS.Parser.Set_Value (yylval, YYText, U_CM); return T_LENGTH; 
+             Set_Number (yylval, YYText, U_CM, yylineno, yylinecol); return T_LENGTH; 
 
          when 46 => 
-             CSS.Parser.Set_Value (yylval, YYText, U_MM); return T_LENGTH; 
+             Set_Number (yylval, YYText, U_MM, yylineno, yylinecol); return T_LENGTH; 
 
          when 47 => 
-             CSS.Parser.Set_Value (yylval, YYText, U_IN); return T_LENGTH; 
+             Set_Number (yylval, YYText, U_IN, yylineno, yylinecol); return T_LENGTH; 
 
          when 48 => 
-             CSS.Parser.Set_Value (yylval, YYText, U_PT); return T_LENGTH; 
+             Set_Number (yylval, YYText, U_PT, yylineno, yylinecol); return T_LENGTH; 
 
          when 49 => 
-             CSS.Parser.Set_Value (yylval, YYText, U_PC); return T_LENGTH; 
+             Set_Number (yylval, YYText, U_PC, yylineno, yylinecol); return T_LENGTH; 
 
          when 50 => 
-             CSS.Parser.Set_Value (yylval, YYText, U_DEG); return T_ANGLE; 
+             Set_Number (yylval, YYText, U_DEG, yylineno, yylinecol); return T_ANGLE; 
 
          when 51 => 
-             CSS.Parser.Set_Value (yylval, YYText, U_RAD); return T_ANGLE; 
+             Set_Number (yylval, YYText, U_RAD, yylineno, yylinecol); return T_ANGLE; 
 
          when 52 => 
-             CSS.Parser.Set_Value (yylval, YYText, U_GRAD); return T_ANGLE; 
+             Set_Number (yylval, YYText, U_GRAD, yylineno, yylinecol); return T_ANGLE; 
 
          when 53 => 
-             CSS.Parser.Set_Value (yylval, YYText, U_MS); return T_TIME; 
+             Set_Number (yylval, YYText, U_MS, yylineno, yylinecol); return T_TIME; 
 
          when 54 => 
-             CSS.Parser.Set_Value (yylval, YYText, U_SEC); return T_TIME; 
+             Set_Number (yylval, YYText, U_SEC, yylineno, yylinecol); return T_TIME; 
 
          when 55 => 
-             CSS.Parser.Set_Value (yylval, YYText, U_HZ); return T_FREQ; 
+             Set_Number (yylval, YYText, U_HZ, yylineno, yylinecol); return T_FREQ; 
 
          when 56 => 
-             CSS.Parser.Set_Value (yylval, YYText, U_KHZ); return T_FREQ; 
+             Set_Number (yylval, YYText, U_KHZ, yylineno, yylinecol); return T_FREQ; 
 
          when 57 => 
-             CSS.Parser.Set_Value (yylval, YYText, U_NONE); return T_DIMENSION; 
+             Set_Number (yylval, YYText, U_NONE, yylineno, yylinecol); return T_DIMENSION; 
 
          when 58 => 
-             CSS.Parser.Set_Value (yylval, YYText, U_NONE); return T_PERCENTAGE; 
+             Set_Number (yylval, YYText, U_NONE, yylineno, yylinecol); return T_PERCENTAGE; 
 
          when 59 => 
-             CSS.Parser.Set_Value (yylval, YYText, U_NONE); return T_NUMBER; 
+             Set_Number (yylval, YYText, U_NONE, yylineno, yylinecol); return T_NUMBER; 
 
          when 60 => 
-             CSS.Parser.Set_Value (yylval, YYText, V_URL); return T_URI; 
+             Set_Uri (yylval, YYText, yylineno, yylinecol); return T_URI; 
 
          when 61 => 
-             CSS.Parser.Set_Value (yylval, YYText, V_URL); return T_URI; 
+             Set_Uri (yylval, YYText, yylineno, yylinecol); return T_URI; 
 
          when 62 => 
-             CSS.Parser.Set_Value (yylval, YYText, V_URL); return T_BAD_URI; 
+             Set_Uri (yylval, YYText, yylineno, yylinecol); return T_BAD_URI; 
 
          when 63 => 
              return T_NOT; 
 
          when 64 => 
-             CSS.Parser.Set_Value (yylval, YYText, V_FUNCTION); return T_FUNCTION; 
+             Set_Ident (yylval, YYText, yylineno, yylinecol); return T_FUNCTION; 
 
          when 65 => 
-             CSS.Parser.Set_Value (yylval, YYText, V_IDENT); return T_HASH; 
+             Set_Ident (yylval, YYText, yylineno, yylinecol); return T_HASH; 
 
          when 66 => 
-             CSS.Parser.Set_Value (yylval, YYText, V_IDENT); return T_CLASS; 
+             Set_Ident (yylval, YYText, yylineno, yylinecol); return T_CLASS; 
 
          when 67 => 
             return '!';
