@@ -82,6 +82,24 @@ package body CSS.Core.Properties is
    end Append;
 
    --  ------------------------------
+   --  Iterate over the list of properties and call the <tt>Process</tt> procedure.
+   --  ------------------------------
+   procedure Iterate (List    : in CSSProperty_List;
+                      Process : not null access procedure (Prop : in CSSProperty)) is
+      Prop : CSSProperty;
+   begin
+      if List.Properties /= null then
+         Prop.Rule := List.Parent;
+         for P of List.Properties.all loop
+            Prop.Name  := P.Name;
+            Prop.Value := P.Value;
+            Prop.Location.Line  := P.Line;
+            Process (Prop);
+         end loop;
+      end if;
+   end Iterate;
+
+   --  ------------------------------
    --  Release the memory used by the property list.
    --  ------------------------------
    overriding
