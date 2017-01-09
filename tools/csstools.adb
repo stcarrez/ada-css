@@ -27,16 +27,16 @@ with CSS.Parser.Lexer;
 with Ada.Exceptions;
 with GNAT.Traceback.Symbolic;
 with CSS.Parser.Lexer_dfa;
+with CSS.Core;
 procedure CssTools is
 
    use Util.Streams.Buffered;
    use Ada.Strings.Unbounded;
 
    Count  : constant Natural := Ada.Command_Line.Argument_Count;
-
+   Doc    : aliased CSS.Core.Stylesheet;
 begin
-   CSS.Parser.Lexer_dfa.aflex_debug := False;
-
+   CSS.Parser.Lexer_dfa.aflex_debug := True;
    if Count = 0 then
       Ada.Text_IO.Put_Line ("Usage: csstools file...");
       return;
@@ -47,7 +47,7 @@ begin
          S    : constant String := Ada.Command_Line.Argument (I);
          Res  : Integer;
       begin
-         Res := CSS.Parser.Parser.Parse (S);
+         Res := CSS.Parser.Parser.Parse (S, Doc'Unchecked_Access);
          Ada.Text_IO.Put_Line ("Result: " & Integer'Image (Res));
       end;
    end loop;
