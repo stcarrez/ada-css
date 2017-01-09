@@ -1,6 +1,7 @@
 # Ada CSS Library
 
 [![Build Status](https://img.shields.io/jenkins/s/http/jenkins.vacs.fr/Ada-CSS.svg)](http://jenkins.vacs.fr/job/Ada-CSS/)
+[![Test Status](https://img.shields.io/jenkins/t/http/jenkins.vacs.fr/Ada-CSS.svg)](http://jenkins.vacs.fr/job/Ada-CSS/)
 [![License](http://img.shields.io/badge/license-APACHE2-blue.svg)](LICENSE)
 
 The Ada CSS library is an Ada 05 implementation of the
