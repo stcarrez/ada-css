@@ -325,38 +325,48 @@ pseudo :
 
 pseudo_params :
     pseudo_params T_IDENT spaces
+--       { CSS.Parser.Set_Node ($$, TYPE_APPEND, $1, $2); }
   |
     pseudo_params '+' pseudo_value
+--       { CSS.Parser.Set_Node ($$, TYPE_ADD, $1, $2); }
   |
     pseudo_value
+       { $$ := $1; }
   ;
 
 pseudo_value :
     num_value
+       { $$ := $1; }
   |
     T_IDENT spaces
+       { $$ := $1; }
   ;
  
 declaration_list :
     declaration_list declaration ';' spaces
+       { Append_Property ($1, Document, $2); $$ := $1; }
   |
     declaration_list declaration
-       { Error (100, "Rule without ';'"); }
+       { Append_Property ($1, Document, $2); $$ := $1; }
   |
     declaration ';' spaces
+       { Set_Property_List ($$, Document, $1); }
   ;
 
 declaration :
      property ':' spaces expr prio
+        { Set_Property ($$, $1, $4, True); }
   |
      property ':' spaces expr
+        { Set_Property ($$, $1, $4, False); }
   |
      property ':' error
+        { Set_Property ($$, $1, $1, False); }
   ;
 
 property :
-      T_IDENT spaces
-          { Error (4, "Property found"); }
+     T_IDENT spaces
+        { $$ := $1; }
   ;
 
 prio :
@@ -365,10 +375,12 @@ prio :
 
 expr :
     expr operator term
+       { CSS.Parser.Set_Expr ($$, $1, $2, $3); }
   |
     expr term
+       { CSS.Parser.Set_Expr ($$, $1, $2); }
   |
-    term
+    term  
   ;
 
 --    [ NUMBER S* | PERCENTAGE S* | LENGTH S* | EMS S* | EXS S* | ANGLE S* |
@@ -427,6 +439,7 @@ term :
 
 function :
      T_FUNCTION spaces expr ')' spaces
+        { CSS.Parser.Set_Function ($$, $1, $3); }
   ;
 
 hexcolor :
@@ -435,11 +448,13 @@ hexcolor :
   ;
 
 %%
+with CSS.Core;
 package CSS.Parser.Parser is
 
    error_count : Natural := 0;
 
-   function Parse (Content : in String) return Integer;
+   function Parse (Content  : in String;
+                   Document : in CSS.Core.Stylesheet_Access) return Integer;
 
    --  Set or clear the parser debug flag.
    --  procedure Set_Debug (Flag : in Boolean);
@@ -466,6 +481,8 @@ package body CSS.Parser.Parser is
 
    procedure yyerror (Message : in String := "syntax error");
 
+   Document : CSS.Core.Stylesheet_Access;
+
    procedure yyerror (Message : in String := "syntax error") is
       pragma Unreferenced (Message);
    begin
@@ -473,12 +490,24 @@ package body CSS.Parser.Parser is
       Error (CSS.Parser.Lexer_Dfa.yylineno, Message);
    end yyerror;
 
-   function Parse (Content : in String) return Integer is
+   function Parse (Content  : in String;
+                   Document : in CSS.Core.Stylesheet_Access) return Integer is
    begin
+      Error_Count := 0;
       CSS.Parser.Lexer_IO.Open_Input (Content);
       --  Expr := MAT.Expressions.EMPTY;
+      CSS.Parser.Parser.Document := Document;
       yyparse;
-      return 0;
+      CSS.Parser.Parser.Document := null;
+      CSS.Parser.Lexer_IO.Close_Input;
+      return Error_Count;
+
+   exception
+      when others =>
+         CSS.Parser.Parser.Document := null;
+         CSS.Parser.Lexer_IO.Close_Input;
+         raise;
+
    end Parse;
 
 ##%procedure_parse
