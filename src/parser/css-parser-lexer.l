@@ -86,47 +86,47 @@ Z               z|\\0{0,4}(5a|7a)(\r\n|[ \t\r\n\f])?|\\z
 "*="			{ return T_SUBSTRINGMATCH; }
 "^="			{ return T_PREFIXMATCH; }
 
-{string}		{ CSS.Parser.Set_Value (yylval, YYText, V_STRING); return T_STRING; }
-{badstring}             { CSS.Parser.Set_Value (yylval, YYText, V_STRING); return T_BAD_STRING; }
-{ident}			{ CSS.Parser.Set_Value (yylval, YYText, V_IDENT); return T_IDENT; }
+{string}		{ Set_String (yylval, YYText, yylineno, yylinecol); return T_STRING; }
+{badstring}             { Set_String (yylval, YYText, yylineno, yylinecol); return T_BAD_STRING; }
+{ident}			{ Set_Ident (yylval, YYText, yylineno, yylinecol); return T_IDENT; }
 
 @{I}{M}{P}{O}{R}{T}	{ return T_IMPORT_SYM; }
 @{P}{A}{G}{E}		{ return T_PAGE_SYM; }
 @{M}{E}{D}{I}{A}	{ return T_MEDIA_SYM; }
 "@charset "		{ return T_CHARSET_SYM; }
-"@"{name}		{ CSS.Parser.Set_Value (yyval, YYText, V_IDENT); return T_ATKEYWORD; }
+"@"{name}		{ Set_Ident (yyval, YYText, yylineno, yylinecol); return T_ATKEYWORD; }
 
 "!"({w}|{comment})*{I}{M}{P}{O}{R}{T}{A}{N}{T}	{return T_IMPORTANT_SYM; }
 
-{num}{E}{M}		{ CSS.Parser.Set_Value (yylval, YYText, U_EM); return T_EMS; }
-{num}{E}{X}		{ CSS.Parser.Set_Value (yylval, YYText, U_EX); return T_EXS; }
-{num}{P}{X}		{ CSS.Parser.Set_Value (yylval, YYText, U_PX); return T_LENGTH; }
-{num}{C}{M}		{ CSS.Parser.Set_Value (yylval, YYText, U_CM); return T_LENGTH; }
-{num}{M}{M}		{ CSS.Parser.Set_Value (yylval, YYText, U_MM); return T_LENGTH; }
-{num}{I}{N}		{ CSS.Parser.Set_Value (yylval, YYText, U_IN); return T_LENGTH; }
-{num}{P}{T}		{ CSS.Parser.Set_Value (yylval, YYText, U_PT); return T_LENGTH; }
-{num}{P}{C}		{ CSS.Parser.Set_Value (yylval, YYText, U_PC); return T_LENGTH; }
-{num}{D}{E}{G}		{ CSS.Parser.Set_Value (yylval, YYText, U_DEG); return T_ANGLE; }
-{num}{R}{A}{D}		{ CSS.Parser.Set_Value (yylval, YYText, U_RAD); return T_ANGLE; }
-{num}{G}{R}{A}{D}	{ CSS.Parser.Set_Value (yylval, YYText, U_GRAD); return T_ANGLE; }
-{num}{M}{S}		{ CSS.Parser.Set_Value (yylval, YYText, U_MS); return T_TIME; }
-{num}{S}		{ CSS.Parser.Set_Value (yylval, YYText, U_SEC); return T_TIME; }
-{num}{H}{Z}		{ CSS.Parser.Set_Value (yylval, YYText, U_HZ); return T_FREQ; }
-{num}{K}{H}{Z}		{ CSS.Parser.Set_Value (yylval, YYText, U_KHZ); return T_FREQ; }
-{num}{ident}		{ CSS.Parser.Set_Value (yylval, YYText, U_NONE); return T_DIMENSION; }
+{num}{E}{M}		{ Set_Number (yylval, YYText, U_EM, yylineno, yylinecol); return T_EMS; }
+{num}{E}{X}		{ Set_Number (yylval, YYText, U_EX, yylineno, yylinecol); return T_EXS; }
+{num}{P}{X}		{ Set_Number (yylval, YYText, U_PX, yylineno, yylinecol); return T_LENGTH; }
+{num}{C}{M}		{ Set_Number (yylval, YYText, U_CM, yylineno, yylinecol); return T_LENGTH; }
+{num}{M}{M}		{ Set_Number (yylval, YYText, U_MM, yylineno, yylinecol); return T_LENGTH; }
+{num}{I}{N}		{ Set_Number (yylval, YYText, U_IN, yylineno, yylinecol); return T_LENGTH; }
+{num}{P}{T}		{ Set_Number (yylval, YYText, U_PT, yylineno, yylinecol); return T_LENGTH; }
+{num}{P}{C}		{ Set_Number (yylval, YYText, U_PC, yylineno, yylinecol); return T_LENGTH; }
+{num}{D}{E}{G}		{ Set_Number (yylval, YYText, U_DEG, yylineno, yylinecol); return T_ANGLE; }
+{num}{R}{A}{D}		{ Set_Number (yylval, YYText, U_RAD, yylineno, yylinecol); return T_ANGLE; }
+{num}{G}{R}{A}{D}	{ Set_Number (yylval, YYText, U_GRAD, yylineno, yylinecol); return T_ANGLE; }
+{num}{M}{S}		{ Set_Number (yylval, YYText, U_MS, yylineno, yylinecol); return T_TIME; }
+{num}{S}		{ Set_Number (yylval, YYText, U_SEC, yylineno, yylinecol); return T_TIME; }
+{num}{H}{Z}		{ Set_Number (yylval, YYText, U_HZ, yylineno, yylinecol); return T_FREQ; }
+{num}{K}{H}{Z}		{ Set_Number (yylval, YYText, U_KHZ, yylineno, yylinecol); return T_FREQ; }
+{num}{ident}		{ Set_Number (yylval, YYText, U_NONE, yylineno, yylinecol); return T_DIMENSION; }
 
-{num}%			{ CSS.Parser.Set_Value (yylval, YYText, U_NONE); return T_PERCENTAGE; }
-{num}			{ CSS.Parser.Set_Value (yylval, YYText, U_NONE); return T_NUMBER; }
+{num}%			{ Set_Number (yylval, YYText, U_NONE, yylineno, yylinecol); return T_PERCENTAGE; }
+{num}			{ Set_Number (yylval, YYText, U_NONE, yylineno, yylinecol); return T_NUMBER; }
 
-"url("{w}{string}{w}")" { CSS.Parser.Set_Value (yylval, YYText, V_URL); return T_URI; }
-"url("{w}{url}{w}")"    { CSS.Parser.Set_Value (yylval, YYText, V_URL); return T_URI; }
-{baduri}                { CSS.Parser.Set_Value (yylval, YYText, V_URL); return T_BAD_URI; }
+"url("{w}{string}{w}")" { Set_Uri (yylval, YYText, yylineno, yylinecol); return T_URI; }
+"url("{w}{url}{w}")"    { Set_Uri (yylval, YYText, yylineno, yylinecol); return T_URI; }
+{baduri}                { Set_Uri (yylval, YYText, yylineno, yylinecol); return T_BAD_URI; }
 
 \:not"("                { return T_NOT; }
-{ident}"("		{ CSS.Parser.Set_Value (yylval, YYText, V_FUNCTION); return T_FUNCTION; }
+{ident}"("		{ Set_Ident (yylval, YYText, yylineno, yylinecol); return T_FUNCTION; }
 
-"#"{name}		{ CSS.Parser.Set_Value (yylval, YYText, V_IDENT); return T_HASH; }
-\.{name}	        { CSS.Parser.Set_Value (yylval, YYText, V_IDENT); return T_CLASS; }
+"#"{name}		{ Set_Ident (yylval, YYText, yylineno, yylinecol); return T_HASH; }
+\.{name}	        { Set_Ident (yylval, YYText, yylineno, yylinecol); return T_CLASS; }
 
 \!              return '!';
 
