@@ -140,7 +140,7 @@ Z               z|\\0{0,4}(5a|7a)(\r\n|[ \t\r\n\f])?|\\z
                   ENTER(INITIAL);
                   return T_STRING;
                 }
-.               { Error (yylineno, "illegal character '" & YYText & "'"); }
+.               { Error (yylineno, yylinecol, "illegal character '" & YYText & "'"); }
 
 %%
 with Ada.Strings.Unbounded;
