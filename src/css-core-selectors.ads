@@ -44,6 +44,10 @@ package CSS.Core.Selectors is
    function Create (Kind : in Selector_Type;
                     Name : in String) return CSSSelector;
 
+   --  Append the selector at end of the selector list.
+   procedure Append (Into     : in out CSSSelector;
+                     Selector : in out CSSSelector);
+
 private
 
    --  A selector node represents a filter element that must be matched
