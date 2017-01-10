@@ -145,17 +145,17 @@ media :
 --  medium [ COMMA S* medium]*
 media_list :
      media_list ',' medium
-         { Error (20, "Found media_list"); }
+         { Error ($3.line, $3.column, "Found media_list"); }
   |
      medium
   ;
 
 medium :
      T_IDENT force_spaces
-        { Error (10, "Found medium (spaces)"); }
+        { Error ($1.line, $1.column, "Found medium (spaces)"); }
   |
      T_IDENT
-        { Error (10, "Found medium"); }
+        { Error ($1.line, $1.column, "Found medium"); }
   ;
 
 --    '{' spaces declaration? [ ';' spaces declaration? ]* '}' spaces
@@ -175,6 +175,7 @@ pseudo_page
   |
     --  Empty
   ;
+
 operator :
     '/' spaces
   |
@@ -195,70 +196,81 @@ unary_operator :
      '+'
   ;
 
---    ruleset ruleset
---  |
 ruleset :
     selector_list '{' spaces declaration_list '}' spaces
   |
     selector_list '{' spaces error '}' spaces
-       { Error (12, "Invalid CSS rule"); }
+       { Error ($1.line, $1.column, "Invalid CSS rule"); }
   ;
 
 selector_list :
     selector_list ',' spaces selector
+       { Add_Selector_List ($1, Document, $4); $$ := $1; }
   |
     selector
+       { Set_Selector_List ($$, Document, $1); }
   |
     error
-       { Error (13, "Invalid CSS selector component"); }
+       { Error ($1.line, $1.column, "Invalid CSS selector component"); }
   ;
 
 --  : simple_selector [ combinator selector | spaces [ combinator? selector ]? ]?
 selector :
-     selector combinator simple_selector_seq
+     selector combinator simple_selector spaces
+       { Add_Selector ($1, $3); $$ := $1; }
   |
-     selector simple_selector_seq
+     selector simple_selector spaces
+       { Add_Selector ($1, $2); $$ := $1; }
   |
-     simple_selector_seq
+     simple_selector spaces
+       { $$ := $1; }
   ;
 
-sel :
---    combinator selector spaces combinator selector
---  |
-    combinator selector
-  ;
-
-simple_selector_seq :
-    type_selector
-    element_name simple_selector_list
+simple_selector :
+     simple_selector term_selector
+       { Add_Selector_Filter ($1, $2); $$ := $1; }
   |
-    simple_selector_list
-  |
-    element_name spaces
-  ;
-
-simple_selector_list :
-     simple_selector_list term_selector
- |
      term_selector
+       { Set_Selector ($$, $1); }
   ;
 
 term_selector :
-     T_HASH spaces
+     type_selector
   |
-     T_CLASS spaces
+     T_HASH
   |
-     attrib spaces
+     T_CLASS
   |
-     pseudo spaces
+     attrib
   |
-     T_NOT negation_arg spaces ')' spaces
+     pseudo
+  |
+     T_NOT negation_arg spaces ')'
+  ;
+
+ns_prefix :
+    T_IDENT '|'
+  |
+    '*' '|'
+  |
+    '|'
+  ;
+
+type_selector :
+    ns_prefix element_name
+  |
+    element_name
+  ;
+
+element_name :
+    T_IDENT
+        { Error ($1.line, $1.column, "Found element name"); }
+  |
+    '*'
   ;
 
 negation_arg :
     type_selector
-  |
-    universal
   |
     T_HASH
   |
@@ -269,33 +281,17 @@ negation_arg :
     pseudo
   ;
 
-universal :
-    '*'
-  ;
-
-type_selector :
-    element_name
-  ;
-
-element_name :
-    T_IDENT
-        { Error (23, "Found element name"); }
-  |
-    '*'
-  ;
-
 --   '[' spaces IDENT spaces [ [ '=' | INCLUDES | DASHMATCH ] spaces
 --    [ IDENT | STRING ] spaces ]? ']'
 attrib :
-     '[' spaces T_IDENT spaces attrib_sel ']'
-  ;
-
-attrib_sel :
-     attrib_sel attrib_sel
+     '[' spaces T_IDENT spaces ']'
   |
-     attrib_op spaces T_IDENT spaces
+     '[' spaces T_IDENT spaces attrib_op spaces T_IDENT spaces ']'
   |
-     attrib_op spaces T_STRING spaces
+     '[' spaces T_IDENT spaces attrib_op spaces T_STRING spaces ']'
+  |
+     '[' error ']'
+         { Error ($3.Line, $3.column, "Invalid attribute definition."); }
   ;
 
 attrib_op :
@@ -310,8 +306,6 @@ attrib_op :
      T_SUFFIXMATCH
   |
      T_SUBSTRINGMATCH
-  |
-     --  Empty
   ;
 
 --    ':' [ T_IDENT | T_FUNCTION spaces [T_IDENT spaces ]? ')' ]
@@ -487,7 +481,7 @@ package body CSS.Parser.Parser is
       pragma Unreferenced (Message);
    begin
       error_count := error_count + 1;
-      Error (CSS.Parser.Lexer_Dfa.yylineno, Message);
+      Error (CSS.Parser.Lexer_Dfa.yylineno, CSS.Parser.Lexer_Dfa.yylinecol, Message);
    end yyerror;
 
    function Parse (Content  : in String;
