@@ -488,6 +488,8 @@ package body CSS.Parser.Parser is
                    Document : in CSS.Core.Stylesheet_Access) return Integer is
    begin
       Error_Count := 0;
+      CSS.Parser.Lexer_Dfa.yylineno  := 1;
+      CSS.Parser.Lexer_Dfa.yylinecol := 1;
       CSS.Parser.Lexer_IO.Open_Input (Content);
       --  Expr := MAT.Expressions.EMPTY;
       CSS.Parser.Parser.Document := Document;
