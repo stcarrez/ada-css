@@ -27,7 +27,7 @@ package Css.Parser.Parser_Tokens is
          T_Substringmatch, ';', '{',
          '}', ',', ':',
          '/', '+', '-',
-         '*' );
+         '|', '*' );
 
     Syntax_Error : exception;
 

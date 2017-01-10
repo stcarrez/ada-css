@@ -4676,7 +4676,7 @@ Text_IO.Put_Line ("End of comment error!"); ENTER(INITIAL);
                 
 
          when 72 => 
-             Error (yylineno, "illegal character '" & YYText & "'"); 
+             Error (yylineno, yylinecol, "illegal character '" & YYText & "'"); 
 
          when 73 => 
                         raise AFLEX_SCANNER_JAMMED;
