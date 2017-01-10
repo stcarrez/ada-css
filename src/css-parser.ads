@@ -92,6 +92,34 @@ private
                               Document : in CSS.Core.Stylesheet_Access;
                               Prop     : in YYstype);
 
+   --  Set the parser token to represent the CSS selector list.
+   --  The first selector searched in the document, inserted in the document
+   --  CSS selector tree and then added to the selector list.
+   procedure Set_Selector_List (Into     : in out YYstype;
+                                Document : in CSS.Core.Stylesheet_Access;
+                                Selector : in YYstype);
+
+   --  Append to the CSS selector list the selector.  The selector is first
+   --  searched in the document CSS selector tree and inserted in the tree.
+   --  It is then added to the list.
+   procedure Add_Selector_List (Into     : in out YYstype;
+                                Document : in CSS.Core.Stylesheet_Access;
+                                Selector : in YYstype);
+
+   --  Set the parser token to represent the CSS selector.
+   procedure Set_Selector (Into     : in out YYstype;
+                           Selector : in YYstype);
+
+   --  Add to the current parser token CSS selector the next CSS selector.
+   procedure Add_Selector (Into     : in out YYstype;
+                           Selector : in YYstype);
+
+   --  Add to the parser token CSS selector a filter represented either
+   --  by an attribute selection, a pseudo element, a pseudo class or
+   --  a function.
+   procedure Add_Selector_Filter (Into   : in out YYstype;
+                                  Filter : in YYstype);
+
    procedure Set_Expr (Into  : in out YYstype;
                        Left  : in YYstype;
                        Right : in YYstype);
@@ -144,6 +172,7 @@ private
    procedure Finalize (Object : in out YYstype);
 
    procedure Error (Line    : in Natural;
+                    Column  : in Natural;
                     Message : in String);
 
 end CSS.Parser;
