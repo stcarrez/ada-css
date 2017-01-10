@@ -17,13 +17,40 @@
 -----------------------------------------------------------------------
 package body CSS.Core.Selectors is
 
+   --  ------------------------------
    --  Create a CSS selector of the given type and with the name.
+   --  ------------------------------
    function Create (Kind : in Selector_Type;
                     Name : in String) return CSSSelector is
       Result : CSSSelector;
+      Node   : constant Selector_Node_Access
+         := new Selector_Node '(Len   => Name'Length,
+                                Kind  => Kind,
+                                Value => Name,
+                                Next  => null,
+                                Child => null);
    begin
+      Result.Sel := Node;
       return Result;
    end Create;
+
+   --  ------------------------------
+   --  Append the selector at end of the selector list.
+   --  ------------------------------
+   procedure Append (Into     : in out CSSSelector;
+                     Selector : in out CSSSelector) is
+      Last : Selector_Node_Access := Into.Sel;
+   begin
+      if Last = null then
+         Into.Sel := Selector.Sel;
+      else
+         while Last.Next /= null loop
+            Last := Last.Next;
+         end loop;
+         Last.Next := Selector.Sel;
+      end if;
+      Selector.Sel := null;
+   end Append;
 
    --  ------------------------------
    --  Compare the two selectors to order them.
