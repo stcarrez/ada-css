@@ -184,10 +184,13 @@ operator :
 
 combinator :
     '+' spaces
+         { Set_Selector_Type ($$, SEL_NEXT_SIBLING, yylineno, yylinecol); }
   |
     '>' spaces
+         { Set_Selector_Type ($$, SEL_CHILD, yylineno, yylinecol); }
   |
     '~' spaces
+         { Set_Selector_Type ($$, SEL_FOLLOWING_SIBLING, yylineno, yylinecol); }
   ;
 
 unary_operator :
@@ -214,7 +217,6 @@ selector_list :
        { Error ($1.line, $1.column, "Invalid CSS selector component"); }
   ;
 
---  : simple_selector [ combinator selector | spaces [ combinator? selector ]? ]?
 selector :
      selector combinator simple_selector spaces
        { Add_Selector ($1, $3); $$ := $1; }
@@ -231,21 +233,24 @@ simple_selector :
        { Add_Selector_Filter ($1, $2); $$ := $1; }
   |
      term_selector
-       { Set_Selector ($$, $1); }
   ;
 
 term_selector :
      type_selector
+       { Set_Selector ($$, SEL_ELEMENT, $1); }
   |
      T_HASH
+       { Set_Selector ($$, SEL_IDENT, $1); }
   |
      T_CLASS
+       { Set_Selector ($$, SEL_CLASS, $1); }
   |
      attrib
   |
      pseudo
   |
      T_NOT negation_arg spaces ')'
+       { Set_Selector ($$, SEL_NOT, $2); }
   ;
 
 ns_prefix :
@@ -260,11 +265,12 @@ type_selector :
     ns_prefix element_name
   |
     element_name
+       { $$ := $1; }
   ;
 
 element_name :
     T_IDENT
-        { Error ($1.line, $1.column, "Found element name"); }
+       { $$ := $1; }
   |
     '*'
   ;
@@ -281,14 +287,15 @@ negation_arg :
     pseudo
   ;
 
---   '[' spaces IDENT spaces [ [ '=' | INCLUDES | DASHMATCH ] spaces
---    [ IDENT | STRING ] spaces ]? ']'
 attrib :
      '[' spaces T_IDENT spaces ']'
+        { Set_Selector ($$, SEL_HAS_ATTRIBUTE, $3); }
   |
      '[' spaces T_IDENT spaces attrib_op spaces T_IDENT spaces ']'
+        { Set_Selector ($$, $5.Sel, $3, $7); }
   |
      '[' spaces T_IDENT spaces attrib_op spaces T_STRING spaces ']'
+        { Set_Selector ($$, $5.Sel, $3, $7); }
   |
      '[' error ']'
          { Error ($3.Line, $3.column, "Invalid attribute definition."); }
@@ -296,25 +303,34 @@ attrib :
 
 attrib_op :
      '='
+         { Set_Selector_Type ($$, SEL_EQ_ATTRIBUTE, yylineno, yylinecol); }
   |
      T_INCLUDES
+         { Set_Selector_Type ($$, SEL_CONTAIN_ATTRIBUTE, yylineno, yylinecol); }
   |
      T_DASHMATCH
+         { Set_Selector_Type ($$, SEL_ORMATCH_ATTRIBUTE, yylineno, yylinecol); }
   |
      T_PREFIXMATCH
+         { Set_Selector_Type ($$, SEL_STARTS_ATTRIBUTE, yylineno, yylinecol); }
   |
      T_SUFFIXMATCH
+         { Set_Selector_Type ($$, SEL_ENDS_ATTRIBUTE, yylineno, yylinecol); }
   |
      T_SUBSTRINGMATCH
+         { Set_Selector_Type ($$, SEL_MATCH_ATTRIBUTE, yylineno, yylinecol); }
   ;
 
 --    ':' [ T_IDENT | T_FUNCTION spaces [T_IDENT spaces ]? ')' ]
 pseudo :
     ':' ':' T_IDENT
+       { Set_Selector ($$, SEL_PSEUDO_ELEMENT, $3); }
   |
     ':' T_IDENT
+       { Set_Selector ($$, SEL_PSEUDO_CLASS, $2); }
   |
     ':' T_FUNCTION spaces pseudo_params ')'
+       { Set_Selector ($$, SEL_FUNCTION, $2); }
   ;
 
 pseudo_params :
@@ -463,11 +479,14 @@ with CSS.Parser.Parser_Shift_Reduce;
 with CSS.Parser.Lexer_IO;
 with CSS.Parser.Lexer;
 with CSS.Parser.Lexer_Dfa;
+with CSS.Core.Selectors;
 with Ada.Text_IO;
 package body CSS.Parser.Parser is
 
    use Ada;
    use CSS.Parser.Lexer;
+   use CSS.Core.Selectors;
+   use CSS.Parser.Lexer_Dfa;
    use type Ada.Text_IO.Count;
    use type Interfaces.Unsigned_64;
 
