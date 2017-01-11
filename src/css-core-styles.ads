@@ -17,12 +17,14 @@
 -----------------------------------------------------------------------
 
 with CSS.Core.Properties;
+with CSS.Core.Selectors;
 package CSS.Core.Styles is
 
    type CSSStyle_Declaration is new CSS.Core.Properties.CSSProperty_List with null record;
 
    type CSSStyleRule is new CSS.Core.CSSRule with record
-      Style : CSSStyle_Declaration;
+      Selectors : CSS.Core.Selectors.CSSSelector_List;
+      Style     : CSSStyle_Declaration;
    end record;
    type CSSStyleRule_Access is access all CSSStyleRule'Class;
 
