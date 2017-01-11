@@ -17,6 +17,7 @@
 -----------------------------------------------------------------------
 with Ada.Strings.Unbounded;
 with CSS.Core;
+private with CSS.Core.Selectors;
 private with Util.Concurrent.Counters;
 private with CSS.Core.Styles;
 private with Ada.Finalization;
@@ -25,8 +26,6 @@ package CSS.Parser is
    type Unit_Type is (U_NONE, U_PX, U_EX, U_EM, U_CM, U_MM, U_IN, U_PI, U_PC, U_PT,
                       U_DEG, U_RAD, U_GRAD,
                       U_MS, U_SEC, U_HZ, U_KHZ);
-
-   type Value_Type is (V_NONE, V_STRING, V_URL, V_NUMBER, V_IDENT, V_FUNCTION);
 
    procedure Load (Path  : in String;
                    Sheet : in CSS.Core.Stylesheet_Access);
@@ -41,6 +40,7 @@ private
 
    type Node_Type is (TYPE_NULL, TYPE_VALUE,
                       TYPE_STRING, TYPE_URI, TYPE_IDENT, TYPE_STYLE, TYPE_PROPERTY, TYPE_SELECTOR,
+                      TYPE_SELECTOR_TYPE,
                       TYPE_PROPERTY_LIST, TYPE_ERROR, TYPE_ADD, TYPE_APPEND);
 
    --  Set the parser token with a string.
@@ -110,6 +110,17 @@ private
    procedure Set_Selector (Into     : in out YYstype;
                            Selector : in YYstype);
 
+   --  Set the parser token to represent the CSS selector.
+   procedure Set_Selector (Into     : in out YYstype;
+                           Kind     : in CSS.Core.Selectors.Selector_Type;
+                           Selector : in YYstype);
+
+   --  Set the parser token to represent the CSS selector.
+   procedure Set_Selector (Into     : in out YYstype;
+                           Kind     : in CSS.Core.Selectors.Selector_Type;
+                           Param1   : in YYstype;
+                           Param2   : in YYstype);
+
    --  Add to the current parser token CSS selector the next CSS selector.
    procedure Add_Selector (Into     : in out YYstype;
                            Selector : in YYstype);
@@ -119,6 +130,13 @@ private
    --  a function.
    procedure Add_Selector_Filter (Into   : in out YYstype;
                                   Filter : in YYstype);
+
+   --  Set the parser token to represent a CSS selector type.
+   --  Record the line and column where the selector type is found.
+   procedure Set_Selector_Type (Into     : in out YYstype;
+                                Selector : in CSS.Core.Selectors.Selector_Type;
+                                Line     : in Natural;
+                                Column   : in Natural);
 
    procedure Set_Expr (Into  : in out YYstype;
                        Left  : in YYstype;
@@ -149,6 +167,9 @@ private
             Value : Parser_Node_Access;
             Prio  : Boolean := False;
 
+         when TYPE_SELECTOR =>
+            Selector : CSS.Core.Selectors.CSSSelector;
+
          when others =>
             null;
 
@@ -161,7 +182,8 @@ private
       Line     : Natural    := 0;
       Column   : Natural    := 0;
       Unit     : Unit_Type  := U_NONE;
-      Kind     : Value_Type := V_NONE;
+      Kind     : Node_Type := TYPE_NULL;
+      Sel      : CSS.Core.Selectors.Selector_Type := CSS.Core.Selectors.SEL_CLASS;
       Node     : Parser_Node_Access;
    end record;
 
