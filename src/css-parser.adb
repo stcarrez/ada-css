@@ -60,20 +60,20 @@ package body CSS.Parser is
    function To_String (Val : in YYstype) return String is
    begin
       case Val.Kind is
-         when V_NONE =>
+         when TYPE_NULL =>
             return "null";
 
-         when V_STRING | V_IDENT =>
+         when TYPE_STRING | TYPE_IDENT =>
             return To_String (Val.Node);
 
-         when V_URL =>
+         when TYPE_URI =>
             return "url(" & To_String (Val.Node) & ")";
 
-         when V_NUMBER =>
+         when TYPE_VALUE =>
             return To_String (Val.Node);
 
-         when V_FUNCTION =>
-            return To_String (Val.Node);
+         when others =>
+            return "?";
 
       end case;
    end To_String;
@@ -95,6 +95,7 @@ package body CSS.Parser is
             Into.Node := null;
          end if;
       end if;
+      Into.Kind   := Kind;
       Into.Line   := Line;
       Into.Column := Column;
    end Set_Type;
@@ -159,7 +160,7 @@ package body CSS.Parser is
    begin
       Set_Type (Into, TYPE_VALUE, Line, Column);
       Into.Unit := Unit;
-      Into.Kind := V_NUMBER;
+      Into.Kind := TYPE_VALUE;
       Into.Node := new Parser_Node_Type '(Kind        => TYPE_STRING,
                                           Ref_Counter => ONE,
                                           others      => <>);
@@ -242,7 +243,7 @@ package body CSS.Parser is
                                 Document : in CSS.Core.Stylesheet_Access;
                                 Selector : in YYstype) is
    begin
-      null;
+      Log.Error ("Selector '{0}'", CSS.Core.Selectors.To_String (Selector.Node.Selector));
    end Set_Selector_List;
 
    --  ------------------------------
@@ -263,7 +264,36 @@ package body CSS.Parser is
    procedure Set_Selector (Into     : in out YYstype;
                            Selector : in YYstype) is
    begin
-      Set_Type (Into, TYPE_STYLE, Selector.Line, Selector.Column);
+      Set_Type (Into, TYPE_SELECTOR, Selector.Line, Selector.Column);
+   end Set_Selector;
+
+   --  ------------------------------
+   --  Set the parser token to represent the CSS selector.
+   --  ------------------------------
+   procedure Set_Selector (Into     : in out YYstype;
+                           Kind     : in CSS.Core.Selectors.Selector_Type;
+                           Selector : in YYstype) is
+   begin
+      Set_Type (Into, TYPE_SELECTOR, Selector.Line, Selector.Column);
+      Into.Node := new Parser_Node_Type '(Kind        => TYPE_SELECTOR,
+                                          Ref_Counter => ONE,
+                                          Selector    => <>);
+      Into.Node.Selector := CSS.Core.Selectors.Create (Kind, To_String (Selector));
+   end Set_Selector;
+
+   --  ------------------------------
+   --  Set the parser token to represent the CSS selector.
+   --  ------------------------------
+   procedure Set_Selector (Into     : in out YYstype;
+                           Kind     : in CSS.Core.Selectors.Selector_Type;
+                           Param1   : in YYstype;
+                           Param2   : in YYstype) is
+   begin
+      Set_Type (Into, TYPE_SELECTOR, Param1.Line, Param1.Column);
+      Into.Node := new Parser_Node_Type '(Kind        => TYPE_SELECTOR,
+                                          Ref_Counter => ONE,
+                                          Selector    => <>);
+      Into.Node.Selector := CSS.Core.Selectors.Create (Kind, To_String (Param1), To_String (Param2));
    end Set_Selector;
 
    --  ------------------------------
@@ -272,7 +302,7 @@ package body CSS.Parser is
    procedure Add_Selector (Into     : in out YYstype;
                            Selector : in YYstype) is
    begin
-      Set_Type (Into, TYPE_STYLE, Selector.Line, Selector.Column);
+      CSS.Core.Selectors.Append (Into.Node.Selector, Selector.Node.Selector);
    end Add_Selector;
 
    --  ------------------------------
@@ -283,8 +313,21 @@ package body CSS.Parser is
    procedure Add_Selector_Filter (Into   : in out YYstype;
                                   Filter : in YYstype) is
    begin
-      Set_Type (Into, TYPE_STYLE, Filter.Line, Filter.Column);
+      CSS.Core.Selectors.Append_Child (Into.Node.Selector, Filter.Node.Selector);
    end Add_Selector_Filter;
+
+   --  ------------------------------
+   --  Set the parser token to represent a CSS selector type.
+   --  Record the line and column where the selector type is found.
+   --  ------------------------------
+   procedure Set_Selector_Type (Into     : in out YYstype;
+                                Selector : in CSS.Core.Selectors.Selector_Type;
+                                Line     : in Natural;
+                                Column   : in Natural) is
+   begin
+      Set_Type (Into, TYPE_SELECTOR_TYPE, Line, Column);
+      Into.Sel := Selector;
+   end Set_Selector_Type;
 
    procedure Set_Expr (Into  : in out YYstype;
                        Left  : in YYstype;
