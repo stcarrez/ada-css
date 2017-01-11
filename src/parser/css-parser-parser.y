@@ -348,6 +348,9 @@ pseudo_value :
     num_value
        { $$ := $1; }
   |
+    T_IDENT spaces '=' spaces num_value
+       { $$ := $1; }
+  |
     T_IDENT spaces
        { $$ := $1; }
   ;
@@ -448,8 +451,23 @@ term :
   ;
 
 function :
-     T_FUNCTION spaces expr ')' spaces
+     T_FUNCTION spaces function_params ')' spaces
         { CSS.Parser.Set_Function ($$, $1, $3); }
+  |
+     T_FUNCTION error ')' spaces
+        { Error ($1.Line, $1.Column, "Invalid function parameter"); }
+  ;
+
+function_params :
+     function_params function_param
+  |
+     function_param
+  ;
+
+function_param :
+     expr
+  |
+     T_IDENT spaces '=' spaces num_value spaces
   ;
 
 hexcolor :
