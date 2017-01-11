@@ -500,67 +500,67 @@ yy.value_stack(yy.tos);
 when 90 => -- #line 352
  
 yyval := 
+yy.value_stack(yy.tos-4); 
+
+when 91 => -- #line 355
+ 
+yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 91 => -- #line 357
+when 92 => -- #line 360
  Append_Property (
 yy.value_stack(yy.tos-3), Document, 
 yy.value_stack(yy.tos-2)); 
 yyval := 
 yy.value_stack(yy.tos-3); 
 
-when 92 => -- #line 360
+when 93 => -- #line 363
  Append_Property (
 yy.value_stack(yy.tos-1), Document, 
 yy.value_stack(yy.tos)); 
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 93 => -- #line 363
+when 94 => -- #line 366
  Set_Property_List (
 yyval, Document, 
 yy.value_stack(yy.tos-2)); 
 
-when 94 => -- #line 368
+when 95 => -- #line 371
  Set_Property (
 yyval, 
 yy.value_stack(yy.tos-4), 
 yy.value_stack(yy.tos-1), True); 
 
-when 95 => -- #line 371
+when 96 => -- #line 374
  Set_Property (
 yyval, 
 yy.value_stack(yy.tos-3), 
 yy.value_stack(yy.tos), False); 
 
-when 96 => -- #line 374
+when 97 => -- #line 377
  Set_Property (
 yyval, 
 yy.value_stack(yy.tos-2), 
 yy.value_stack(yy.tos-2), False); 
 
-when 97 => -- #line 379
+when 98 => -- #line 382
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 99 => -- #line 388
+when 100 => -- #line 391
  CSS.Parser.Set_Expr (
 yyval, 
 yy.value_stack(yy.tos-2), 
 yy.value_stack(yy.tos-1), 
 yy.value_stack(yy.tos)); 
 
-when 100 => -- #line 391
+when 101 => -- #line 394
  CSS.Parser.Set_Expr (
 yyval, 
 yy.value_stack(yy.tos-1), 
 yy.value_stack(yy.tos)); 
-
-when 102 => -- #line 400
- 
-yyval := 
-yy.value_stack(yy.tos-1); 
 
 when 103 => -- #line 403
  
@@ -597,10 +597,10 @@ when 109 => -- #line 421
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 110 => -- #line 429
+when 110 => -- #line 424
  
 yyval := 
-yy.value_stack(yy.tos); 
+yy.value_stack(yy.tos-1); 
 
 when 111 => -- #line 432
  
@@ -610,7 +610,7 @@ yy.value_stack(yy.tos);
 when 112 => -- #line 435
  
 yyval := 
-yy.value_stack(yy.tos-1); 
+yy.value_stack(yy.tos); 
 
 when 113 => -- #line 438
  
@@ -625,20 +625,30 @@ yy.value_stack(yy.tos-1);
 when 115 => -- #line 444
  
 yyval := 
-yy.value_stack(yy.tos); 
+yy.value_stack(yy.tos-1); 
 
 when 116 => -- #line 447
  
 yyval := 
 yy.value_stack(yy.tos); 
 
-when 117 => -- #line 452
+when 117 => -- #line 450
+ 
+yyval := 
+yy.value_stack(yy.tos); 
+
+when 118 => -- #line 455
  CSS.Parser.Set_Function (
 yyval, 
 yy.value_stack(yy.tos-4), 
 yy.value_stack(yy.tos-2)); 
 
-when 118 => -- #line 457
+when 119 => -- #line 458
+ Error (
+yy.value_stack(yy.tos-3).Line, 
+yy.value_stack(yy.tos-3).Column, "Invalid function parameter"); 
+
+when 124 => -- #line 475
  
 yyval := 
 yy.value_stack(yy.tos-1); 
