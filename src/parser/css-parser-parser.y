@@ -139,7 +139,13 @@ string_or_uri :
 
 -- MEDIA_SYM S* media_list '{' S* ruleset* '}' S*
 media :
-     T_MEDIA_SYM spaces media_list '{' spaces ruleset '}' spaces
+     media_start '{' spaces ruleset '}' spaces
+        { Current_Rule := null; }
+  ;
+
+media_start :
+     T_MEDIA_SYM spaces media_list
+        { Current_Rule := null; Error ($1.line, $2.line, "Found @media rule"); }
   ;
 
 --  medium [ COMMA S* medium]*
@@ -159,9 +165,13 @@ medium :
   ;
 
 --    '{' spaces declaration? [ ';' spaces declaration? ]* '}' spaces
-page
-  : T_PAGE_SYM spaces pseudo_page
-    '{' spaces declaration_list '}' spaces
+page :
+    page_start '{' spaces declaration_list '}' spaces
+  ;
+
+page_start :
+    T_PAGE_SYM spaces pseudo_page
+        { Error ($1.line, $1.column, "Starting a pseudo page."); }
   ;
 
 declaration_list :
@@ -201,17 +211,18 @@ unary_operator :
 
 ruleset :
     selector_list '{' spaces declaration_list '}' spaces
+       { Current_Rule := null; }
   |
     selector_list '{' spaces error '}' spaces
-       { Error ($1.line, $1.column, "Invalid CSS rule"); }
+       { Current_Rule := null; Error ($1.line, $1.column, "Invalid CSS rule"); }
   ;
 
 selector_list :
     selector_list ',' spaces selector
-       { Add_Selector_List ($1, Document, $4); $$ := $1; }
+       { Add_Selector_List (Current_Rule, Document, $4); }
   |
     selector
-       { Set_Selector_List ($$, Document, $1); }
+       { Add_Selector_List (Current_Rule, Document, $1); }
   |
     error
        { Error ($1.line, $1.column, "Invalid CSS selector component"); }
@@ -357,13 +368,13 @@ pseudo_value :
  
 declaration_list :
     declaration_list declaration ';' spaces
-       { Append_Property ($1, Document, $2); $$ := $1; }
+       { Append_Property (Current_Rule.Style, Document, $2); }
   |
     declaration_list declaration
-       { Append_Property ($1, Document, $2); $$ := $1; }
+       { Append_Property (Current_Rule.Style, Document, $2); }
   |
     declaration ';' spaces
-       { Set_Property_List ($$, Document, $1); }
+       { Append_Property (Current_Rule.Style, Document, $1); }
   ;
 
 declaration :
@@ -498,6 +509,7 @@ with CSS.Parser.Lexer_IO;
 with CSS.Parser.Lexer;
 with CSS.Parser.Lexer_Dfa;
 with CSS.Core.Selectors;
+with CSS.Core.Styles;
 with Ada.Text_IO;
 package body CSS.Parser.Parser is
 
@@ -512,7 +524,8 @@ package body CSS.Parser.Parser is
 
    procedure yyerror (Message : in String := "syntax error");
 
-   Document : CSS.Core.Stylesheet_Access;
+   Document      : CSS.Core.Stylesheet_Access;
+   Current_Rule  : CSS.Core.Styles.CSSStyleRule_Access;
 
    procedure yyerror (Message : in String := "syntax error") is
       pragma Unreferenced (Message);
