@@ -200,7 +200,7 @@ pseudo_page :
 
 page_declaration_list :
     page_declaration_list ';' spaces declaration spaces
-       { Append_Property (Current_Page.Style, Document, $2); }
+       { Append_Property (Current_Page.Style, Document, $4); }
   |
     declaration spaces
        { Append_Property (Current_Page.Style, Document, $1); }
@@ -391,7 +391,7 @@ pseudo_value :
  
 declaration_list :
     declaration_list ';' spaces declaration spaces
-       { Append_Property (Current_Rule.Style, Document, $3); }
+       { Append_Property (Current_Rule.Style, Document, $4); }
   |
     declaration spaces
        { Append_Property (Current_Rule.Style, Document, $1); }
