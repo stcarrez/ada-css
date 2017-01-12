@@ -367,7 +367,7 @@ yy.value_stack(yy.tos));
 
 when 43 => -- #line 203
  Append_Property (Current_Page.Style, Document, 
-yy.value_stack(yy.tos-3)); 
+yy.value_stack(yy.tos-1)); 
 
 when 44 => -- #line 206
  Append_Property (Current_Page.Style, Document, 
@@ -550,7 +550,7 @@ yy.value_stack(yy.tos-1);
 
 when 100 => -- #line 394
  Append_Property (Current_Rule.Style, Document, 
-yy.value_stack(yy.tos-2)); 
+yy.value_stack(yy.tos-1)); 
 
 when 101 => -- #line 397
  Append_Property (Current_Rule.Style, Document, 
