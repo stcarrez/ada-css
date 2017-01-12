@@ -25,4 +25,13 @@ package body CSS.Core.Styles is
       return STYLE_RULE;
    end Get_Type;
 
+   --  ------------------------------
+   --  Get the type that identifies the rule.
+   --  ------------------------------
+   overriding
+   function Get_Type (Rule : in CSSPageRule) return CSSRule_Type is
+   begin
+      return PAGE_RULE;
+   end Get_Type;
+
 end CSS.Core.Styles;
