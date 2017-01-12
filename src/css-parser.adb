@@ -199,7 +199,7 @@ package body CSS.Parser is
       Set_Type (Into, TYPE_STYLE, Prop.Line, Prop.Column);
       Into.Node := new Parser_Node_Type '(Kind => TYPE_STYLE, Ref_Counter => ONE, Rule => null);
       Into.Node.Rule := new CSS.Core.Styles.CSSStyleRule;
-      Append_Property (Into, Document, Prop);
+      Append_Property (Into.Node.Rule.Style, Document, Prop);
    end Set_Property_List;
 
    function Get_Property_Name (Document : in CSS.Core.Stylesheet_Access;
@@ -225,13 +225,13 @@ package body CSS.Parser is
    --  ------------------------------
    --  Append to the CSSStyleRule the property held by the parser token.
    --  ------------------------------
-   procedure Append_Property (Into     : in out YYstype;
+   procedure Append_Property (Into     : in out CSS.Core.Styles.CSSStyle_Declaration;
                               Document : in CSS.Core.Stylesheet_Access;
                               Prop     : in YYstype) is
       Name  : CSS.Core.CSSProperty_Name := Get_Property_Name (Document, Prop);
       Value : CSS.Core.CSSProperty_Value := Get_Property_Value (Document, Prop);
    begin
-      Into.Node.Rule.Style.Append (Name, null, 0);
+      Into.Append (Name, null, 0);
    end Append_Property;
 
    --  ------------------------------
@@ -251,11 +251,15 @@ package body CSS.Parser is
    --  searched in the document CSS selector tree and inserted in the tree.
    --  It is then added to the list.
    --  ------------------------------
-   procedure Add_Selector_List (Into     : in out YYstype;
+   procedure Add_Selector_List (Into     : in out CSS.Core.Styles.CSSStyleRule_Access;
                                 Document : in CSS.Core.Stylesheet_Access;
                                 Selector : in YYstype) is
+      use type CSS.Core.Styles.CSSStyleRule_Access;
    begin
-      null;
+      if Into = null then
+         Into := new CSS.Core.Styles.CSSStyleRule;
+      end if;
+      CSS.Core.Selectors.Append (Into.Selectors, Selector.Node.Selector);
    end Add_Selector_List;
 
    --  ------------------------------
