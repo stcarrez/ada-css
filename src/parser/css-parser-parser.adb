@@ -111,7 +111,7 @@ procedure YYParse is
        index      : integer;
 
        -- Is Debugging option on or off
-        DEBUG : constant boolean := TRUE;
+        DEBUG : constant boolean := FALSE;
 
     end yy;
 
