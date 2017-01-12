@@ -164,26 +164,46 @@ medium :
         { Error ($1.line, $1.column, "Found medium"); }
   ;
 
---    '{' spaces declaration? [ ';' spaces declaration? ]* '}' spaces
 page :
-    page_start '{' spaces declaration_list '}' spaces
+    page_selector spaces '{' spaces page_declaration_list ';' spaces '}' spaces
+       { Current_Page := null; }
+  |
+    page_selector spaces '{' spaces page_declaration_list '}' spaces
+       { Current_Page := null; }
+  ;
+
+page_selector :
+    page_start spaces T_IDENT pseudo_page_list
+        { null; }
+  |
+    page_start spaces pseudo_page_list
+        { null; }
   ;
 
 page_start :
-    T_PAGE_SYM spaces pseudo_page
-        { Error ($1.line, $1.column, "Starting a pseudo page."); }
+    T_PAGE_SYM
+        { Current_Page := new CSS.Core.Styles.CSSPageRule; }
   ;
 
-declaration_list :
-    declaration_list ';' spaces declaration
+pseudo_page_list :
+     pseudo_page_list pseudo_page
   |
-    declaration
+     pseudo_page
+  |
+     --  Empty
   ;
 
-pseudo_page
-  : ':' T_IDENT spaces
+pseudo_page :
+    ':' T_IDENT
+        { Set_Selector ($$, SEL_PSEUDO_ELEMENT, $2); }
+  ;
+
+page_declaration_list :
+    page_declaration_list ';' spaces declaration spaces
+       { Append_Property (Current_Page.Style, Document, $2); }
   |
-    --  Empty
+    declaration spaces
+       { Append_Property (Current_Page.Style, Document, $1); }
   ;
 
 operator :
@@ -210,6 +230,9 @@ unary_operator :
   ;
 
 ruleset :
+    selector_list '{' spaces declaration_list ';' spaces '}' spaces
+       { Current_Rule := null; }
+  |
     selector_list '{' spaces declaration_list '}' spaces
        { Current_Rule := null; }
   |
@@ -367,13 +390,10 @@ pseudo_value :
   ;
  
 declaration_list :
-    declaration_list declaration ';' spaces
-       { Append_Property (Current_Rule.Style, Document, $2); }
+    declaration_list ';' spaces declaration spaces
+       { Append_Property (Current_Rule.Style, Document, $3); }
   |
-    declaration_list declaration
-       { Append_Property (Current_Rule.Style, Document, $2); }
-  |
-    declaration ';' spaces
+    declaration spaces
        { Append_Property (Current_Rule.Style, Document, $1); }
   ;
 
@@ -525,6 +545,7 @@ package body CSS.Parser.Parser is
    procedure yyerror (Message : in String := "syntax error");
 
    Document      : CSS.Core.Stylesheet_Access;
+   Current_Page  : CSS.Core.Styles.CSSPageRule_Access;
    Current_Rule  : CSS.Core.Styles.CSSStyleRule_Access;
 
    procedure yyerror (Message : in String := "syntax error") is
