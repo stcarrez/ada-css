@@ -32,4 +32,14 @@ package CSS.Core.Styles is
    overriding
    function Get_Type (Rule : in CSSStyleRule) return CSSRule_Type;
 
+   type CSSPageRule is new CSS.Core.CSSRule with record
+      Selector  : CSS.Core.Selectors.CSSSelector;
+      Style     : CSSStyle_Declaration;
+   end record;
+   type CSSPageRule_Access is access all CSSPageRule'Class;
+
+   --  Get the type that identifies the rule.
+   overriding
+   function Get_Type (Rule : in CSSPageRule) return CSSRule_Type;
+
 end CSS.Core.Styles;
