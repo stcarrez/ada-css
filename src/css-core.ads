@@ -16,6 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Util.Strings;
+with Util.Refs;
 private with CSS.Comments;
 private with Ada.Finalization;
 private with Ada.Containers.Hashed_Maps;
@@ -64,7 +65,7 @@ package CSS.Core is
    --  Each distinct CSS style rule type is represented by a distinct interface that inherits
    --  from this interface.
    --  See CSSOM: Section 5.4.2. The CSSRule Interface
-   type CSSRule is abstract tagged limited private;
+   type CSSRule is abstract new Util.Refs.Ref_Entity with private;
    type CSSRule_Access is access all CSSRule'Class;
 
    --  Get the type that identifies the rule.
@@ -104,7 +105,7 @@ private
    overriding
    procedure Finalize (Sheet : in out Stylesheet);
 
-   type CSSRule is abstract limited new Ada.Finalization.Limited_Controlled with record
+   type CSSRule is abstract new Util.Refs.Ref_Entity with record
       Loc      : Location;
       Parent   : CSSRule_Access;
       Comments : CSS.Comments.CSSComment_List;
