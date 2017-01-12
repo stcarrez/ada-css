@@ -88,7 +88,7 @@ private
                                 Prop     : in YYstype);
 
    --  Append to the CSSStyleRule the property held by the parser token.
-   procedure Append_Property (Into     : in out YYstype;
+   procedure Append_Property (Into     : in out CSS.Core.Styles.CSSStyle_Declaration;
                               Document : in CSS.Core.Stylesheet_Access;
                               Prop     : in YYstype);
 
@@ -102,7 +102,7 @@ private
    --  Append to the CSS selector list the selector.  The selector is first
    --  searched in the document CSS selector tree and inserted in the tree.
    --  It is then added to the list.
-   procedure Add_Selector_List (Into     : in out YYstype;
+   procedure Add_Selector_List (Into     : in out CSS.Core.Styles.CSSStyleRule_Access;
                                 Document : in CSS.Core.Stylesheet_Access;
                                 Selector : in YYstype);
 
