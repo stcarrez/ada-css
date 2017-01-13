@@ -23,7 +23,7 @@ package body CSS.Parser.Parser is
 
    procedure yyerror (Message : in String := "syntax error");
 
-   Document      : CSS.Core.Stylesheet_Access;
+   Document      : CSS.Core.Sheets.CSSStylesheet_Access;
    Current_Page  : CSS.Core.Styles.CSSPageRule_Access;
    Current_Rule  : CSS.Core.Styles.CSSStyleRule_Access;
 
@@ -35,7 +35,7 @@ package body CSS.Parser.Parser is
    end yyerror;
 
    function Parse (Content  : in String;
-                   Document : in CSS.Core.Stylesheet_Access) return Integer is
+                   Document : in CSS.Core.Sheets.CSSStylesheet_Access) return Integer is
    begin
       Error_Count := 0;
       CSS.Parser.Lexer_Dfa.yylineno  := 1;
@@ -46,12 +46,14 @@ package body CSS.Parser.Parser is
       yyparse;
       CSS.Parser.Parser.Document := null;
       CSS.Parser.Lexer_IO.Close_Input;
+      Parser_Tokens.yylval := EMPTY;
       return Error_Count;
 
    exception
       when others =>
          CSS.Parser.Parser.Document := null;
          CSS.Parser.Lexer_IO.Close_Input;
+         Parser_Tokens.yylval := EMPTY;
          raise;
 
    end Parse;
