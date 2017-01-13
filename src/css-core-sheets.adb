@@ -26,9 +26,12 @@ package body CSS.Core.Sheets is
    end Create_Rule;
 
    procedure Append (Document : in out CSSStyleSheet;
-                     Rule     : in Styles.CSSStyleRule_Access) is
+                     Rule     : in Styles.CSSStyleRule_Access;
+                     Line     : in Natural;
+                     Column   : in Natural) is
       Ref : CSS.Core.Refs.Ref := CSS.Core.Refs.Create (Rule.all'Access);
    begin
+      Rule.Set_Location (Line, Column);
       Document.Rules.Append (Ref);
    end Append;
 
