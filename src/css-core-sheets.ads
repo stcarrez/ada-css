@@ -31,6 +31,8 @@ package CSS.Core.Sheets is
    function Create_Rule (Document : in CSSStyleSheet) return Styles.CSSStyleRule_Access;
 
    procedure Append (Document : in out CSSStyleSheet;
-                     Rule     : in Styles.CSSStyleRule_Access);
+                     Rule     : in Styles.CSSStyleRule_Access;
+                     Line     : in Natural;
+                     Column   : in Natural);
 
 end CSS.Core.Sheets;
