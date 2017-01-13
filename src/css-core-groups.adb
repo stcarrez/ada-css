@@ -18,7 +18,9 @@
 
 package body CSS.Core.Groups is
 
+   --  ------------------------------
    --  Get the type that identifies the rule.
+   --  ------------------------------
    overriding
    function Get_Type (Rule : in CSSGroupingRule) return CSSRule_Type is
    begin
