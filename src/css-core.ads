@@ -111,4 +111,9 @@ private
       Comments : CSS.Comments.CSSComment_List;
    end record;
 
+   --  Set the source code location.
+   procedure Set_Location (Rule   : in out CSSRule'Class;
+                           Line   : in Natural;
+                           Column : in Natural);
+                           
 end CSS.Core;
