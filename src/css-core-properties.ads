@@ -41,6 +41,10 @@ package CSS.Core.Properties is
    --  Get the number of properties in the list.
    function Get_Length (List : in CSSProperty_List) return Natural;
 
+   --  Returns true if the two property list are identical.  They contain
+   --  the same properties in the same order.
+   function "=" (Left, Right : in CSSProperty_List) return Boolean;
+
    --  Append the CSS property with the value to the list.
    procedure Append (List  : in out CSSProperty_List;
                      Name  : in CSSProperty_Name;
