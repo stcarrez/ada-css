@@ -60,6 +60,33 @@ package body CSS.Core.Properties is
    end Get_Length;
 
    --  ------------------------------
+   --  Returns true if the two property list are identical.  They contain
+   --  the same properties in the same order.
+   --  ------------------------------
+   function "=" (Left, Right : in CSSProperty_List) return Boolean is
+   begin
+      if Left.Properties = Right.Properties then
+         return True;
+      elsif Left.Properties = null or else Right.Properties = null then
+         return False;
+      elsif Left.Properties'Length /= Right.Properties'Length then
+         return False;
+      else
+         for I in Left.Properties'Range loop
+            --  Compare only the property name and property value.
+            --  (we don't care about the line and column).
+            if Left.Properties (I).Name /= Right.Properties (I).Name then
+               return False;
+            end if;
+            if Left.Properties (I).Value /= Right.Properties (I).Value then
+               return False;
+            end if;
+         end loop;
+         return True;
+      end if;
+   end "=";
+
+   --  ------------------------------
    --  Append the CSS property with the value to the list.
    --  ------------------------------
    procedure Append (List  : in out CSSProperty_List;
