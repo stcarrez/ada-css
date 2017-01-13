@@ -26,6 +26,36 @@ package body CSS.Core.Styles is
    end Get_Type;
 
    --  ------------------------------
+   --  If the reference is valid and represents a style rule, return it.
+   --  Otherwise returns null.
+   --  ------------------------------
+   function Value (Ref : in CSS.Core.Refs.Ref) return CSSStyleRule_Access is
+   begin
+      if Ref.Is_Null then
+         return null;
+      else
+         declare
+            V : constant CSS.Core.CSSRule_Access := Ref.Value;
+         begin
+            if V.all in CSSStyleRule'Class then
+               return CSSStyleRule'Class (V.all)'Access;
+            else
+               return null;
+            end if;
+         end;
+      end if;
+   end Value;
+
+   --  ------------------------------
+   --  If the cursor is valid and represents a style rule, return it.
+   --  Otherwise returns null.
+   --  ------------------------------
+   function Element (Pos : in CSS.Core.Vectors.Cursor) return CSSStyleRule_Access is
+   begin
+      return Value (CSS.Core.Vectors.Element (Pos));
+   end Element;
+
+   --  ------------------------------
    --  Get the type that identifies the rule.
    --  ------------------------------
    overriding
