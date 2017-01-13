@@ -18,6 +18,8 @@
 
 with CSS.Core.Properties;
 with CSS.Core.Selectors;
+with CSS.Core.Refs;
+with CSS.Core.Vectors;
 package CSS.Core.Styles is
 
    type CSSStyle_Declaration is new CSS.Core.Properties.CSSProperty_List with null record;
@@ -31,6 +33,14 @@ package CSS.Core.Styles is
    --  Get the type that identifies the rule.
    overriding
    function Get_Type (Rule : in CSSStyleRule) return CSSRule_Type;
+
+   --  If the reference is valid and represents a style rule, return it.
+   --  Otherwise returns null.
+   function Value (Ref : in CSS.Core.Refs.Ref) return CSSStyleRule_Access;
+
+   --  If the cursor is valid and represents a style rule, return it.
+   --  Otherwise returns null.
+   function Element (Pos : in CSS.Core.Vectors.Cursor) return CSSStyleRule_Access;
 
    type CSSPageRule is new CSS.Core.CSSRule with record
       Selector  : CSS.Core.Selectors.CSSSelector;
