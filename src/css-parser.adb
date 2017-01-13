@@ -27,7 +27,7 @@ package body CSS.Parser is
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("CSS.Parser");
 
    procedure Load (Path  : in String;
-                   Sheet : in CSS.Core.Stylesheet_Access) is
+                   Sheet : in CSS.Core.Sheets.CSSStylesheet_Access) is
       Res : Integer := CSS.Parser.Parser.Parse (Path, Sheet);
    begin
       null;
@@ -193,7 +193,7 @@ package body CSS.Parser is
    --  The stylesheet document is used for the property string allocation.
    --  ------------------------------
    procedure Set_Property_List (Into     : in out YYstype;
-                                Document : in CSS.Core.Stylesheet_Access;
+                                Document : in CSS.Core.Sheets.CSSStylesheet_Access;
                                 Prop     : in YYstype) is
    begin
       Set_Type (Into, TYPE_STYLE, Prop.Line, Prop.Column);
@@ -202,7 +202,7 @@ package body CSS.Parser is
       Append_Property (Into.Node.Rule.Style, Document, Prop);
    end Set_Property_List;
 
-   function Get_Property_Name (Document : in CSS.Core.Stylesheet_Access;
+   function Get_Property_Name (Document : in CSS.Core.Sheets.CSSStylesheet_Access;
                                Prop     : in YYstype) return CSS.Core.CSSProperty_Name is
    begin
       if Prop.Node = null then
@@ -212,7 +212,7 @@ package body CSS.Parser is
       end if;
    end Get_Property_Name;
 
-   function Get_Property_Value (Document : in CSS.Core.Stylesheet_Access;
+   function Get_Property_Value (Document : in CSS.Core.Sheets.CSSStylesheet_Access;
                                 Prop     : in YYstype) return CSS.Core.CSSProperty_Name is
    begin
       if Prop.Node = null then
@@ -226,12 +226,12 @@ package body CSS.Parser is
    --  Append to the CSSStyleRule the property held by the parser token.
    --  ------------------------------
    procedure Append_Property (Into     : in out CSS.Core.Styles.CSSStyle_Declaration;
-                              Document : in CSS.Core.Stylesheet_Access;
+                              Document : in CSS.Core.Sheets.CSSStylesheet_Access;
                               Prop     : in YYstype) is
       Name  : CSS.Core.CSSProperty_Name := Get_Property_Name (Document, Prop);
       Value : CSS.Core.CSSProperty_Value := Get_Property_Value (Document, Prop);
    begin
-      Into.Append (Name, null, 0);
+      Into.Append (Name, Value, 0);
    end Append_Property;
 
    --  ------------------------------
@@ -240,7 +240,7 @@ package body CSS.Parser is
    --  CSS selector tree and then added to the selector list.
    --  ------------------------------
    procedure Set_Selector_List (Into     : in out YYstype;
-                                Document : in CSS.Core.Stylesheet_Access;
+                                Document : in CSS.Core.Sheets.CSSStylesheet_Access;
                                 Selector : in YYstype) is
    begin
       Log.Error ("Selector '{0}'", CSS.Core.Selectors.To_String (Selector.Node.Selector));
@@ -252,12 +252,13 @@ package body CSS.Parser is
    --  It is then added to the list.
    --  ------------------------------
    procedure Add_Selector_List (Into     : in out CSS.Core.Styles.CSSStyleRule_Access;
-                                Document : in CSS.Core.Stylesheet_Access;
+                                Document : in CSS.Core.Sheets.CSSStylesheet_Access;
                                 Selector : in YYstype) is
       use type CSS.Core.Styles.CSSStyleRule_Access;
    begin
       if Into = null then
          Into := new CSS.Core.Styles.CSSStyleRule;
+         Document.Append (Into, Selector.Line, Selector.Column);
       end if;
       CSS.Core.Selectors.Append (Into.Selectors, Selector.Node.Selector);
    end Add_Selector_List;
@@ -337,7 +338,8 @@ package body CSS.Parser is
                        Left  : in YYstype;
                        Right : in YYstype) is
    begin
-      Log.Error ("Expression {0} {1}", To_String (Left), To_String (Right));
+      Log.Error (Natural'Image (Left.Line) & ":" & Natural'Image (Left.Column)
+                 & "Expression {0} {1}", To_String (Left), To_String (Right));
    end Set_Expr;
 
    procedure Set_Expr (Into  : in out YYstype;
@@ -345,7 +347,8 @@ package body CSS.Parser is
                        Oper  : in YYstype;
                        Right : in YYstype) is
    begin
-      Log.Error ("Expression {0} {1} {2}", To_String (Left), To_String (Oper), To_String (Right));
+      Log.Error (Natural'Image (Left.Line) & ":" & Natural'Image (Left.Column)
+                 & "Expression {0} {1} {2}", To_String (Left), To_String (Oper), To_String (Right));
    end Set_Expr;
 
    procedure Set_Function (Into   : in out YYstype;
