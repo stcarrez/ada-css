@@ -99,19 +99,25 @@ package body CSS.Core.Selectors is
       end if;
    end To_String;
 
+   procedure To_String (Into     : in out Ada.Strings.Unbounded.Unbounded_String;
+                        Selector : in CSSSelector) is
+   begin
+      for I in Selector.Sel'Range loop
+         exit when Selector.Sel (I) = null;
+         if I > Selector.Sel'First then
+            Append (Into, " ");
+         end if;
+         To_String (Into, Selector.Sel (I));
+      end loop;
+   end To_String;
+
    --  ------------------------------
    --  Get a printable representation of the CSS selector.
    --  ------------------------------
    function To_String (Selector : in CSSSelector) return String is
       Result : Unbounded_String;
    begin
-      for I in Selector.Sel'Range loop
-         exit when Selector.Sel (I) = null;
-         if I > Selector.Sel'First then
-            Append (Result, " ");
-         end if;
-         To_String (Result, Selector.Sel (I));
-      end loop;
+      To_String (Result, Selector);
       return To_String (Result);
    end To_String;
 
@@ -284,5 +290,22 @@ package body CSS.Core.Selectors is
    begin
       Into.List.Append (Selector);
    end Append;
+
+   --  ------------------------------
+   --  Return a printable representation of the CSS selector list.
+   --  ------------------------------
+   function To_String (List : in CSSSelector_List) return String is
+      Result : Unbounded_String;
+      Iter   : Selector_List.Cursor := List.List.First;
+   begin
+      while Selector_List.Has_Element (Iter) loop
+         if Length (Result) > 0 then
+            Append (Result, ", ");
+         end if;
+         To_String (Result, Selector_List.Element (Iter));
+         Selector_List.Next (Iter);
+      end loop;
+      return To_String (Result);
+   end To_String;
 
 end CSS.Core.Selectors;
