@@ -75,6 +75,9 @@ package CSS.Core.Selectors is
    procedure Append (Into     : in out CSSSelector_List;
                      Selector : in out CSSSelector);
 
+   --  Return a printable representation of the CSS selector list.
+   function To_String (List : in CSSSelector_List) return String;
+
 private
 
    --  A selector node represents a filter element that must be matched
