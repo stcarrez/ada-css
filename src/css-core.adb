@@ -130,4 +130,12 @@ package body CSS.Core is
       end if;
    end Finalize;
 
+   --  Set the source code location.
+   procedure Set_Location (Rule   : in out CSSRule'Class;
+                           Line   : in Natural;
+                           Column : in Natural) is
+   begin
+      Rule.Loc.Line := Line;
+   end Set_Location;
+
 end CSS.Core;
