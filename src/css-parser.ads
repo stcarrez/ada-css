@@ -17,6 +17,7 @@
 -----------------------------------------------------------------------
 with Ada.Strings.Unbounded;
 with CSS.Core;
+with CSS.Core.Sheets;
 private with CSS.Core.Selectors;
 private with Util.Concurrent.Counters;
 private with CSS.Core.Styles;
@@ -28,13 +29,16 @@ package CSS.Parser is
                       U_MS, U_SEC, U_HZ, U_KHZ);
 
    procedure Load (Path  : in String;
-                   Sheet : in CSS.Core.Stylesheet_Access);
+                   Sheet : in CSS.Core.Sheets.CSSStylesheet_Access);
 
    --  The parser token or expression.
    type YYstype is private;
 
    --  Return a printable representation of the parser token value.
    function To_String (Val : in YYstype) return String;
+
+   --  Empty token.
+   EMPTY : constant YYstype;
 
 private
 
@@ -84,26 +88,26 @@ private
    --  declaration.  The style rule is created and the first property inserted in it.
    --  The stylesheet document is used for the property string allocation.
    procedure Set_Property_List (Into     : in out YYstype;
-                                Document : in CSS.Core.Stylesheet_Access;
+                                Document : in CSS.Core.Sheets.CSSStylesheet_Access;
                                 Prop     : in YYstype);
 
    --  Append to the CSSStyleRule the property held by the parser token.
    procedure Append_Property (Into     : in out CSS.Core.Styles.CSSStyle_Declaration;
-                              Document : in CSS.Core.Stylesheet_Access;
+                              Document : in CSS.Core.Sheets.CSSStylesheet_Access;
                               Prop     : in YYstype);
 
    --  Set the parser token to represent the CSS selector list.
    --  The first selector searched in the document, inserted in the document
    --  CSS selector tree and then added to the selector list.
    procedure Set_Selector_List (Into     : in out YYstype;
-                                Document : in CSS.Core.Stylesheet_Access;
+                                Document : in CSS.Core.Sheets.CSSStylesheet_Access;
                                 Selector : in YYstype);
 
    --  Append to the CSS selector list the selector.  The selector is first
    --  searched in the document CSS selector tree and inserted in the tree.
    --  It is then added to the list.
    procedure Add_Selector_List (Into     : in out CSS.Core.Styles.CSSStyleRule_Access;
-                                Document : in CSS.Core.Stylesheet_Access;
+                                Document : in CSS.Core.Sheets.CSSStylesheet_Access;
                                 Selector : in YYstype);
 
    --  Set the parser token to represent the CSS selector.
@@ -196,5 +200,11 @@ private
    procedure Error (Line    : in Natural;
                     Column  : in Natural;
                     Message : in String);
+
+   EMPTY : constant YYstype := YYstype '(Ada.Finalization.Controlled with
+                                         Line => 0, Column => 0, Unit => U_NONE,
+                                         Kind => TYPE_NULL,
+                                         Sel  => CSS.Core.Selectors.SEL_CLASS,
+                                         Node => null);
 
 end CSS.Parser;
