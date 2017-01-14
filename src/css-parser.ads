@@ -21,12 +21,9 @@ with CSS.Core.Sheets;
 private with CSS.Core.Selectors;
 private with Util.Concurrent.Counters;
 private with CSS.Core.Styles;
+private with CSS.Core.Values;
 private with Ada.Finalization;
 package CSS.Parser is
-
-   type Unit_Type is (U_NONE, U_PX, U_EX, U_EM, U_CM, U_MM, U_IN, U_PI, U_PC, U_PT,
-                      U_DEG, U_RAD, U_GRAD,
-                      U_MS, U_SEC, U_HZ, U_KHZ);
 
    procedure Load (Path  : in String;
                    Sheet : in CSS.Core.Sheets.CSSStylesheet_Access);
@@ -42,7 +39,7 @@ package CSS.Parser is
 
 private
 
-   type Node_Type is (TYPE_NULL, TYPE_VALUE,
+   type Node_Type is (TYPE_NULL, TYPE_VALUE, TYPE_NUMBER,
                       TYPE_STRING, TYPE_URI, TYPE_IDENT, TYPE_STYLE, TYPE_PROPERTY, TYPE_SELECTOR,
                       TYPE_SELECTOR_TYPE,
                       TYPE_PROPERTY_LIST, TYPE_ERROR, TYPE_ADD, TYPE_APPEND);
@@ -65,7 +62,7 @@ private
    --  The line and column number are recorded in the token.
    procedure Set_Number (Into   : in out YYstype;
                          Value  : in String;
-                         Unit   : in Unit_Type;
+                         Unit   : in CSS.Core.Values.Unit_Type;
                          Line   : in Natural;
                          Column : in Natural);
 
@@ -142,6 +139,10 @@ private
                                 Line     : in Natural;
                                 Column   : in Natural);
 
+   procedure Set_Value (Into     : in out YYstype;
+                        Document : in CSS.Core.Sheets.CSSStylesheet_Access;
+                        Value    : in YYstype);
+
    procedure Set_Expr (Into  : in out YYstype;
                        Left  : in YYstype;
                        Right : in YYstype);
@@ -160,7 +161,7 @@ private
    type Parser_Node_Type (Kind : Node_Type) is limited record
       Ref_Counter : Util.Concurrent.Counters.Counter;
       case Kind is
-         when TYPE_STRING | TYPE_IDENT | TYPE_URI =>
+         when TYPE_STRING | TYPE_IDENT | TYPE_URI | TYPE_NUMBER =>
             Str_Value : Ada.Strings.Unbounded.Unbounded_String;
 
          when TYPE_STYLE  =>
@@ -174,6 +175,12 @@ private
          when TYPE_SELECTOR =>
             Selector : CSS.Core.Selectors.CSSSelector;
 
+         when TYPE_VALUE =>
+            V : CSS.Core.Values.Value_Type;
+
+         when TYPE_PROPERTY_LIST =>
+            Values : CSS.Core.Values.Value_List;
+
          when others =>
             null;
 
@@ -185,7 +192,7 @@ private
    type YYstype is new Ada.Finalization.Controlled with record
       Line     : Natural    := 0;
       Column   : Natural    := 0;
-      Unit     : Unit_Type  := U_NONE;
+      Unit     : CSS.Core.Values.Unit_Type  := CSS.Core.VAlues.UNIT_NONE;
       Kind     : Node_Type := TYPE_NULL;
       Sel      : CSS.Core.Selectors.Selector_Type := CSS.Core.Selectors.SEL_CLASS;
       Node     : Parser_Node_Access;
@@ -202,7 +209,8 @@ private
                     Message : in String);
 
    EMPTY : constant YYstype := YYstype '(Ada.Finalization.Controlled with
-                                         Line => 0, Column => 0, Unit => U_NONE,
+                                         Line => 0, Column => 0,
+                                         Unit => CSS.Core.Values.UNIT_NONE,
                                          Kind => TYPE_NULL,
                                          Sel  => CSS.Core.Selectors.SEL_CLASS,
                                          Node => null);
