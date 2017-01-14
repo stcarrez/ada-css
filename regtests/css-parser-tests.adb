@@ -21,6 +21,7 @@ with Ada.Directories;
 
 with Util.Measures;
 
+with CSS.Core.Sheets;
 with CSS.Parser.Parser;
 package body CSS.Parser.Tests is
 
@@ -41,7 +42,7 @@ package body CSS.Parser.Tests is
    overriding
    procedure Run_Test (T : in out Test) is
       Res : Integer;
-      Doc : aliased CSS.Core.Stylesheet;
+      Doc : aliased CSS.Core.Sheets.CSSStyleSheet;
    begin
       Res := CSS.Parser.Parser.Parse (Ada.Strings.Unbounded.To_String (T.File), Doc'Unchecked_Access);
       Util.Tests.Assert_Equals (T, 0, CSS.Parser.Parser.Error_Count,

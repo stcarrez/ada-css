@@ -17,7 +17,7 @@
 -----------------------------------------------------------------------
 
 with Util.Test_Caller;
-
+with CSS.Core.Values;
 package body CSS.Core.Properties.Tests is
 
    package Caller is new Util.Test_Caller (Test, "CSS.Core");
@@ -33,17 +33,18 @@ package body CSS.Core.Properties.Tests is
    --  ------------------------------
    procedure Test_Append (T : in out Test) is
       Sheet : Stylesheet;
-      List : CSSProperty_List;
-      N    : CSSProperty_Name := Sheet.Create_Property_Name ("border");
-      V    : CSSProperty_Value := Sheet.Create_Property_Name ("23");
-      P    : CSSProperty;
+      List  : CSSProperty_List;
+      Repo  : CSS.Core.Values.Repository_Type;
+      N     : CSSProperty_Name := Sheet.Create_Property_Name ("border");
+      V     : Value_Type := Repo.Create_Number ("23");
+      P     : CSSProperty;
    begin
       Util.Tests.Assert_Equals (T, 0, List.Get_Length, "Get_Length returned invalid length");
       List.Append (N, V);
       Util.Tests.Assert_Equals (T, 1, List.Get_Length, "Get_Length returned invalid length");
       P := List.Get_Property ("border");
       Util.Tests.Assert_Equals (T, "border", P.Name.all, "Get_Property returned invalid property");
-      Util.Tests.Assert_Equals (T, "23", P.Value.all, "Get_Property returned invalid property");
+      Util.Tests.Assert_Equals (T, "23", P.Value.To_String, "Get_Property returned invalid property");
    end Test_Append;
 
 end CSS.Core.Properties.Tests;
