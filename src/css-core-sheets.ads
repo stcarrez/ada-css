@@ -20,10 +20,12 @@ with CSS.Core.Groups;
 with CSS.Core.Styles;
 with CSS.Core.Refs;
 with CSS.Core.Vectors;
+with CSS.Core.Values;
 package CSS.Core.Sheets is
 
    type CSSStyleSheet is new CSS.Core.StyleSheet with record
-      Rules : CSS.Core.Vectors.Vector;
+      Rules  : CSS.Core.Vectors.Vector;
+      Values : CSS.Core.Values.Repository_Type;
    end record;
    type CSSStyleSheet_Access is access all CSSStyleSheet'Class;
 
