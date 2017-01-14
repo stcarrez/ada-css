@@ -42,6 +42,21 @@ procedure CssTools is
    Count  : constant Natural := Ada.Command_Line.Argument_Count;
    Doc    : aliased CSS.Core.Sheets.CSSStylesheet;
 
+   procedure Print (Rule : in CSS.Core.Styles.CSSStyleRule_Access) is
+      procedure Print (Prop : in CSS.Core.Properties.CSSProperty) is
+      begin
+         Ada.Text_IO.Put ("   ");
+	 Ada.Text_IO.Put (Prop.Name.all);
+	 Ada.Text_IO.Put (": ");
+	 Ada.Text_IO.Put (Prop.Value.To_String);
+	 Ada.Text_IO.Put_Line (";");
+      end Print;
+   begin
+      Ada.Text_IO.Put_Line (CSS.Core.Selectors.To_String (Rule.Selectors) & " {");
+      Rule.Style.Iterate (Print'Access);
+      Ada.Text_IO.Put_Line ("}");
+   end Print;
+
    procedure Report_Duplicate (Rules : CSS.Core.Vectors.Vector) is
       use type CSS.Core.CSSRule_Type;
       use CSS.Core.Properties;
@@ -73,6 +88,7 @@ procedure CssTools is
                                            & ": " & CSS.Core.Selectors.To_String (Rule.Selectors));
                      Ada.Text_IO.Put_Line ("  " & CSS.Core.To_String (Match.Get_Location)
                                            & ": " & CSS.Core.Selectors.To_String (Match.Selectors));
+		     Print (Rule);
                   end if;
                end if;
             end;
