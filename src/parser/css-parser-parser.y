@@ -427,6 +427,29 @@ expr :
     term  
   ;
 
+term :
+     unary_operator num_value
+        { CSS.Parser.Set_Value ($$, Document, $2); }
+  |
+     num_value
+        { CSS.Parser.Set_Value ($$, Document, $1); }
+  |
+     T_STRING spaces
+        { CSS.Parser.Set_Value ($$, Document, $1); }
+  |
+     T_IDENT spaces
+        { CSS.Parser.Set_Value ($$, Document, $1); }
+  |
+     T_URI spaces
+        { CSS.Parser.Set_Value ($$, Document, $1); }
+  |
+     hexcolor
+        { $$ := $1; }
+  |
+     function
+        { $$ := $1; }
+  ;
+
 --    [ NUMBER S* | PERCENTAGE S* | LENGTH S* | EMS S* | EXS S* | ANGLE S* |
 --      TIME S* | FREQ S* ]
 num_value :
@@ -452,32 +475,6 @@ num_value :
         { $$ := $1; }
   |
       T_FREQ spaces
-        { $$ := $1; }
-  ;
-
---  : unary_operator? term_value
---    [ NUMBER S* | PERCENTAGE S* | LENGTH S* | EMS S* | EXS S* | ANGLE S* |
---      TIME S* | FREQ S* ]
-term :
-     unary_operator num_value
-        { $$ := $2; }
-  |
-     num_value
-        { $$ := $1; }
-  |
-     T_STRING spaces
-        { $$ := $1; }
-  |
-     T_IDENT spaces
-        { $$ := $1; }
-  |
-     T_URI spaces
-        { $$ := $1; }
-  |
-     hexcolor
-        { $$ := $1; }
-  |
-     function
         { $$ := $1; }
   ;
 
