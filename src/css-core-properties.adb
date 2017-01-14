@@ -91,7 +91,7 @@ package body CSS.Core.Properties is
    --  ------------------------------
    procedure Append (List  : in out CSSProperty_List;
                      Name  : in CSSProperty_Name;
-                     Value : in CSSProperty_Value;
+                     Value : in Value_List;
                      Line  : in Natural := 0) is
       New_List : CSSInternal_Property_Array_Access;
    begin
@@ -107,6 +107,29 @@ package body CSS.Core.Properties is
       Free (List.Properties);
       List.Properties := New_List;
    end Append;
+
+   --  ------------------------------
+   --  Append the CSS property with the value to the list.
+   --  ------------------------------
+   procedure Append (List  : in out CSSProperty_List;
+                     Name  : in CSSProperty_Name;
+                     Value : in Value_Type;
+                     Line  : in Natural := 0) is
+      New_List : CSSInternal_Property_Array_Access;
+   begin
+      if List.Properties = null then
+         New_List := new CSSInternal_Property_Array (1 .. 1);
+      else
+         New_List := new CSSInternal_Property_Array (1 .. List.Properties'Length + 1);
+         New_List (List.Properties'Range) := List.Properties.all;
+      end if;
+      New_List (New_List'Last).Name  := Name;
+      New_List (New_List'Last).Value.Append (Value);
+      New_List (New_List'Last).Line  := Line;
+      Free (List.Properties);
+      List.Properties := New_List;
+   end Append;
+
 
    --  ------------------------------
    --  Iterate over the list of properties and call the <tt>Process</tt> procedure.
