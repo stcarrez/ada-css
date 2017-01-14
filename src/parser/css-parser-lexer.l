@@ -98,25 +98,25 @@ Z               z|\\0{0,4}(5a|7a)(\r\n|[ \t\r\n\f])?|\\z
 
 "!"({w}|{comment})*{I}{M}{P}{O}{R}{T}{A}{N}{T}	{return T_IMPORTANT_SYM; }
 
-{num}{E}{M}		{ Set_Number (yylval, YYText, U_EM, yylineno, yylinecol); return T_EMS; }
-{num}{E}{X}		{ Set_Number (yylval, YYText, U_EX, yylineno, yylinecol); return T_EXS; }
-{num}{P}{X}		{ Set_Number (yylval, YYText, U_PX, yylineno, yylinecol); return T_LENGTH; }
-{num}{C}{M}		{ Set_Number (yylval, YYText, U_CM, yylineno, yylinecol); return T_LENGTH; }
-{num}{M}{M}		{ Set_Number (yylval, YYText, U_MM, yylineno, yylinecol); return T_LENGTH; }
-{num}{I}{N}		{ Set_Number (yylval, YYText, U_IN, yylineno, yylinecol); return T_LENGTH; }
-{num}{P}{T}		{ Set_Number (yylval, YYText, U_PT, yylineno, yylinecol); return T_LENGTH; }
-{num}{P}{C}		{ Set_Number (yylval, YYText, U_PC, yylineno, yylinecol); return T_LENGTH; }
-{num}{D}{E}{G}		{ Set_Number (yylval, YYText, U_DEG, yylineno, yylinecol); return T_ANGLE; }
-{num}{R}{A}{D}		{ Set_Number (yylval, YYText, U_RAD, yylineno, yylinecol); return T_ANGLE; }
-{num}{G}{R}{A}{D}	{ Set_Number (yylval, YYText, U_GRAD, yylineno, yylinecol); return T_ANGLE; }
-{num}{M}{S}		{ Set_Number (yylval, YYText, U_MS, yylineno, yylinecol); return T_TIME; }
-{num}{S}		{ Set_Number (yylval, YYText, U_SEC, yylineno, yylinecol); return T_TIME; }
-{num}{H}{Z}		{ Set_Number (yylval, YYText, U_HZ, yylineno, yylinecol); return T_FREQ; }
-{num}{K}{H}{Z}		{ Set_Number (yylval, YYText, U_KHZ, yylineno, yylinecol); return T_FREQ; }
-{num}{ident}		{ Set_Number (yylval, YYText, U_NONE, yylineno, yylinecol); return T_DIMENSION; }
+{num}{E}{M}		{ Set_Number (yylval, YYText, UNIT_EM, yylineno, yylinecol); return T_EMS; }
+{num}{E}{X}		{ Set_Number (yylval, YYText, UNIT_EX, yylineno, yylinecol); return T_EXS; }
+{num}{P}{X}		{ Set_Number (yylval, YYText, UNIT_PX, yylineno, yylinecol); return T_LENGTH; }
+{num}{C}{M}		{ Set_Number (yylval, YYText, UNIT_CM, yylineno, yylinecol); return T_LENGTH; }
+{num}{M}{M}		{ Set_Number (yylval, YYText, UNIT_MM, yylineno, yylinecol); return T_LENGTH; }
+{num}{I}{N}		{ Set_Number (yylval, YYText, UNIT_IN, yylineno, yylinecol); return T_LENGTH; }
+{num}{P}{T}		{ Set_Number (yylval, YYText, UNIT_PT, yylineno, yylinecol); return T_LENGTH; }
+{num}{P}{C}		{ Set_Number (yylval, YYText, UNIT_PC, yylineno, yylinecol); return T_LENGTH; }
+{num}{D}{E}{G}		{ Set_Number (yylval, YYText, UNIT_DEG, yylineno, yylinecol); return T_ANGLE; }
+{num}{R}{A}{D}		{ Set_Number (yylval, YYText, UNIT_RAD, yylineno, yylinecol); return T_ANGLE; }
+{num}{G}{R}{A}{D}	{ Set_Number (yylval, YYText, UNIT_GRAD, yylineno, yylinecol); return T_ANGLE; }
+{num}{M}{S}		{ Set_Number (yylval, YYText, UNIT_MS, yylineno, yylinecol); return T_TIME; }
+{num}{S}		{ Set_Number (yylval, YYText, UNIT_SEC, yylineno, yylinecol); return T_TIME; }
+{num}{H}{Z}		{ Set_Number (yylval, YYText, UNIT_HZ, yylineno, yylinecol); return T_FREQ; }
+{num}{K}{H}{Z}		{ Set_Number (yylval, YYText, UNIT_KHZ, yylineno, yylinecol); return T_FREQ; }
+{num}{ident}		{ Set_Number (yylval, YYText, UNIT_NONE, yylineno, yylinecol); return T_DIMENSION; }
 
-{num}%			{ Set_Number (yylval, YYText, U_NONE, yylineno, yylinecol); return T_PERCENTAGE; }
-{num}			{ Set_Number (yylval, YYText, U_NONE, yylineno, yylinecol); return T_NUMBER; }
+{num}%			{ Set_Number (yylval, YYText, UNIT_NONE, yylineno, yylinecol); return T_PERCENTAGE; }
+{num}			{ Set_Number (yylval, YYText, UNIT_NONE, yylineno, yylinecol); return T_NUMBER; }
 
 "url("{w}{string}{w}")" { Set_Uri (yylval, YYText, yylineno, yylinecol); return T_URI; }
 "url("{w}{url}{w}")"    { Set_Uri (yylval, YYText, yylineno, yylinecol); return T_URI; }
@@ -159,7 +159,7 @@ with CSS.Core;
 with Ada.Text_IO;
 with CSS.Parser.Lexer_dfa;
 with CSS.Parser.Lexer_IO;
-
+with CSS.Core.Values;
 package body CSS.Parser.Lexer is
 
    use Ada.Text_IO;
@@ -167,6 +167,7 @@ package body CSS.Parser.Lexer is
    use Ada;
    use CSS.Parser.Lexer_dfa;
    use CSS.Parser.Lexer_IO;
+   use CSS.Core.Values;
 
    pragma Style_Checks (Off);
    pragma Warnings (Off);
