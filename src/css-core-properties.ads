@@ -16,16 +16,22 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 private with Ada.Finalization;
+with CSS.Core.Values;
 
 package CSS.Core.Properties is
 
    --  Exception raised when a property cannot be found.
    NO_PROPERTY : exception;
 
+   subtype Value_Type is CSS.Core.Values.Value_Type;
+   subtype Value_List is CSS.Core.Values.Value_List;
+   use type CSS.Core.Values.Value_List;
+   use type CSS.Core.Values.Value_Type;
+
    type CSSProperty is record
       Rule     : CSSRule_Access;
       Name     : CSSProperty_Name;
-      Value    : CSSProperty_Value;
+      Value    : Value_List;
       Location : CSS.Core.Location;
    end record;
 
@@ -48,7 +54,13 @@ package CSS.Core.Properties is
    --  Append the CSS property with the value to the list.
    procedure Append (List  : in out CSSProperty_List;
                      Name  : in CSSProperty_Name;
-                     Value : in CSSProperty_Value;
+                     Value : in Value_List;
+                     Line  : in Natural := 0);
+
+   --  Append the CSS property with the value to the list.
+   procedure Append (List  : in out CSSProperty_List;
+                     Name  : in CSSProperty_Name;
+                     Value : in Value_Type;
                      Line  : in Natural := 0);
 
    --  Iterate over the list of properties and call the <tt>Process</tt> procedure.
@@ -59,7 +71,7 @@ private
 
    type CSSInternal_Property is record
       Name     : CSSProperty_Name;
-      Value    : CSSProperty_Value;
+      Value    : Value_List;
       Line     : Natural;
    end record;
 
