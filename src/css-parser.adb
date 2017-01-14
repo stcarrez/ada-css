@@ -154,14 +154,14 @@ package body CSS.Parser is
    --  ------------------------------
    procedure Set_Number (Into   : in out YYstype;
                          Value  : in String;
-                         Unit   : in Unit_Type;
+                         Unit   : in CSS.Core.Values.Unit_Type;
                          Line   : in Natural;
                          Column : in Natural) is
    begin
       Set_Type (Into, TYPE_VALUE, Line, Column);
       Into.Unit := Unit;
-      Into.Kind := TYPE_VALUE;
-      Into.Node := new Parser_Node_Type '(Kind        => TYPE_STRING,
+      Into.Kind := TYPE_NUMBER;
+      Into.Node := new Parser_Node_Type '(Kind        => TYPE_NUMBER,
                                           Ref_Counter => ONE,
                                           others      => <>);
       Ada.Strings.Unbounded.Set_Unbounded_String (Into.Node.Str_Value, Value);
@@ -229,9 +229,18 @@ package body CSS.Parser is
                               Document : in CSS.Core.Sheets.CSSStylesheet_Access;
                               Prop     : in YYstype) is
       Name  : CSS.Core.CSSProperty_Name := Get_Property_Name (Document, Prop);
-      Value : CSS.Core.CSSProperty_Value := Get_Property_Value (Document, Prop);
    begin
-      Into.Append (Name, Value, 0);
+      case Prop.Node.Value.Kind is
+         when TYPE_VALUE =>
+            Into.Append (Name, Prop.Node.Value.V, 0);
+
+         when TYPE_PROPERTY_LIST =>
+            Into.Append (Name, Prop.Node.Value.Values, 0);
+
+         when others =>
+            Log.Error ("Invalid property value");
+
+      end case;
    end Append_Property;
 
    --  ------------------------------
@@ -334,6 +343,34 @@ package body CSS.Parser is
       Into.Sel := Selector;
    end Set_Selector_Type;
 
+   procedure Set_Value (Into     : in out YYstype;
+                        Document : in CSS.Core.Sheets.CSSStylesheet_Access;
+                        Value    : in YYstype) is
+   begin
+      Set_Type (Into, TYPE_VALUE, Value.Line, Value.Column);
+      Into.Node := new Parser_Node_Type '(Kind        => TYPE_VALUE,
+                                          Ref_Counter => ONE,
+                                          V    => <>);
+      case Value.Kind is
+         when TYPE_STRING =>
+            Into.Node.V := Document.Values.Create_String (To_String (Value.Node.Str_Value));
+
+         when TYPE_URI =>
+            Into.Node.V := Document.Values.Create_URL (To_String (Value.Node.Str_Value));
+
+         when TYPE_IDENT =>
+            Into.Node.V := Document.Values.Create_Ident (To_String (Value.Node.Str_Value));
+
+         when TYPE_NUMBER =>
+            Into.Node.V := Document.Values.Create_Number (To_String (Value.Node.Str_Value),
+                                                          Value.Unit);
+
+         when others =>
+            null;
+
+      end case;
+   end Set_Value;
+
    procedure Set_Expr (Into  : in out YYstype;
                        Left  : in YYstype;
                        Right : in YYstype) is
@@ -375,7 +412,7 @@ package body CSS.Parser is
          Util.Concurrent.Counters.Increment (Object.Node.Ref_Counter);
       end if;
    end Adjust;
-   
+
    overriding
    procedure Finalize (Object : in out YYstype) is
    begin
