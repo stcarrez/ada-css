@@ -3,7 +3,7 @@ with CSS.Core;
 with Ada.Text_IO;
 with CSS.Parser.Lexer_dfa;
 with CSS.Parser.Lexer_IO;
-
+with CSS.Core.Values;
 package body CSS.Parser.Lexer is
 
    use Ada.Text_IO;
@@ -11,6 +11,7 @@ package body CSS.Parser.Lexer is
    use Ada;
    use CSS.Parser.Lexer_dfa;
    use CSS.Parser.Lexer_IO;
+   use CSS.Core.Values;
 
    pragma Style_Checks (Off);
    pragma Warnings (Off);
@@ -4580,58 +4581,58 @@ Text_IO.Put_Line ("End of comment error!"); ENTER(INITIAL);
             return T_IMPORTANT_SYM; 
 
          when 42 => 
-             Set_Number (yylval, YYText, U_EM, yylineno, yylinecol); return T_EMS; 
+             Set_Number (yylval, YYText, UNIT_EM, yylineno, yylinecol); return T_EMS; 
 
          when 43 => 
-             Set_Number (yylval, YYText, U_EX, yylineno, yylinecol); return T_EXS; 
+             Set_Number (yylval, YYText, UNIT_EX, yylineno, yylinecol); return T_EXS; 
 
          when 44 => 
-             Set_Number (yylval, YYText, U_PX, yylineno, yylinecol); return T_LENGTH; 
+             Set_Number (yylval, YYText, UNIT_PX, yylineno, yylinecol); return T_LENGTH; 
 
          when 45 => 
-             Set_Number (yylval, YYText, U_CM, yylineno, yylinecol); return T_LENGTH; 
+             Set_Number (yylval, YYText, UNIT_CM, yylineno, yylinecol); return T_LENGTH; 
 
          when 46 => 
-             Set_Number (yylval, YYText, U_MM, yylineno, yylinecol); return T_LENGTH; 
+             Set_Number (yylval, YYText, UNIT_MM, yylineno, yylinecol); return T_LENGTH; 
 
          when 47 => 
-             Set_Number (yylval, YYText, U_IN, yylineno, yylinecol); return T_LENGTH; 
+             Set_Number (yylval, YYText, UNIT_IN, yylineno, yylinecol); return T_LENGTH; 
 
          when 48 => 
-             Set_Number (yylval, YYText, U_PT, yylineno, yylinecol); return T_LENGTH; 
+             Set_Number (yylval, YYText, UNIT_PT, yylineno, yylinecol); return T_LENGTH; 
 
          when 49 => 
-             Set_Number (yylval, YYText, U_PC, yylineno, yylinecol); return T_LENGTH; 
+             Set_Number (yylval, YYText, UNIT_PC, yylineno, yylinecol); return T_LENGTH; 
 
          when 50 => 
-             Set_Number (yylval, YYText, U_DEG, yylineno, yylinecol); return T_ANGLE; 
+             Set_Number (yylval, YYText, UNIT_DEG, yylineno, yylinecol); return T_ANGLE; 
 
          when 51 => 
-             Set_Number (yylval, YYText, U_RAD, yylineno, yylinecol); return T_ANGLE; 
+             Set_Number (yylval, YYText, UNIT_RAD, yylineno, yylinecol); return T_ANGLE; 
 
          when 52 => 
-             Set_Number (yylval, YYText, U_GRAD, yylineno, yylinecol); return T_ANGLE; 
+             Set_Number (yylval, YYText, UNIT_GRAD, yylineno, yylinecol); return T_ANGLE; 
 
          when 53 => 
-             Set_Number (yylval, YYText, U_MS, yylineno, yylinecol); return T_TIME; 
+             Set_Number (yylval, YYText, UNIT_MS, yylineno, yylinecol); return T_TIME; 
 
          when 54 => 
-             Set_Number (yylval, YYText, U_SEC, yylineno, yylinecol); return T_TIME; 
+             Set_Number (yylval, YYText, UNIT_SEC, yylineno, yylinecol); return T_TIME; 
 
          when 55 => 
-             Set_Number (yylval, YYText, U_HZ, yylineno, yylinecol); return T_FREQ; 
+             Set_Number (yylval, YYText, UNIT_HZ, yylineno, yylinecol); return T_FREQ; 
 
          when 56 => 
-             Set_Number (yylval, YYText, U_KHZ, yylineno, yylinecol); return T_FREQ; 
+             Set_Number (yylval, YYText, UNIT_KHZ, yylineno, yylinecol); return T_FREQ; 
 
          when 57 => 
-             Set_Number (yylval, YYText, U_NONE, yylineno, yylinecol); return T_DIMENSION; 
+             Set_Number (yylval, YYText, UNIT_NONE, yylineno, yylinecol); return T_DIMENSION; 
 
          when 58 => 
-             Set_Number (yylval, YYText, U_NONE, yylineno, yylinecol); return T_PERCENTAGE; 
+             Set_Number (yylval, YYText, UNIT_NONE, yylineno, yylinecol); return T_PERCENTAGE; 
 
          when 59 => 
-             Set_Number (yylval, YYText, U_NONE, yylineno, yylinecol); return T_NUMBER; 
+             Set_Number (yylval, YYText, UNIT_NONE, yylineno, yylinecol); return T_NUMBER; 
 
          when 60 => 
              Set_Uri (yylval, YYText, yylineno, yylinecol); return T_URI; 
