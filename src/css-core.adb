@@ -50,6 +50,26 @@ package body CSS.Core is
    end To_String;
 
    --  ------------------------------
+   --  Compare the two source location.
+   --  ------------------------------
+   function "<" (Left, Right : in Location) return Boolean is
+   begin
+      if Left.Sheet = Right.Sheet then
+         if Left.Line = Right.Line then
+            return Left.Column < Right.Column;
+         else
+            return Left.Line < Right.Line;
+         end if;
+      elsif Left.Sheet = null then
+         return False;
+      elsif Right.Sheet = null then
+         return True;
+      else
+         return Left.Sheet.Get_Href < Right.Sheet.Get_Href;
+      end if;
+   end "<";
+
+   --  ------------------------------
    --  Returns the CSS type ("text/css").
    --  ------------------------------
    function Get_Type (Sheet : in Stylesheet) return String is
