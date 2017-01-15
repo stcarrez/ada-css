@@ -60,6 +60,8 @@ package CSS.Core.Values is
 
    function "<" (Left, Right : in Value_Type) return Boolean;
 
+   EMPTY : constant Value_Type;
+
    type Value_List is tagged private;
 
    --  Append the value to the list.
@@ -142,5 +144,7 @@ private
    --  Release the values.
    overriding
    procedure Finalize (Object : in out Value_List);
+
+   EMPTY : constant Value_Type := null;
 
 end CSS.Core.Values;
