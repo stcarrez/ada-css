@@ -17,7 +17,10 @@ project CssAda is
 
    package Binder renames Config.Binder;
    package Builder renames Config.Builder;
-   package Compiler renames Config.Compiler;
+   package Compiler is
+      for Default_Switches ("Ada") use
+             Config.Compiler'Default_Switches ("Ada") & ("-gnat2012");
+   end Compiler;
    package Ide      renames Config.Ide;
 
 end CssAda;
