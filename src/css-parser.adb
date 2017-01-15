@@ -177,6 +177,21 @@ package body CSS.Parser is
    end Set_Number;
 
    --  ------------------------------
+   --  Set the parser token with a color.
+   --  Report an error if the color is invalid.
+   --  ------------------------------
+   procedure Set_Color (Into  : in out YYstype;
+                        Value : in YYStype) is
+   begin
+      Set_Type (Into, TYPE_COLOR, Value.Line, Value.Column);
+      Into.Kind := TYPE_COLOR;
+      Into.Node := new Parser_Node_Type '(Kind        => TYPE_COLOR,
+                                          Ref_Counter => ONE,
+                                          others      => <>);
+      Value.Node.Str_Value := Value.Node.Str_Value;
+   end Set_Color;
+
+   --  ------------------------------
    --  Set the parser token to represent a property identifier and its value expression.
    --  The value may be a multi-value (ex: 1px 2em 3 4).  The priority indicates whether
    --  the !important keyword was present.
@@ -245,14 +260,14 @@ package body CSS.Parser is
          Log.Debug ("Property {0} was incorrect and is dropped", Name.all);
       else
          case Prop.Node.Value.Kind is
-         when TYPE_VALUE =>
-            Into.Append (Name, Prop.Node.Value.V, 0);
+            when TYPE_VALUE =>
+               Into.Append (Name, Prop.Node.Value.V, 0);
 
-         when TYPE_PROPERTY_LIST =>
-            Into.Append (Name, Prop.Node.Value.Values, 0);
+            when TYPE_PROPERTY_LIST =>
+               Into.Append (Name, Prop.Node.Value.Values, 0);
 
-         when others =>
-            Log.Error ("Invalid property value");
+            when others =>
+               Log.Error ("Invalid property value");
 
          end case;
       end if;
@@ -371,6 +386,9 @@ package body CSS.Parser is
          when TYPE_IDENT =>
             return Document.Values.Create_Ident (To_String (From.Node.Str_Value));
 
+         when TYPE_COLOR =>
+            return Document.Values.Create_Color (To_String (From.Node.Str_Value));
+
          when TYPE_NUMBER =>
             return Document.Values.Create_Number (To_String (From.Node.Str_Value),
                                                   From.Unit);
@@ -441,6 +459,14 @@ package body CSS.Parser is
    begin
       Report_Handler.Error (Loc, Message);
    end Error;
+
+   procedure Warning (Line    : in Natural;
+                      Column  : in Natural;
+                      Message : in String) is
+      Loc : constant Core.Location := Core.Create_Location (Current_Sheet.all'Access, Line, Column);
+   begin
+      Report_Handler.Warning (Loc, Message);
+   end Warning;
 
    overriding
    procedure Adjust (Object : in out YYstype) is
