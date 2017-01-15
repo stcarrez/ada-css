@@ -43,8 +43,10 @@ package body CSS.Core is
    --  ------------------------------
    function To_String (Loc : in Location) return String is
       Line : constant String := Natural'Image (Loc.Line);
+      Col  : constant String := Natural'Image (Loc.Column);
    begin
-      return Get_Source (Loc) & ":" & Line (Line'First + 1 .. Line'Last);
+      return Get_Source (Loc) & ":" & Line (Line'First + 1 .. Line'Last)
+        & ":" & Col (Col'First + 1 .. Col'Last);
    end To_String;
 
    --  ------------------------------
@@ -69,8 +71,31 @@ package body CSS.Core is
    --  ------------------------------
    function Get_Href (Sheet : in Stylesheet) return String is
    begin
-      return "";
+      return Ada.Strings.Unbounded.To_String (Sheet.Href);
    end Get_Href;
+
+   --  ------------------------------
+   --  Set the href attribute representing the stylesheet location.
+   --  ------------------------------
+   procedure Set_Href (Sheet : in out Stylesheet;
+                       Href  : in String) is
+   begin
+      Ada.Strings.Unbounded.Set_Unbounded_String (Sheet.Href, Href);
+   end Set_Href;
+
+   --  ------------------------------
+   --  Create a location record to represent a CSS source position.
+   --  ------------------------------
+   function Create_Location (Sheet  : in Stylesheet_Access;
+                             Line   : in Natural;
+                             Column : in Natural) return Location is
+      Result : Location;
+   begin
+      Result.Line   := Line;
+      Result.Column := Column;
+      Result.Sheet  := Sheet;
+      return Result;
+   end Create_Location;
 
    function Create_Property_Name (Sheet : in Stylesheet;
                                   Name  : in String) return CSSProperty_Name is
@@ -135,7 +160,8 @@ package body CSS.Core is
                            Line   : in Natural;
                            Column : in Natural) is
    begin
-      Rule.Loc.Line := Line;
+      Rule.Loc.Line   := Line;
+      Rule.Loc.Column := Column;
    end Set_Location;
 
 end CSS.Core;
