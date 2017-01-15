@@ -19,6 +19,7 @@ pragma Ada_2012;
 with Ada.Strings.Unbounded;
 with CSS.Core;
 with CSS.Core.Sheets;
+with CSS.Core.Errors;
 private with CSS.Core.Selectors;
 private with Util.Concurrent.Counters;
 private with CSS.Core.Styles;
@@ -26,8 +27,9 @@ private with CSS.Core.Values;
 private with Ada.Finalization;
 package CSS.Parser is
 
-   procedure Load (Path  : in String;
-                   Sheet : in CSS.Core.Sheets.CSSStylesheet_Access);
+   procedure Load (Path    : in String;
+                   Sheet   : in CSS.Core.Sheets.CSSStylesheet_Access;
+                   Handler : in CSS.Core.Errors.Error_Handler_Access);
 
    --  The parser token or expression.
    type YYstype is private;
