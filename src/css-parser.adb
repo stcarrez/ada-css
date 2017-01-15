@@ -27,11 +27,19 @@ package body CSS.Parser is
 
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("CSS.Parser");
 
-   procedure Load (Path  : in String;
-                   Sheet : in CSS.Core.Sheets.CSSStylesheet_Access) is
-      Res : Integer := CSS.Parser.Parser.Parse (Path, Sheet);
+   Report_Handler : CSS.Core.Errors.Error_Handler_Access;
+   Current_Sheet  : CSS.Core.Sheets.CSSStylesheet_Access;
+
+   procedure Load (Path    : in String;
+                   Sheet   : in CSS.Core.Sheets.CSSStylesheet_Access;
+                   Handler : in CSS.Core.Errors.Error_Handler_Access) is
+      Res : Integer;
    begin
-      null;
+      Report_Handler := Handler;
+      Current_Sheet := Sheet;
+      Res := CSS.Parser.Parser.Parse (Path, Sheet);
+      Report_Handler := null;
+      Current_Sheet := null;
    end Load;
 
    function To_String (Val : in Parser_Node_Access) return String is
@@ -185,7 +193,9 @@ package body CSS.Parser is
                                           Value       => Value.Node,
                                           Prio        => Prio);
       Util.Concurrent.Counters.Increment (Ident.Node.Ref_Counter);
-      Util.Concurrent.Counters.Increment (Value.Node.Ref_Counter);
+      if Value.Node /= null then
+         Util.Concurrent.Counters.Increment (Value.Node.Ref_Counter);
+      end if;
    end Set_Property;
 
    --  ------------------------------
@@ -231,7 +241,10 @@ package body CSS.Parser is
                               Prop     : in YYstype) is
       Name  : CSS.Core.CSSProperty_Name := Get_Property_Name (Document, Prop);
    begin
-      case Prop.Node.Value.Kind is
+      if Prop.Node.Value = null then
+         Log.Debug ("Property {0} was incorrect and is dropped", Name.all);
+      else
+         case Prop.Node.Value.Kind is
          when TYPE_VALUE =>
             Into.Append (Name, Prop.Node.Value.V, 0);
 
@@ -241,7 +254,8 @@ package body CSS.Parser is
          when others =>
             Log.Error ("Invalid property value");
 
-      end case;
+         end case;
+      end if;
    end Append_Property;
 
    --  ------------------------------
@@ -344,6 +358,29 @@ package body CSS.Parser is
       Into.Sel := Selector;
    end Set_Selector_Type;
 
+   function Create_Value (Document : in CSS.Core.Sheets.CSSStylesheet_Access;
+                          From     : in YYstype) return CSS.Core.Values.Value_Type is
+   begin
+      case From.Kind is
+         when TYPE_STRING =>
+            return Document.Values.Create_String (To_String (From.Node.Str_Value));
+
+         when TYPE_URI =>
+            return Document.Values.Create_URL (To_String (From.Node.Str_Value));
+
+         when TYPE_IDENT =>
+            return Document.Values.Create_Ident (To_String (From.Node.Str_Value));
+
+         when TYPE_NUMBER =>
+            return Document.Values.Create_Number (To_String (From.Node.Str_Value),
+                                                  From.Unit);
+
+         when others =>
+            return CSS.Core.Values.EMPTY;
+
+      end case;
+   end Create_Value;
+
    procedure Set_Value (Into     : in out YYstype;
                         Document : in CSS.Core.Sheets.CSSStylesheet_Access;
                         Value    : in YYstype) is
@@ -352,32 +389,33 @@ package body CSS.Parser is
       Into.Node := new Parser_Node_Type '(Kind        => TYPE_VALUE,
                                           Ref_Counter => ONE,
                                           V    => <>);
-      case Value.Kind is
-         when TYPE_STRING =>
-            Into.Node.V := Document.Values.Create_String (To_String (Value.Node.Str_Value));
-
-         when TYPE_URI =>
-            Into.Node.V := Document.Values.Create_URL (To_String (Value.Node.Str_Value));
-
-         when TYPE_IDENT =>
-            Into.Node.V := Document.Values.Create_Ident (To_String (Value.Node.Str_Value));
-
-         when TYPE_NUMBER =>
-            Into.Node.V := Document.Values.Create_Number (To_String (Value.Node.Str_Value),
-                                                          Value.Unit);
-
-         when others =>
-            null;
-
-      end case;
+      Into.Node.V := Create_Value (Document, Value);
    end Set_Value;
 
    procedure Set_Expr (Into  : in out YYstype;
                        Left  : in YYstype;
                        Right : in YYstype) is
    begin
-      Log.Error (Natural'Image (Left.Line) & ":" & Natural'Image (Left.Column)
-                 & "Expression {0} {1}", To_String (Left), To_String (Right));
+      if Left.Kind = TYPE_NULL then
+         Log.Debug ("Ignoring syntax error in expression");
+         Into := Left;
+
+      elsif Right.Kind = TYPE_NULL then
+         Log.Debug ("Ignoring syntax error in expression");
+         Into := Right;
+
+      elsif Left.Kind = TYPE_PROPERTY_LIST then
+         Left.Node.Values.Append (Create_Value (Current_Sheet, Right));
+         Into := Left;
+
+      else
+         Set_Type (Into, TYPE_VALUE, Left.Line, Left.Column);
+         Into.Node := new Parser_Node_Type '(Kind        => TYPE_PROPERTY_LIST,
+                                             Ref_Counter => ONE,
+                                             Values      => <>);
+         Into.Node.Values.Append (Create_Value (Current_Sheet, Left));
+         Into.Node.Values.Append (Create_Value (Current_Sheet, Right));
+      end if;
    end Set_Expr;
 
    procedure Set_Expr (Into  : in out YYstype;
@@ -399,11 +437,9 @@ package body CSS.Parser is
    procedure Error (Line    : in Natural;
                     Column  : in Natural;
                     Message : in String) is
-      L : constant String := Natural'Image (Line);
-      C : constant String := Natural'Image (Column);
+      Loc : constant Core.Location := Core.Create_Location (Current_Sheet.all'Access, Line, Column);
    begin
-      Ada.Text_IO.Put_Line (L (L'First + 1 .. L'Last) & ":"
-                            & C (C'First + 1 .. C'Last) & ": " & Message);
+      Report_Handler.Error (Loc, Message);
    end Error;
 
    overriding
