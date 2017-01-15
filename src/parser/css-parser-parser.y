@@ -238,6 +238,9 @@ ruleset :
   |
     selector_list '{' spaces error '}' spaces
        { Current_Rule := null; Error ($4.line, $4.column, "Invalid CSS rule"); }
+  |
+    error '}' spaces
+       { Error ($1.Line, $1.Column, "Syntax error in CSS rule"); } 
   ;
 
 selector_list :
@@ -248,7 +251,7 @@ selector_list :
        { Add_Selector_List (Current_Rule, Document, $1); }
   |
     error
-       { Error ($1.line, $1.column, "Invalid CSS selector component"); }
+       { Error ($1.Line, $1.Column, "Invalid CSS selector component"); }
   ;
 
 selector :
@@ -417,6 +420,9 @@ declaration :
 property :
      T_IDENT spaces
         { $$ := $1; }
+  |
+     '*' T_IDENT spaces
+        { Warning ($2.Line, $2.Column, "IE7 '*' symbol hack is used"); $$ := $2; }
   ;
 
 prio :
@@ -450,7 +456,7 @@ term :
         { CSS.Parser.Set_Value ($$, Document, $1); }
   |
      hexcolor
-        { $$ := $1; }
+        { CSS.Parser.Set_Value ($$, Document, $1); }
   |
      function
         { $$ := $1; }
@@ -509,7 +515,7 @@ function_param :
 
 hexcolor :
      T_HASH spaces
-        { $$ := $1; }
+        { Set_Color ($$, $1); }
   ;
 
 %%
