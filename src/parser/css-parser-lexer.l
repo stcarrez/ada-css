@@ -76,6 +76,7 @@ Z               z|\\0{0,4}(5a|7a)(\r\n|[ \t\r\n\f])?|\\z
 \*                      return '*';
 \/                      return '/';
 \.                      return '.';
+\|                      return '|';
 {s}		        return S;
 
 "<!--"		        { return T_CDO; }
