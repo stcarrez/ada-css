@@ -22,6 +22,7 @@ with Ada.Directories;
 with Util.Measures;
 
 with CSS.Core.Sheets;
+with CSS.Core.Errors.Default;
 with CSS.Parser.Parser;
 package body CSS.Parser.Tests is
 
@@ -41,24 +42,42 @@ package body CSS.Parser.Tests is
    --  ------------------------------
    overriding
    procedure Run_Test (T : in out Test) is
-      Res : Integer;
-      Doc : aliased CSS.Core.Sheets.CSSStyleSheet;
+      Name   : constant String := Ada.Strings.Unbounded.To_String (T.Name);
+      Path   : constant String := Ada.Strings.Unbounded.To_String (T.File);
+      Doc    : aliased CSS.Core.Sheets.CSSStyleSheet;
+      Errors : aliased CSS.Core.Errors.Default.Error_Handler;
    begin
-      Res := CSS.Parser.Parser.Parse (Ada.Strings.Unbounded.To_String (T.File), Doc'Unchecked_Access);
-      Util.Tests.Assert_Equals (T, 0, CSS.Parser.Parser.Error_Count,
-                                "Errors reported for '" & To_String (T.Name));
+      Doc.Set_Href (Name);
+      Ada.Text_IO.Create (Errors.File, Ada.Text_IO.Out_File, To_String (T.Result));
+      CSS.Parser.Load (Path, Doc'Unchecked_Access, Errors'Unchecked_Access);
+      Ada.Text_IO.Close (Errors.File);
+      if T.Has_Error then
+         T.Assert (Errors.Error_Count > 0, "No error reported for '" & Name & "'");
+      else
+         Util.Tests.Assert_Equals (T, 0, Errors.Error_Count,
+                                   "Errors reported for '" & Name & "'");
+      end if;
+
+   exception
+      when others =>
+         if Ada.Text_IO.Is_Open (Errors.File) then
+            Ada.Text_IO.Close (Errors.File);
+         end if;
+         raise;
+
    end Run_Test;
 
    procedure Add_Tests (Suite : in Util.Tests.Access_Test_Suite) is
       use Ada.Directories;
 
-      procedure Add_Parser_Tests;
+      procedure Add_Parser_Tests (Dir       : in String;
+                                  Has_Error : in Boolean);
 
       function Create_Test (Name    : in String;
                             Path    : in String) return Test_Case_Access;
 
-      Result_Dir  : constant String := "regtests/result";
-      Expect_Dir  : constant String := "regtests/expect";
+      Result_Dir  : constant String := "regtests/result/";
+      Expect_Dir  : constant String := "regtests/expect/";
       Expect_Path : constant String := Util.Tests.Get_Path (Expect_Dir);
       Result_Path : constant String := Util.Tests.Get_Test_Path (Result_Dir);
       Search      : Search_Type;
@@ -77,8 +96,8 @@ package body CSS.Parser.Tests is
          return Tst;
       end Create_Test;
 
-      procedure Add_Parser_Tests is
-         Dir         : constant String := "regtests/files/parser";
+      procedure Add_Parser_Tests (Dir       : in String;
+                                  Has_Error : in Boolean) is
          Path        : constant String := Util.Tests.Get_Path (Dir);
       begin
          if Kind (Path) /= Directory then
@@ -98,6 +117,7 @@ package body CSS.Parser.Tests is
                then
                   Tst := Create_Test (Name, Path & "/" & Simple);
                   if Tst /= null then
+                     Tst.Has_Error := Has_Error;
                      Suite.Add_Test (Tst.all'Access);
                   end if;
                end if;
@@ -106,7 +126,8 @@ package body CSS.Parser.Tests is
       end Add_Parser_Tests;
 
    begin
-      Add_Parser_Tests;
+      Add_Parser_Tests ("regtests/files/parser", False);
+      Add_Parser_Tests ("regtests/files/errors", True);
    end Add_Tests;
 
 end CSS.Parser.Tests;
