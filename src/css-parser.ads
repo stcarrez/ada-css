@@ -42,7 +42,7 @@ package CSS.Parser is
 
 private
 
-   type Node_Type is (TYPE_NULL, TYPE_VALUE, TYPE_NUMBER,
+   type Node_Type is (TYPE_NULL, TYPE_VALUE, TYPE_NUMBER, TYPE_COLOR,
                       TYPE_STRING, TYPE_URI, TYPE_IDENT, TYPE_STYLE, TYPE_PROPERTY, TYPE_SELECTOR,
                       TYPE_SELECTOR_TYPE,
                       TYPE_PROPERTY_LIST, TYPE_ERROR, TYPE_ADD, TYPE_APPEND);
@@ -75,6 +75,11 @@ private
                       Value  : in String;
                       Line   : in Natural;
                       Column : in Natural);
+
+   --  Set the parser token with a color.
+   --  Report an error if the color is invalid.
+   procedure Set_Color (Into  : in out YYstype;
+                        Value : in YYStype);
 
    --  Set the parser token to represent a property identifier and its value expression.
    --  The value may be a multi-value (ex: 1px 2em 3 4).  The priority indicates whether
@@ -164,7 +169,7 @@ private
    type Parser_Node_Type (Kind : Node_Type) is limited record
       Ref_Counter : Util.Concurrent.Counters.Counter;
       case Kind is
-         when TYPE_STRING | TYPE_IDENT | TYPE_URI | TYPE_NUMBER =>
+         when TYPE_STRING | TYPE_IDENT | TYPE_URI | TYPE_NUMBER | TYPE_COLOR =>
             Str_Value : Ada.Strings.Unbounded.Unbounded_String;
 
          when TYPE_STYLE  =>
@@ -210,6 +215,10 @@ private
    procedure Error (Line    : in Natural;
                     Column  : in Natural;
                     Message : in String);
+
+   procedure Warning (Line    : in Natural;
+                      Column  : in Natural;
+                      Message : in String);
 
    EMPTY : constant YYstype := YYstype '(Ada.Finalization.Controlled with
                                          Line => 0, Column => 0,
