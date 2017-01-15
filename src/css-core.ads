@@ -19,6 +19,7 @@ with Util.Strings;
 with Util.Refs;
 private with CSS.Comments;
 private with Ada.Finalization;
+private with Ada.Strings.Unbounded;
 private with Ada.Containers.Hashed_Maps;
 
 --  The API implemented by the <tt>CSS.Core</tt> package and child packages try to
@@ -44,7 +45,7 @@ package CSS.Core is
    --  The StyleSheet interface represents an abstract, base style sheet.
    --  See CSSOM: 5.1.1. The StyleSheet Interface
    type Stylesheet is tagged limited private;
-   type Stylesheet_Access is access all Stylesheet;
+   type Stylesheet_Access is access all Stylesheet'Class;
 
    --  Returns the CSS type ("text/css").
    function Get_Type (Sheet : in Stylesheet) return String;
@@ -55,8 +56,17 @@ package CSS.Core is
    --  Get the href attribute (stylesheet location).
    function Get_Href (Sheet : in Stylesheet) return String;
 
+   --  Set the href attribute representing the stylesheet location.
+   procedure Set_Href (Sheet : in out Stylesheet;
+                       Href  : in String);
+
    function Create_Property_Name (Sheet : in Stylesheet;
                                   Name  : in String) return CSSProperty_Name;
+
+   --  Create a location record to represent a CSS source position.
+   function Create_Location (Sheet  : in Stylesheet_Access;
+                             Line   : in Natural;
+                             Column : in Natural) return Location;
 
    type CSSRule_Type is (STYLE_RULE, CHARSET_RULE, IMPORT_RULE, MEDIA_RULE,
                          FONT_FACE_RULE, PAGE_RULE, MARGIN_RULE, NAMESPACE_RULE);
@@ -99,6 +109,7 @@ private
 
    type Stylesheet is new Ada.Finalization.Limited_Controlled with record
       Loc      : Location;
+      Href     : Ada.Strings.Unbounded.Unbounded_String;
       Strings  : String_Map_Access := new String_Map.Map;
       Comments : CSS.Comments.CSSComment_List;
    end record;
