@@ -237,7 +237,7 @@ ruleset :
        { Current_Rule := null; }
   |
     selector_list '{' spaces error '}' spaces
-       { Current_Rule := null; Error ($1.line, $1.column, "Invalid CSS rule"); }
+       { Current_Rule := null; Error ($4.line, $4.column, "Invalid CSS rule"); }
   ;
 
 selector_list :
@@ -404,8 +404,14 @@ declaration :
      property ':' spaces expr
         { Set_Property ($$, $1, $4, False); }
   |
+     property ':' spaces T_BAD_STRING
+        { Error ($4.Line, $4.Column, "Missing ''' or '""' at end of string"); Set_Property ($$, $1, EMPTY, False); }
+  |
      property ':' error
-        { Set_Property ($$, $1, $1, False); }
+        { Error ($3.Line, $3.Column, "Invalid property value"); Set_Property ($$, $1, $1, False); }
+  |
+     property error
+        { Error ($1.Line, $1.Column, "Missing ':' after property name"); Set_Property ($$, $1, EMPTY, False); }
   ;
 
 property :
@@ -448,6 +454,9 @@ term :
   |
      function
         { $$ := $1; }
+  |
+     T_BAD_URI
+        { Error ($1.Line, $1.Column, "Invalid url()"); $$ := EMPTY; }
   ;
 
 --    [ NUMBER S* | PERCENTAGE S* | LENGTH S* | EMS S* | EXS S* | ANGLE S* |
