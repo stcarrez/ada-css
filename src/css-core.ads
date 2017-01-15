@@ -42,6 +42,9 @@ package CSS.Core is
    --  Get a printable representation of the source file name and line number.
    function To_String (Loc : in Location) return String;
 
+   --  Compare the two source location.
+   function "<" (Left, Right : in Location) return Boolean;
+
    --  The StyleSheet interface represents an abstract, base style sheet.
    --  See CSSOM: 5.1.1. The StyleSheet Interface
    type Stylesheet is tagged limited private;
