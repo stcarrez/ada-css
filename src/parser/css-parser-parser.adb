@@ -398,85 +398,83 @@ when 54 => -- #line 240
 yy.value_stack(yy.tos-2).line, 
 yy.value_stack(yy.tos-2).column, "Invalid CSS rule"); 
 
-when 55 => -- #line 245
- Add_Selector_List (Current_Rule, Document, 
-yy.value_stack(yy.tos)); 
+when 55 => -- #line 243
+ Error (
+yy.value_stack(yy.tos-2).Line, 
+yy.value_stack(yy.tos-2).Column, "Syntax error in CSS rule"); 
 
 when 56 => -- #line 248
  Add_Selector_List (Current_Rule, Document, 
 yy.value_stack(yy.tos)); 
 
 when 57 => -- #line 251
- Error (
-yy.value_stack(yy.tos).line, 
-yy.value_stack(yy.tos).column, "Invalid CSS selector component"); 
+ Add_Selector_List (Current_Rule, Document, 
+yy.value_stack(yy.tos)); 
 
-when 58 => -- #line 256
+when 58 => -- #line 254
+ Error (
+yy.value_stack(yy.tos).Line, 
+yy.value_stack(yy.tos).Column, "Invalid CSS selector component"); 
+
+when 59 => -- #line 259
  Add_Selector (
 yy.value_stack(yy.tos-3), 
 yy.value_stack(yy.tos-1)); 
 yyval := 
 yy.value_stack(yy.tos-3); 
 
-when 59 => -- #line 259
+when 60 => -- #line 262
  Add_Selector (
 yy.value_stack(yy.tos-2), 
 yy.value_stack(yy.tos-1)); 
 yyval := 
 yy.value_stack(yy.tos-2); 
 
-when 60 => -- #line 262
+when 61 => -- #line 265
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 61 => -- #line 267
+when 62 => -- #line 270
  Add_Selector_Filter (
 yy.value_stack(yy.tos-1), 
 yy.value_stack(yy.tos)); 
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 63 => -- #line 274
+when 64 => -- #line 277
  Set_Selector (
 yyval, SEL_ELEMENT, 
 yy.value_stack(yy.tos)); 
 
-when 64 => -- #line 277
+when 65 => -- #line 280
  Set_Selector (
 yyval, SEL_IDENT, 
 yy.value_stack(yy.tos)); 
 
-when 65 => -- #line 280
+when 66 => -- #line 283
  Set_Selector (
 yyval, SEL_CLASS, 
 yy.value_stack(yy.tos)); 
 
-when 68 => -- #line 287
+when 69 => -- #line 290
  Set_Selector (
 yyval, SEL_NOT, 
 yy.value_stack(yy.tos-2)); 
 
-when 73 => -- #line 302
+when 74 => -- #line 305
  
 yyval := 
 yy.value_stack(yy.tos); 
 
-when 74 => -- #line 307
+when 75 => -- #line 310
  
 yyval := 
 yy.value_stack(yy.tos); 
-
-when 81 => -- #line 326
- Set_Selector (
-yyval, SEL_HAS_ATTRIBUTE, 
-yy.value_stack(yy.tos-2)); 
 
 when 82 => -- #line 329
  Set_Selector (
-yyval, 
-yy.value_stack(yy.tos-4).Sel, 
-yy.value_stack(yy.tos-6), 
+yyval, SEL_HAS_ATTRIBUTE, 
 yy.value_stack(yy.tos-2)); 
 
 when 83 => -- #line 332
@@ -487,55 +485,57 @@ yy.value_stack(yy.tos-6),
 yy.value_stack(yy.tos-2)); 
 
 when 84 => -- #line 335
+ Set_Selector (
+yyval, 
+yy.value_stack(yy.tos-4).Sel, 
+yy.value_stack(yy.tos-6), 
+yy.value_stack(yy.tos-2)); 
+
+when 85 => -- #line 338
  Error (
 yy.value_stack(yy.tos).Line, 
 yy.value_stack(yy.tos).column, "Invalid attribute definition."); 
 
-when 85 => -- #line 340
+when 86 => -- #line 343
  Set_Selector_Type (
 yyval, SEL_EQ_ATTRIBUTE, yylineno, yylinecol); 
 
-when 86 => -- #line 343
+when 87 => -- #line 346
  Set_Selector_Type (
 yyval, SEL_CONTAIN_ATTRIBUTE, yylineno, yylinecol); 
 
-when 87 => -- #line 346
+when 88 => -- #line 349
  Set_Selector_Type (
 yyval, SEL_ORMATCH_ATTRIBUTE, yylineno, yylinecol); 
 
-when 88 => -- #line 349
+when 89 => -- #line 352
  Set_Selector_Type (
 yyval, SEL_STARTS_ATTRIBUTE, yylineno, yylinecol); 
 
-when 89 => -- #line 352
+when 90 => -- #line 355
  Set_Selector_Type (
 yyval, SEL_ENDS_ATTRIBUTE, yylineno, yylinecol); 
 
-when 90 => -- #line 355
+when 91 => -- #line 358
  Set_Selector_Type (
 yyval, SEL_MATCH_ATTRIBUTE, yylineno, yylinecol); 
 
-when 91 => -- #line 361
+when 92 => -- #line 364
  Set_Selector (
 yyval, SEL_PSEUDO_ELEMENT, 
 yy.value_stack(yy.tos)); 
 
-when 92 => -- #line 364
+when 93 => -- #line 367
  Set_Selector (
 yyval, SEL_PSEUDO_CLASS, 
 yy.value_stack(yy.tos)); 
 
-when 93 => -- #line 367
+when 94 => -- #line 370
  Set_Selector (
 yyval, SEL_FUNCTION, 
 yy.value_stack(yy.tos-3)); 
 
-when 96 => -- #line 378
- 
-yyval := 
-yy.value_stack(yy.tos); 
-
-when 97 => -- #line 383
+when 97 => -- #line 381
  
 yyval := 
 yy.value_stack(yy.tos); 
@@ -543,41 +543,46 @@ yy.value_stack(yy.tos);
 when 98 => -- #line 386
  
 yyval := 
-yy.value_stack(yy.tos-4); 
+yy.value_stack(yy.tos); 
 
 when 99 => -- #line 389
  
 yyval := 
-yy.value_stack(yy.tos-1); 
+yy.value_stack(yy.tos-4); 
 
-when 100 => -- #line 394
- Append_Property (Current_Rule.Style, Document, 
-yy.value_stack(yy.tos-1)); 
+when 100 => -- #line 392
+ 
+yyval := 
+yy.value_stack(yy.tos-1); 
 
 when 101 => -- #line 397
  Append_Property (Current_Rule.Style, Document, 
 yy.value_stack(yy.tos-1)); 
 
-when 102 => -- #line 402
+when 102 => -- #line 400
+ Append_Property (Current_Rule.Style, Document, 
+yy.value_stack(yy.tos-1)); 
+
+when 103 => -- #line 405
  Set_Property (
 yyval, 
 yy.value_stack(yy.tos-4), 
 yy.value_stack(yy.tos-1), True); 
 
-when 103 => -- #line 405
+when 104 => -- #line 408
  Set_Property (
 yyval, 
 yy.value_stack(yy.tos-3), 
 yy.value_stack(yy.tos), False); 
 
-when 104 => -- #line 408
+when 105 => -- #line 411
  Error (
 yy.value_stack(yy.tos).Line, 
 yy.value_stack(yy.tos).Column, "Missing ''' or '""' at end of string"); Set_Property (
 yyval, 
 yy.value_stack(yy.tos-3), EMPTY, False); 
 
-when 105 => -- #line 411
+when 106 => -- #line 414
  Error (
 yy.value_stack(yy.tos).Line, 
 yy.value_stack(yy.tos).Column, "Invalid property value"); Set_Property (
@@ -585,50 +590,47 @@ yyval,
 yy.value_stack(yy.tos-2), 
 yy.value_stack(yy.tos-2), False); 
 
-when 106 => -- #line 414
+when 107 => -- #line 417
  Error (
 yy.value_stack(yy.tos-1).Line, 
 yy.value_stack(yy.tos-1).Column, "Missing ':' after property name"); Set_Property (
 yyval, 
 yy.value_stack(yy.tos-1), EMPTY, False); 
 
-when 107 => -- #line 419
+when 108 => -- #line 422
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 109 => -- #line 428
+when 109 => -- #line 425
+ Warning (
+yy.value_stack(yy.tos-1).Line, 
+yy.value_stack(yy.tos-1).Column, "IE7 '*' symbol hack is used"); 
+yyval := 
+yy.value_stack(yy.tos-1); 
+
+when 111 => -- #line 434
  CSS.Parser.Set_Expr (
 yyval, 
 yy.value_stack(yy.tos-2), 
 yy.value_stack(yy.tos-1), 
 yy.value_stack(yy.tos)); 
 
-when 110 => -- #line 431
+when 112 => -- #line 437
  CSS.Parser.Set_Expr (
 yyval, 
 yy.value_stack(yy.tos-1), 
 yy.value_stack(yy.tos)); 
 
-when 112 => -- #line 438
- CSS.Parser.Set_Value (
-yyval, Document, 
-yy.value_stack(yy.tos)); 
-
-when 113 => -- #line 441
- CSS.Parser.Set_Value (
-yyval, Document, 
-yy.value_stack(yy.tos)); 
-
 when 114 => -- #line 444
  CSS.Parser.Set_Value (
 yyval, Document, 
-yy.value_stack(yy.tos-1)); 
+yy.value_stack(yy.tos)); 
 
 when 115 => -- #line 447
  CSS.Parser.Set_Value (
 yyval, Document, 
-yy.value_stack(yy.tos-1)); 
+yy.value_stack(yy.tos)); 
 
 when 116 => -- #line 450
  CSS.Parser.Set_Value (
@@ -636,30 +638,30 @@ yyval, Document,
 yy.value_stack(yy.tos-1)); 
 
 when 117 => -- #line 453
- 
-yyval := 
-yy.value_stack(yy.tos); 
+ CSS.Parser.Set_Value (
+yyval, Document, 
+yy.value_stack(yy.tos-1)); 
 
 when 118 => -- #line 456
+ CSS.Parser.Set_Value (
+yyval, Document, 
+yy.value_stack(yy.tos-1)); 
+
+when 119 => -- #line 459
+ CSS.Parser.Set_Value (
+yyval, Document, 
+yy.value_stack(yy.tos)); 
+
+when 120 => -- #line 462
  
 yyval := 
 yy.value_stack(yy.tos); 
 
-when 119 => -- #line 459
+when 121 => -- #line 465
  Error (
 yy.value_stack(yy.tos).Line, 
 yy.value_stack(yy.tos).Column, "Invalid url()"); 
 yyval := EMPTY; 
-
-when 120 => -- #line 466
- 
-yyval := 
-yy.value_stack(yy.tos-1); 
-
-when 121 => -- #line 469
- 
-yyval := 
-yy.value_stack(yy.tos-1); 
 
 when 122 => -- #line 472
  
@@ -691,21 +693,31 @@ when 127 => -- #line 487
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 128 => -- #line 492
+when 128 => -- #line 490
+ 
+yyval := 
+yy.value_stack(yy.tos-1); 
+
+when 129 => -- #line 493
+ 
+yyval := 
+yy.value_stack(yy.tos-1); 
+
+when 130 => -- #line 498
  CSS.Parser.Set_Function (
 yyval, 
 yy.value_stack(yy.tos-4), 
 yy.value_stack(yy.tos-2)); 
 
-when 129 => -- #line 495
+when 131 => -- #line 501
  Error (
 yy.value_stack(yy.tos-3).Line, 
 yy.value_stack(yy.tos-3).Column, "Invalid function parameter"); 
 
-when 134 => -- #line 512
- 
-yyval := 
-yy.value_stack(yy.tos-1); 
+when 136 => -- #line 518
+ Set_Color (
+yyval, 
+yy.value_stack(yy.tos-1)); 
 
                     when others => null;
                 end case;
