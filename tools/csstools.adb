@@ -34,13 +34,15 @@ with CSS.Core.Vectors;
 with CSS.Core.Styles;
 with CSS.Core.Selectors;
 with CSS.Core.Properties;
+with CSS.Core.Errors.Default;
 procedure CssTools is
 
    use Util.Streams.Buffered;
    use Ada.Strings.Unbounded;
 
-   Count  : constant Natural := Ada.Command_Line.Argument_Count;
-   Doc    : aliased CSS.Core.Sheets.CSSStylesheet;
+   Count       : constant Natural := Ada.Command_Line.Argument_Count;
+   Doc         : aliased CSS.Core.Sheets.CSSStylesheet;
+   Err_Handler : aliased CSS.Core.Errors.Default.Error_Handler;
 
    procedure Print (Rule : in CSS.Core.Styles.CSSStyleRule_Access) is
       procedure Print (Prop : in CSS.Core.Properties.CSSProperty) is
@@ -100,7 +102,7 @@ procedure CssTools is
     end Report_Duplicate;
 
 begin
-   CSS.Parser.Lexer_dfa.aflex_debug := False;
+   CSS.Parser.Lexer_dfa.aflex_debug := True;
    if Count = 0 then
       Ada.Text_IO.Put_Line ("Usage: csstools file...");
       return;
@@ -109,10 +111,9 @@ begin
    for I in 1 .. Count loop
       declare
          S    : constant String := Ada.Command_Line.Argument (I);
-         Res  : Integer;
       begin
-         Res := CSS.Parser.Parser.Parse (S, Doc'Unchecked_Access);
-         Ada.Text_IO.Put_Line ("Result: " & Integer'Image (Res));
+         Doc.Set_Href (S);
+         CSS.Parser.Load (S, Doc'Unchecked_Access, Err_Handler'Unchecked_Access);
          Report_Duplicate (Doc.Rules);
       end;
    end loop;
