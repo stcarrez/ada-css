@@ -95,7 +95,7 @@ private
    --      |                                |
    --    Child                            Child
    --      |                                |
-   --      V                                V 
+   --      V                                V
    --  [SEL_CLASS ".item"]             [SEL_PSEUDO_CLASS "visited"]
    --
    --  This tree is not exposed outside of the package.
@@ -128,7 +128,8 @@ private
    type Selector_Node;
    type Selector_Node_Access is access all Selector_Node;
    type Selector_Node (Len  : Natural;
-                       Kind : Selector_Type) is limited record
+                       Kind : Selector_Type) is
+   limited record
       Child   : Selector_Node_Access;
       Sibling : Selector_Node_Access;
       Parent  : Selector_Node_Access;
@@ -144,7 +145,8 @@ private
    type Selector_Tree_Node_Access is access all Selector_Tree_Node;
 
    type Selector_Tree_Node (Len  : Natural;
-                            Kind : Selector_Type) is limited record
+                            Kind : Selector_Type) is
+   limited record
       Sibling  : Selector_Tree_Node_Access;
       Parent   : Selector_Tree_Node_Access;
       Child    : Selector_Tree_Node_Access;
