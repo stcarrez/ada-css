@@ -23,10 +23,11 @@ package CSS.Parser.Tests is
    procedure Add_Tests (Suite : in Util.Tests.Access_Test_Suite);
 
    type Test is new Util.Tests.Test_Case with record
-      Name    : Ada.Strings.Unbounded.Unbounded_String;
-      File    : Ada.Strings.Unbounded.Unbounded_String;
-      Expect  : Ada.Strings.Unbounded.Unbounded_String;
-      Result  : Ada.Strings.Unbounded.Unbounded_String;
+      Name      : Ada.Strings.Unbounded.Unbounded_String;
+      File      : Ada.Strings.Unbounded.Unbounded_String;
+      Expect    : Ada.Strings.Unbounded.Unbounded_String;
+      Result    : Ada.Strings.Unbounded.Unbounded_String;
+      Has_Error : Boolean := False;
    end record;
    type Test_Case_Access is access all Test;
 
