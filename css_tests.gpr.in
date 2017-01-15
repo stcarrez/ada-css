@@ -16,7 +16,12 @@ project Css_Tests is
    for Object_Dir use "./" & Config'Object_Dir & "/obj";
    for Exec_Dir use "./" & Config'Exec_Dir & "/bin";
 
-   package binder is
+   package Compiler is
+      for Default_Switches ("Ada") use
+             Config.Compiler'Default_Switches ("Ada") & ("-gnat2012");
+   end Compiler;
+
+   package Binder is
       case Config.Mode is
          when "debug" =>
             for Default_Switches ("Ada") use ("-E", "-W8");
@@ -25,10 +30,9 @@ project Css_Tests is
             for Default_Switches ("Ada") use ("-E", "-W8");
 
       end case;
-   end binder;
+   end Binder;
 
    package Builder renames Config.Builder;
-   package Compiler renames Config.Compiler;
    package Linker renames Config.Linker;
 
 end Css_Tests;
