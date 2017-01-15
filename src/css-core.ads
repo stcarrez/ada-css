@@ -92,8 +92,9 @@ private
    type String_Map_Access is access all String_Map.Map;
 
    type Location is record
-      Sheet : Stylesheet_Access;
-      Line  : Natural := 0;
+      Sheet  : Stylesheet_Access;
+      Line   : Natural := 0;
+      Column : Natural := 0;
    end record;
 
    type Stylesheet is new Ada.Finalization.Limited_Controlled with record
@@ -115,5 +116,5 @@ private
    procedure Set_Location (Rule   : in out CSSRule'Class;
                            Line   : in Natural;
                            Column : in Natural);
-                           
+
 end CSS.Core;
