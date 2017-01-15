@@ -35,6 +35,7 @@ with CSS.Core.Styles;
 with CSS.Core.Selectors;
 with CSS.Core.Properties;
 with CSS.Core.Errors.Default;
+with CSS.Tools.Messages;
 procedure CssTools is
 
    use Util.Streams.Buffered;
@@ -42,7 +43,7 @@ procedure CssTools is
 
    Count       : constant Natural := Ada.Command_Line.Argument_Count;
    Doc         : aliased CSS.Core.Sheets.CSSStylesheet;
-   Err_Handler : aliased CSS.Core.Errors.Default.Error_Handler;
+   Err_Handler : aliased CSS.Tools.Messages.Message_List;
 
    procedure Print (Rule : in CSS.Core.Styles.CSSStyleRule_Access) is
       procedure Print (Prop : in CSS.Core.Properties.CSSProperty) is
@@ -58,6 +59,15 @@ procedure CssTools is
       Rule.Style.Iterate (Print'Access);
       Ada.Text_IO.Put_Line ("}");
    end Print;
+
+   procedure Print_Message (Severity : in CSS.Tools.Messages.Severity_Type;
+                            Loc      : in CSS.Core.Location;
+                            Message  : in String) is
+   begin
+      Ada.Text_IO.Put (CSS.Core.To_String (Loc));
+      Ada.Text_IO.Put (":");
+      Ada.Text_IO.Put_Line (Message);
+   end Print_Message;
 
    procedure Report_Duplicate (Rules : CSS.Core.Vectors.Vector) is
       use type CSS.Core.CSSRule_Type;
@@ -102,7 +112,7 @@ procedure CssTools is
     end Report_Duplicate;
 
 begin
-   CSS.Parser.Lexer_dfa.aflex_debug := True;
+   CSS.Parser.Lexer_dfa.aflex_debug := False;
    if Count = 0 then
       Ada.Text_IO.Put_Line ("Usage: csstools file...");
       return;
@@ -115,6 +125,7 @@ begin
          Doc.Set_Href (S);
          CSS.Parser.Load (S, Doc'Unchecked_Access, Err_Handler'Unchecked_Access);
          Report_Duplicate (Doc.Rules);
+         Err_Handler.Iterate (Print_Message'Access);
       end;
    end loop;
    Ada.Text_IO.Put_Line ("Comments: ");
