@@ -15,6 +15,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
+pragma Ada_2012;
 with Ada.Strings.Unbounded;
 package body CSS.Core.Values is
 
