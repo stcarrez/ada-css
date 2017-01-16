@@ -178,10 +178,12 @@ package body CSS.Core is
    --  Set the source code location.
    procedure Set_Location (Rule   : in out CSSRule'Class;
                            Line   : in Natural;
-                           Column : in Natural) is
+                           Column : in Natural;
+                           Sheet  : in Stylesheet_Access) is
    begin
       Rule.Loc.Line   := Line;
       Rule.Loc.Column := Column;
+      Rule.Loc.Sheet  := Sheet;
    end Set_Location;
 
 end CSS.Core;
