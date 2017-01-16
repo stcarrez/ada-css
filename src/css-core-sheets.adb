@@ -31,7 +31,7 @@ package body CSS.Core.Sheets is
                      Column   : in Natural) is
       Ref : CSS.Core.Refs.Ref := CSS.Core.Refs.Create (Rule.all'Access);
    begin
-      Rule.Set_Location (Line, Column);
+      Rule.Set_Location (Line, Column, Document'Unchecked_Access);
       Document.Rules.Append (Ref);
    end Append;
 
