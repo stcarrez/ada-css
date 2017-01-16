@@ -19,6 +19,22 @@ with Ada.Unchecked_Deallocation;
 package body CSS.Tools.Messages is
 
    --  ------------------------------
+   --  Get the number of errors collected.
+   --  ------------------------------
+   function Get_Error_Count (Handler : in Message_List) return Natural is
+   begin
+      return Handler.Error_Count;
+   end Get_Error_Count;
+
+   --  ------------------------------
+   --  Get the number of warnings collected.
+   --  ------------------------------
+   function Get_Warning_Count (Handler : in Message_List) return Natural is
+   begin
+      return Handler.Warning_Count;
+   end Get_Warning_Count;
+
+   --  ------------------------------
    --  Add a message for the given source location.
    --  ------------------------------
    procedure Add (Handler : in out Message_List;
@@ -26,6 +42,11 @@ package body CSS.Tools.Messages is
                   Message : in Message_Type_Access) is
       Pos : constant Message_Sets.Cursor := Handler.List.Find (Loc);
    begin
+      if Message.Kind = MSG_ERROR then
+         Handler.Error_Count := Handler.Error_Count + 1;
+      elsif Message.Kind = MSG_WARNING then
+         Handler.Warning_Count := Handler.Warning_Count + 1;
+      end if;
       if Message_Sets.Has_Element (Pos) then
          Message_Sets.Element (Pos).Next := Message;
       else
