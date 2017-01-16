@@ -24,6 +24,7 @@ package body CSS.Parser is
 
    use Ada.Strings.Unbounded;
    use Util.Concurrent.Counters;
+   use type CSS.Core.Styles.CSSStyleRule_Access;
 
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("CSS.Parser");
 
@@ -188,7 +189,7 @@ package body CSS.Parser is
       Into.Node := new Parser_Node_Type '(Kind        => TYPE_COLOR,
                                           Ref_Counter => ONE,
                                           others      => <>);
-      Value.Node.Str_Value := Value.Node.Str_Value;
+      Into.Node.Str_Value := Value.Node.Str_Value;
    end Set_Color;
 
    --  ------------------------------
@@ -256,7 +257,9 @@ package body CSS.Parser is
                               Prop     : in YYstype) is
       Name  : CSS.Core.CSSProperty_Name := Get_Property_Name (Document, Prop);
    begin
-      if Prop.Node.Value = null then
+      if Prop.Node = null then
+         Log.Debug ("Property has an invalid name and is dropped");      
+      elsif Prop.Node.Value = null then
          Log.Debug ("Property {0} was incorrect and is dropped", Name.all);
       else
          case Prop.Node.Value.Kind is
@@ -271,6 +274,17 @@ package body CSS.Parser is
 
          end case;
       end if;
+   end Append_Property;
+
+   procedure Append_Property (Into     : in out CSS.Core.Styles.CSSStyleRule_Access;
+                              Document : in CSS.Core.Sheets.CSSStylesheet_Access;
+                              Prop     : in YYstype) is
+   begin
+      if Into = null then
+         Into := new CSS.Core.Styles.CSSStyleRule;
+         Document.Append (Into, Prop.Line, Prop.Column);
+      end if;
+      Append_Property (Into.Style, Document, Prop);
    end Append_Property;
 
    --  ------------------------------
@@ -393,6 +407,9 @@ package body CSS.Parser is
             return Document.Values.Create_Number (To_String (From.Node.Str_Value),
                                                   From.Unit);
 
+         when TYPE_VALUE =>
+            return From.Node.V;
+
          when others =>
             return CSS.Core.Values.EMPTY;
 
@@ -427,7 +444,7 @@ package body CSS.Parser is
          Into := Left;
 
       else
-         Set_Type (Into, TYPE_VALUE, Left.Line, Left.Column);
+         Set_Type (Into, TYPE_PROPERTY_LIST, Left.Line, Left.Column);
          Into.Node := new Parser_Node_Type '(Kind        => TYPE_PROPERTY_LIST,
                                              Ref_Counter => ONE,
                                              Values      => <>);
