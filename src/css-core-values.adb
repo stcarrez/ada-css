@@ -129,7 +129,7 @@ package body CSS.Core.Values is
          return Value_Sets.Element (Pos);
       end if;
       declare
-         V : Value_Type := new Value_Node '(Len => Value.Len,
+         V : constant Value_Type := new Value_Node '(Len => Value.Len,
                                             Kind => Value.Kind,
                                             Unit => Value.Unit,
                                             Value => Value.Value);
@@ -204,6 +204,14 @@ package body CSS.Core.Values is
    begin
       return Repository.Create_Value (V'Unchecked_Access);
    end Create_Number;
+
+   --  ------------------------------
+   --  Return the number of entries in the repository.
+   --  ------------------------------
+   function Length (Repository : in Repository_Type) return Natural is
+   begin
+      return Natural (Repository.Root.Length);
+   end Length;
 
    --  ------------------------------
    --  Release the storage held by the selector sub-tree.
