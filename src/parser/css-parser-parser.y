@@ -18,6 +18,10 @@
 %token T_ATTR
 %token T_UNIT
 %token T_IMPORTANT_SYM
+%token T_OR
+%token T_AND
+%token T_NOT
+%token T_ONLY
 %token '(' ')'
 %token '[' ']'
 %token '@'
@@ -66,6 +70,9 @@ stylesheet_rules :
     stylesheet_rules stylesheet_rule
   |
     stylesheet_rule
+  |
+    error
+       { Error ($1.Line, $1.Column, "Invalid CSS selector component"); }
   ;
 
 stylesheet_rule :
@@ -74,6 +81,8 @@ stylesheet_rule :
     media
   |
     page
+  |
+    at_rule
   |
     spaces_or_comments
   ;
@@ -137,18 +146,41 @@ string_or_uri :
      T_URI
   ;
 
--- MEDIA_SYM S* media_list '{' S* ruleset* '}' S*
 media :
-     media_start '{' spaces ruleset '}' spaces
+     media_start '{' spaces ruleset_list '}' spaces
         { Current_Rule := null; }
+  |
+     error '{' spaces ruleset_list '}' spaces
+        { Current_Rule := null; }
+  ;
+
+ruleset_list :
+    ruleset_list ruleset
+  |
+    ruleset
   ;
 
 media_start :
      T_MEDIA_SYM spaces media_list
         { Current_Rule := null; Error ($1.line, $2.line, "Found @media rule"); }
+  |
+    error
+        { Current_Rule := null; Error (yylval.Line, yylval.Column, "Media condition error"); }
   ;
 
---  medium [ COMMA S* medium]*
+at_rule :
+     at_rule_start '{' spaces ruleset '}' spaces
+        { Current_Rule := null; }
+  |
+     error '{' spaces ruleset '}' spaces
+        { Current_Rule := null; }
+  ;
+
+at_rule_start :
+     T_ATKEYWORD spaces media_list
+        { Current_Rule := null; Error ($1.line, $2.line, "Found @<keyword> rule"); }
+  ;
+
 media_list :
      media_list ',' medium
          { Error ($3.line, $3.column, "Found media_list"); }
@@ -157,11 +189,94 @@ media_list :
   ;
 
 medium :
-     T_IDENT force_spaces
-        { Error ($1.line, $1.column, "Found medium (spaces)"); }
+    media_query
+  ;
+
+media_query :
+     media_condition 
   |
-     T_IDENT
-        { Error ($1.line, $1.column, "Found medium"); }
+     T_NOT spaces T_IDENT spaces media_optional_condition
+  |
+     T_ONLY spaces T_IDENT spaces media_optional_condition
+  |
+     T_IDENT spaces media_optional_condition
+  ;
+
+media_optional_condition :
+    T_AND spaces media_condition_no_or
+  |
+    --  Empty
+  ;
+
+media_condition :
+     T_NOT spaces media_in_parens
+  |
+     media_in_parens
+  |
+     media_and_list
+  |
+     media_or_list
+  ;
+
+media_condition_no_or :
+     T_NOT spaces media_in_parens
+  |
+     media_in_parens media_and_list
+  |
+     media_in_parens
+  ;
+
+media_and_list :
+    media_and_list media_and
+  |
+    media_and
+  ;
+
+media_and :
+     T_AND spaces media_in_parens
+  ;
+
+media_or_list :
+    media_or_list media_or
+  |
+    media_or
+  ;
+
+media_or :
+     T_OR media_in_parens
+  ;
+
+media_in_parens :
+    '(' spaces media_condition spaces ')' spaces
+  |
+    '(' spaces media_feature spaces ')' spaces
+  |
+    '(' spaces T_IDENT spaces ')' spaces
+  |
+    '(' error ')' spaces
+       { Error (yylval.Line, yylval.Column, "Invalid media in parens"); }
+  ;
+
+media_op :
+    '<' '='
+  |
+    '>' '='
+  |
+    '>'
+  |
+    '<'
+  ;
+
+media_feature :
+    T_IDENT spaces media_op spaces num_value
+  |
+    num_value spaces media_op spaces T_IDENT spaces num_value
+  |
+    num_value spaces media_op spaces T_IDENT
+  |
+    T_IDENT spaces ':' spaces num_value
+  |
+    T_IDENT
   ;
 
 page :
@@ -230,17 +345,24 @@ unary_operator :
   ;
 
 ruleset :
-    selector_list '{' spaces declaration_list ';' spaces '}' spaces
+    rule_selectors spaces declaration_list ';' spaces '}' spaces
        { Current_Rule := null; }
   |
-    selector_list '{' spaces declaration_list '}' spaces
+    rule_selectors spaces declaration_list '}' spaces
        { Current_Rule := null; }
   |
-    selector_list '{' spaces error '}' spaces
+    rule_selectors spaces error '}' spaces
        { Current_Rule := null; Error ($4.line, $4.column, "Invalid CSS rule"); }
   |
     error '}' spaces
        { Error ($1.Line, $1.Column, "Syntax error in CSS rule"); } 
+  ;
+
+rule_selectors :
+    selector_list '{'
+  |
+    error '{'
+       { Error ($1.Line, $1.Column, "Invalid CSS selector component"); }
   ;
 
 selector_list :
@@ -249,9 +371,6 @@ selector_list :
   |
     selector
        { Add_Selector_List (Current_Rule, Document, $1); }
-  |
-    error
-       { Error ($1.Line, $1.Column, "Invalid CSS selector component"); }
   ;
 
 selector :
@@ -394,10 +513,16 @@ pseudo_value :
  
 declaration_list :
     declaration_list ';' spaces declaration spaces
-       { Append_Property (Current_Rule.Style, Document, $4); }
+       { Append_Property (Current_Rule, Document, $4); }
+  |
+    declaration_list error ';' spaces declaration spaces
+       { Append_Property (Current_Rule, Document, $5); Error ($2.Line, $2.Column, "Invalid property"); yyerrok; }
+  |
+    declaration_list error ';' spaces
+       { $$ := $1; Error ($2.Line, $2.Column, "Invalid property (2)"); yyerrok; }
   |
     declaration spaces
-       { Append_Property (Current_Rule.Style, Document, $1); }
+       { Append_Property (Current_Rule, Document, $1); }
   ;
 
 declaration :
@@ -411,10 +536,13 @@ declaration :
         { Error ($4.Line, $4.Column, "Missing ''' or '""' at end of string"); Set_Property ($$, $1, EMPTY, False); }
   |
      property ':' error
-        { Error ($3.Line, $3.Column, "Invalid property value"); Set_Property ($$, $1, $1, False); }
+        { Error ($3.Line, $3.Column, "Invalid property value: " & YYText); Set_Property ($$, $1, $1, False); }
   |
      property error
         { Error ($1.Line, $1.Column, "Missing ':' after property name"); Set_Property ($$, $1, EMPTY, False); }
+  |
+     error
+        { Error (yylval.Line, yylval.Column, "Invalid property name"); $$ := EMPTY; }
   ;
 
 property :
