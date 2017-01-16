@@ -324,397 +324,429 @@ begin
 
                 case yy.rule_id is
 
-when 28 => -- #line 143
- Current_Rule := null; 
-
-when 29 => -- #line 148
- Current_Rule := null; Error (
-yy.value_stack(yy.tos-2).line, 
-yy.value_stack(yy.tos-1).line, "Found @media rule"); 
-
-when 30 => -- #line 154
- Error (
-yy.value_stack(yy.tos).line, 
-yy.value_stack(yy.tos).column, "Found media_list"); 
-
-when 32 => -- #line 161
- Error (
-yy.value_stack(yy.tos-1).line, 
-yy.value_stack(yy.tos-1).column, "Found medium (spaces)"); 
-
-when 33 => -- #line 164
- Error (
-yy.value_stack(yy.tos).line, 
-yy.value_stack(yy.tos).column, "Found medium"); 
-
-when 34 => -- #line 169
- Current_Page := null; 
-
-when 35 => -- #line 172
- Current_Page := null; 
-
-when 36 => -- #line 177
- null; 
-
-when 37 => -- #line 180
- null; 
-
-when 38 => -- #line 185
- Current_Page := new CSS.Core.Styles.CSSPageRule; 
-
-when 42 => -- #line 198
- Set_Selector (
-yyval, SEL_PSEUDO_ELEMENT, 
-yy.value_stack(yy.tos)); 
-
-when 43 => -- #line 203
- Append_Property (Current_Page.Style, Document, 
-yy.value_stack(yy.tos-1)); 
-
-when 44 => -- #line 206
- Append_Property (Current_Page.Style, Document, 
-yy.value_stack(yy.tos-1)); 
-
-when 47 => -- #line 217
- Set_Selector_Type (
-yyval, SEL_NEXT_SIBLING, yylineno, yylinecol); 
-
-when 48 => -- #line 220
- Set_Selector_Type (
-yyval, SEL_CHILD, yylineno, yylinecol); 
-
-when 49 => -- #line 223
- Set_Selector_Type (
-yyval, SEL_FOLLOWING_SIBLING, yylineno, yylinecol); 
-
-when 52 => -- #line 234
- Current_Rule := null; 
-
-when 53 => -- #line 237
- Current_Rule := null; 
-
-when 54 => -- #line 240
- Current_Rule := null; Error (
-yy.value_stack(yy.tos-2).line, 
-yy.value_stack(yy.tos-2).column, "Invalid CSS rule"); 
-
-when 55 => -- #line 243
- Error (
-yy.value_stack(yy.tos-2).Line, 
-yy.value_stack(yy.tos-2).Column, "Syntax error in CSS rule"); 
-
-when 56 => -- #line 248
- Add_Selector_List (Current_Rule, Document, 
-yy.value_stack(yy.tos)); 
-
-when 57 => -- #line 251
- Add_Selector_List (Current_Rule, Document, 
-yy.value_stack(yy.tos)); 
-
-when 58 => -- #line 254
+when 4 => -- #line 75
  Error (
 yy.value_stack(yy.tos).Line, 
 yy.value_stack(yy.tos).Column, "Invalid CSS selector component"); 
 
-when 59 => -- #line 259
+when 30 => -- #line 151
+ Current_Rule := null; 
+
+when 31 => -- #line 154
+ Current_Rule := null; 
+
+when 34 => -- #line 165
+ Current_Rule := null; Error (
+yy.value_stack(yy.tos-2).line, 
+yy.value_stack(yy.tos-1).line, "Found @media rule"); 
+
+when 35 => -- #line 168
+ Current_Rule := null; Error (yylval.Line, yylval.Column, "Media condition error"); 
+
+when 36 => -- #line 173
+ Current_Rule := null; 
+
+when 37 => -- #line 176
+ Current_Rule := null; 
+
+when 38 => -- #line 181
+ Current_Rule := null; Error (
+yy.value_stack(yy.tos-2).line, 
+yy.value_stack(yy.tos-1).line, "Found @<keyword> rule"); 
+
+when 39 => -- #line 186
+ Error (
+yy.value_stack(yy.tos).line, 
+yy.value_stack(yy.tos).column, "Found media_list"); 
+
+when 64 => -- #line 257
+ Error (yylval.Line, yylval.Column, "Invalid media in parens"); 
+
+when 74 => -- #line 284
+ Current_Page := null; 
+
+when 75 => -- #line 287
+ Current_Page := null; 
+
+when 76 => -- #line 292
+ null; 
+
+when 77 => -- #line 295
+ null; 
+
+when 78 => -- #line 300
+ Current_Page := new CSS.Core.Styles.CSSPageRule; 
+
+when 82 => -- #line 313
+ Set_Selector (
+yyval, SEL_PSEUDO_ELEMENT, 
+yy.value_stack(yy.tos)); 
+
+when 83 => -- #line 318
+ Append_Property (Current_Page.Style, Document, 
+yy.value_stack(yy.tos-1)); 
+
+when 84 => -- #line 321
+ Append_Property (Current_Page.Style, Document, 
+yy.value_stack(yy.tos-1)); 
+
+when 87 => -- #line 332
+ Set_Selector_Type (
+yyval, SEL_NEXT_SIBLING, yylineno, yylinecol); 
+
+when 88 => -- #line 335
+ Set_Selector_Type (
+yyval, SEL_CHILD, yylineno, yylinecol); 
+
+when 89 => -- #line 338
+ Set_Selector_Type (
+yyval, SEL_FOLLOWING_SIBLING, yylineno, yylinecol); 
+
+when 92 => -- #line 349
+ Current_Rule := null; 
+
+when 93 => -- #line 352
+ Current_Rule := null; 
+
+when 94 => -- #line 355
+ Current_Rule := null; Error (
+yy.value_stack(yy.tos-1).line, 
+yy.value_stack(yy.tos-1).column, "Invalid CSS rule"); 
+
+when 95 => -- #line 358
+ Error (
+yy.value_stack(yy.tos-2).Line, 
+yy.value_stack(yy.tos-2).Column, "Syntax error in CSS rule"); 
+
+when 97 => -- #line 365
+ Error (
+yy.value_stack(yy.tos-1).Line, 
+yy.value_stack(yy.tos-1).Column, "Invalid CSS selector component"); 
+
+when 98 => -- #line 370
+ Add_Selector_List (Current_Rule, Document, 
+yy.value_stack(yy.tos)); 
+
+when 99 => -- #line 373
+ Add_Selector_List (Current_Rule, Document, 
+yy.value_stack(yy.tos)); 
+
+when 100 => -- #line 378
  Add_Selector (
 yy.value_stack(yy.tos-3), 
 yy.value_stack(yy.tos-1)); 
 yyval := 
 yy.value_stack(yy.tos-3); 
 
-when 60 => -- #line 262
+when 101 => -- #line 381
  Add_Selector (
 yy.value_stack(yy.tos-2), 
 yy.value_stack(yy.tos-1)); 
 yyval := 
 yy.value_stack(yy.tos-2); 
 
-when 61 => -- #line 265
+when 102 => -- #line 384
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 62 => -- #line 270
+when 103 => -- #line 389
  Add_Selector_Filter (
 yy.value_stack(yy.tos-1), 
 yy.value_stack(yy.tos)); 
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 64 => -- #line 277
+when 105 => -- #line 396
  Set_Selector (
 yyval, SEL_ELEMENT, 
 yy.value_stack(yy.tos)); 
 
-when 65 => -- #line 280
+when 106 => -- #line 399
  Set_Selector (
 yyval, SEL_IDENT, 
 yy.value_stack(yy.tos)); 
 
-when 66 => -- #line 283
+when 107 => -- #line 402
  Set_Selector (
 yyval, SEL_CLASS, 
 yy.value_stack(yy.tos)); 
 
-when 69 => -- #line 290
+when 110 => -- #line 409
  Set_Selector (
 yyval, SEL_NOT, 
 yy.value_stack(yy.tos-2)); 
 
-when 74 => -- #line 305
+when 115 => -- #line 424
  
 yyval := 
 yy.value_stack(yy.tos); 
 
-when 75 => -- #line 310
+when 116 => -- #line 429
  
 yyval := 
 yy.value_stack(yy.tos); 
 
-when 82 => -- #line 329
+when 123 => -- #line 448
  Set_Selector (
 yyval, SEL_HAS_ATTRIBUTE, 
 yy.value_stack(yy.tos-2)); 
 
-when 83 => -- #line 332
+when 124 => -- #line 451
  Set_Selector (
 yyval, 
 yy.value_stack(yy.tos-4).Sel, 
 yy.value_stack(yy.tos-6), 
 yy.value_stack(yy.tos-2)); 
 
-when 84 => -- #line 335
+when 125 => -- #line 454
  Set_Selector (
 yyval, 
 yy.value_stack(yy.tos-4).Sel, 
 yy.value_stack(yy.tos-6), 
 yy.value_stack(yy.tos-2)); 
 
-when 85 => -- #line 338
+when 126 => -- #line 457
  Error (
 yy.value_stack(yy.tos).Line, 
 yy.value_stack(yy.tos).column, "Invalid attribute definition."); 
 
-when 86 => -- #line 343
+when 127 => -- #line 462
  Set_Selector_Type (
 yyval, SEL_EQ_ATTRIBUTE, yylineno, yylinecol); 
 
-when 87 => -- #line 346
+when 128 => -- #line 465
  Set_Selector_Type (
 yyval, SEL_CONTAIN_ATTRIBUTE, yylineno, yylinecol); 
 
-when 88 => -- #line 349
+when 129 => -- #line 468
  Set_Selector_Type (
 yyval, SEL_ORMATCH_ATTRIBUTE, yylineno, yylinecol); 
 
-when 89 => -- #line 352
+when 130 => -- #line 471
  Set_Selector_Type (
 yyval, SEL_STARTS_ATTRIBUTE, yylineno, yylinecol); 
 
-when 90 => -- #line 355
+when 131 => -- #line 474
  Set_Selector_Type (
 yyval, SEL_ENDS_ATTRIBUTE, yylineno, yylinecol); 
 
-when 91 => -- #line 358
+when 132 => -- #line 477
  Set_Selector_Type (
 yyval, SEL_MATCH_ATTRIBUTE, yylineno, yylinecol); 
 
-when 92 => -- #line 364
+when 133 => -- #line 483
  Set_Selector (
 yyval, SEL_PSEUDO_ELEMENT, 
 yy.value_stack(yy.tos)); 
 
-when 93 => -- #line 367
+when 134 => -- #line 486
  Set_Selector (
 yyval, SEL_PSEUDO_CLASS, 
 yy.value_stack(yy.tos)); 
 
-when 94 => -- #line 370
+when 135 => -- #line 489
  Set_Selector (
 yyval, SEL_FUNCTION, 
 yy.value_stack(yy.tos-3)); 
 
-when 97 => -- #line 381
+when 138 => -- #line 500
  
 yyval := 
 yy.value_stack(yy.tos); 
 
-when 98 => -- #line 386
+when 139 => -- #line 505
  
 yyval := 
 yy.value_stack(yy.tos); 
 
-when 99 => -- #line 389
+when 140 => -- #line 508
  
 yyval := 
 yy.value_stack(yy.tos-4); 
 
-when 100 => -- #line 392
+when 141 => -- #line 511
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 101 => -- #line 397
- Append_Property (Current_Rule.Style, Document, 
+when 142 => -- #line 516
+ Append_Property (Current_Rule, Document, 
 yy.value_stack(yy.tos-1)); 
 
-when 102 => -- #line 400
- Append_Property (Current_Rule.Style, Document, 
+when 143 => -- #line 519
+ Append_Property (Current_Rule, Document, 
+yy.value_stack(yy.tos-1)); Error (
+yy.value_stack(yy.tos-4).Line, 
+yy.value_stack(yy.tos-4).Column, "Invalid property"); yyerrok; 
+
+when 144 => -- #line 522
+ 
+yyval := 
+yy.value_stack(yy.tos-3); Error (
+yy.value_stack(yy.tos-2).Line, 
+yy.value_stack(yy.tos-2).Column, "Invalid property (2)"); yyerrok; 
+
+when 145 => -- #line 525
+ Append_Property (Current_Rule, Document, 
 yy.value_stack(yy.tos-1)); 
 
-when 103 => -- #line 405
+when 146 => -- #line 530
  Set_Property (
 yyval, 
 yy.value_stack(yy.tos-4), 
 yy.value_stack(yy.tos-1), True); 
 
-when 104 => -- #line 408
+when 147 => -- #line 533
  Set_Property (
 yyval, 
 yy.value_stack(yy.tos-3), 
 yy.value_stack(yy.tos), False); 
 
-when 105 => -- #line 411
+when 148 => -- #line 536
  Error (
 yy.value_stack(yy.tos).Line, 
 yy.value_stack(yy.tos).Column, "Missing ''' or '""' at end of string"); Set_Property (
 yyval, 
 yy.value_stack(yy.tos-3), EMPTY, False); 
 
-when 106 => -- #line 414
+when 149 => -- #line 539
  Error (
 yy.value_stack(yy.tos).Line, 
-yy.value_stack(yy.tos).Column, "Invalid property value"); Set_Property (
+yy.value_stack(yy.tos).Column, "Invalid property value: " & YYText); Set_Property (
 yyval, 
 yy.value_stack(yy.tos-2), 
 yy.value_stack(yy.tos-2), False); 
 
-when 107 => -- #line 417
+when 150 => -- #line 542
  Error (
 yy.value_stack(yy.tos-1).Line, 
 yy.value_stack(yy.tos-1).Column, "Missing ':' after property name"); Set_Property (
 yyval, 
 yy.value_stack(yy.tos-1), EMPTY, False); 
 
-when 108 => -- #line 422
+when 151 => -- #line 545
+ Error (yylval.Line, yylval.Column, "Invalid property name"); 
+yyval := EMPTY; 
+
+when 152 => -- #line 550
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 109 => -- #line 425
+when 153 => -- #line 553
  Warning (
 yy.value_stack(yy.tos-1).Line, 
 yy.value_stack(yy.tos-1).Column, "IE7 '*' symbol hack is used"); 
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 111 => -- #line 434
+when 155 => -- #line 562
  CSS.Parser.Set_Expr (
 yyval, 
 yy.value_stack(yy.tos-2), 
 yy.value_stack(yy.tos-1), 
 yy.value_stack(yy.tos)); 
 
-when 112 => -- #line 437
+when 156 => -- #line 565
  CSS.Parser.Set_Expr (
 yyval, 
 yy.value_stack(yy.tos-1), 
 yy.value_stack(yy.tos)); 
 
-when 114 => -- #line 444
+when 158 => -- #line 572
  CSS.Parser.Set_Value (
 yyval, Document, 
 yy.value_stack(yy.tos)); 
 
-when 115 => -- #line 447
+when 159 => -- #line 575
  CSS.Parser.Set_Value (
 yyval, Document, 
 yy.value_stack(yy.tos)); 
 
-when 116 => -- #line 450
+when 160 => -- #line 578
  CSS.Parser.Set_Value (
 yyval, Document, 
 yy.value_stack(yy.tos-1)); 
 
-when 117 => -- #line 453
+when 161 => -- #line 581
  CSS.Parser.Set_Value (
 yyval, Document, 
 yy.value_stack(yy.tos-1)); 
 
-when 118 => -- #line 456
+when 162 => -- #line 584
  CSS.Parser.Set_Value (
 yyval, Document, 
 yy.value_stack(yy.tos-1)); 
 
-when 119 => -- #line 459
+when 163 => -- #line 587
  CSS.Parser.Set_Value (
 yyval, Document, 
 yy.value_stack(yy.tos)); 
 
-when 120 => -- #line 462
+when 164 => -- #line 590
  
 yyval := 
 yy.value_stack(yy.tos); 
 
-when 121 => -- #line 465
+when 165 => -- #line 593
  Error (
 yy.value_stack(yy.tos).Line, 
 yy.value_stack(yy.tos).Column, "Invalid url()"); 
 yyval := EMPTY; 
 
-when 122 => -- #line 472
+when 166 => -- #line 600
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 123 => -- #line 475
+when 167 => -- #line 603
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 124 => -- #line 478
+when 168 => -- #line 606
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 125 => -- #line 481
+when 169 => -- #line 609
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 126 => -- #line 484
+when 170 => -- #line 612
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 127 => -- #line 487
+when 171 => -- #line 615
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 128 => -- #line 490
+when 172 => -- #line 618
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 129 => -- #line 493
+when 173 => -- #line 621
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 130 => -- #line 498
+when 174 => -- #line 626
  CSS.Parser.Set_Function (
 yyval, 
 yy.value_stack(yy.tos-4), 
 yy.value_stack(yy.tos-2)); 
 
-when 131 => -- #line 501
+when 175 => -- #line 629
  Error (
 yy.value_stack(yy.tos-3).Line, 
 yy.value_stack(yy.tos-3).Column, "Invalid function parameter"); 
 
-when 136 => -- #line 518
+when 180 => -- #line 646
  Set_Color (
 yyval, 
 yy.value_stack(yy.tos-1)); 
