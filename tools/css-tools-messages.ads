@@ -39,6 +39,12 @@ package CSS.Tools.Messages is
                       Loc     : in CSS.Core.Location;
                       Message : in String);
 
+   --  Get the number of errors collected.
+   function Get_Error_Count (Handler : in Message_List) return Natural;
+
+   --  Get the number of warnings collected.
+   function Get_Warning_Count (Handler : in Message_List) return Natural;
+
    --  Iterate over the list of message in the line order.
    procedure Iterate (List : in Message_List;
                       Process : not null access procedure (Severity : in Severity_Type;
@@ -65,7 +71,9 @@ private
    --  line number.
    type Message_List is limited new Ada.Finalization.Limited_Controlled
      and CSS.Core.Errors.Error_Handler with record
-      List : Message_Sets.Map;
+      List          : Message_Sets.Map;
+      Error_Count   : Natural := 0;
+      Warning_Count : Natural := 0;
    end record;
 
    --  Add a message for the given source location.
