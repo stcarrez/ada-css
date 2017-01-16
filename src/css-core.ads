@@ -129,6 +129,7 @@ private
    --  Set the source code location.
    procedure Set_Location (Rule   : in out CSSRule'Class;
                            Line   : in Natural;
-                           Column : in Natural);
+                           Column : in Natural;
+                           Sheet  : in Stylesheet_Access);
 
 end CSS.Core;
