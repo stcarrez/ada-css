@@ -98,6 +98,9 @@ package CSS.Core.Values is
                            Value      : in String;
                            Unit       : in Unit_Type := UNIT_NONE) return Value_Type;
 
+   --  Return the number of entries in the repository.
+   function Length (Repository : in Repository_Type) return Natural;
+
 private
 
    type Value_Node;
