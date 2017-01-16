@@ -87,6 +87,10 @@ Z               z|\\0{0,4}(5a|7a)(\r\n|[ \t\r\n\f])?|\\z
 "*="			{ return T_SUBSTRINGMATCH; }
 "^="			{ return T_PREFIXMATCH; }
 
+"and"                   { return T_AND; }
+"or"                    { return T_OR; }
+"only"                  { return T_ONLY; }
+"not"                   { return T_NOT; }
 {string}		{ Set_String (yylval, YYText, yylineno, yylinecol); return T_STRING; }
 {badstring}             { Set_String (yylval, YYText, yylineno, yylinecol); return T_BAD_STRING; }
 {ident}			{ Set_Ident (yylval, YYText, yylineno, yylinecol); return T_IDENT; }
