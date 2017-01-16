@@ -31,6 +31,7 @@ w               {s}?
 nl              \n|\r\n|\r|\f
 
 A               a|\\0{0,4}(41|61)(\r\n|[ \t\r\n\f])?
+B               b|\\0{0,4}(42|62)(\r\n|[ \t\r\n\f])?
 C               c|\\0{0,4}(43|63)(\r\n|[ \t\r\n\f])?
 D               d|\\0{0,4}(44|64)(\r\n|[ \t\r\n\f])?
 E               e|\\0{0,4}(45|65)(\r\n|[ \t\r\n\f])?
@@ -47,6 +48,8 @@ R               r|\\0{0,4}(52|72)(\r\n|[ \t\r\n\f])?|\\r
 S               s|\\0{0,4}(53|73)(\r\n|[ \t\r\n\f])?|\\s
 T               t|\\0{0,4}(54|74)(\r\n|[ \t\r\n\f])?|\\t
 U               u|\\0{0,4}(55|75)(\r\n|[ \t\r\n\f])?|\\u
+V               v|\\0{0,4}(56|76)(\r\n|[ \t\r\n\f])?|\\v
+W               w|\\0{0,4}(57|77)(\r\n|[ \t\r\n\f])?|\\w
 X               x|\\0{0,4}(58|78)(\r\n|[ \t\r\n\f])?|\\x
 Z               z|\\0{0,4}(5a|7a)(\r\n|[ \t\r\n\f])?|\\z
 
@@ -105,6 +108,16 @@ Z               z|\\0{0,4}(5a|7a)(\r\n|[ \t\r\n\f])?|\\z
 
 {num}{E}{M}		{ Set_Number (yylval, YYText, UNIT_EM, yylineno, yylinecol); return T_EMS; }
 {num}{E}{X}		{ Set_Number (yylval, YYText, UNIT_EX, yylineno, yylinecol); return T_EXS; }
+{num}{R}{E}{M}		{ Set_Number (yylval, YYText, UNIT_REM, yylineno, yylinecol); return T_LENGTH; }
+{num}{R}{L}{H}		{ Set_Number (yylval, YYText, UNIT_RLH, yylineno, yylinecol); return T_LENGTH; }
+{num}{L}{H}		{ Set_Number (yylval, YYText, UNIT_LH, yylineno, yylinecol); return T_LENGTH; }
+{num}{I}{C}		{ Set_Number (yylval, YYText, UNIT_IC, yylineno, yylinecol); return T_LENGTH; }
+{num}{V}{W}		{ Set_Number (yylval, YYText, UNIT_VW, yylineno, yylinecol); return T_LENGTH; }
+{num}{V}{H}		{ Set_Number (yylval, YYText, UNIT_VH, yylineno, yylinecol); return T_LENGTH; }
+{num}{V}{I}		{ Set_Number (yylval, YYText, UNIT_VI, yylineno, yylinecol); return T_LENGTH; }
+{num}{V}{B}		{ Set_Number (yylval, YYText, UNIT_VB, yylineno, yylinecol); return T_LENGTH; }
+{num}{V}{M}{I}{N}	{ Set_Number (yylval, YYText, UNIT_VMIN, yylineno, yylinecol); return T_LENGTH; }
+{num}{V}{M}{A}{X}	{ Set_Number (yylval, YYText, UNIT_VMAX, yylineno, yylinecol); return T_LENGTH; }
 {num}{P}{X}		{ Set_Number (yylval, YYText, UNIT_PX, yylineno, yylinecol); return T_LENGTH; }
 {num}{C}{M}		{ Set_Number (yylval, YYText, UNIT_CM, yylineno, yylinecol); return T_LENGTH; }
 {num}{M}{M}		{ Set_Number (yylval, YYText, UNIT_MM, yylineno, yylinecol); return T_LENGTH; }
