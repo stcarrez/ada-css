@@ -100,6 +100,9 @@ private
    procedure Append_Property (Into     : in out CSS.Core.Styles.CSSStyle_Declaration;
                               Document : in CSS.Core.Sheets.CSSStylesheet_Access;
                               Prop     : in YYstype);
+   procedure Append_Property (Into     : in out CSS.Core.Styles.CSSStyleRule_Access;
+                              Document : in CSS.Core.Sheets.CSSStylesheet_Access;
+                              Prop     : in YYstype);
 
    --  Set the parser token to represent the CSS selector list.
    --  The first selector searched in the document, inserted in the document
