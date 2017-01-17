@@ -8,7 +8,7 @@ project Css_Tools is
 
    Mains := ("csstools.adb");
 
-   for Source_Dirs use ("tools");
+   for Source_Dirs use ("tools", "tools/parser");
 
    for Main use Mains;
 
