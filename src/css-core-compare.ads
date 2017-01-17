@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------
---  css-core-refs -- References of CSS rules
+--  css-core-compare -- Comparision on CSS rule references
 --  Copyright (C) 2017 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
@@ -19,5 +19,11 @@ with CSS.Core.Refs;
 package CSS.Core.Compare is
 
    function "=" (Left, Right : in CSS.Core.Refs.Ref) return Boolean;
+
+   --  Compare the two rules to order them.  Rules are compared on their
+   --  source location.  The comparison is intended to be used by the
+   --  <tt>CSS.Core.Sets</tt> package to allow the creation of sets that
+   --  contain unique rules.
+   function "<" (Left, Right : in CSS.Core.Refs.Ref) return Boolean;
 
 end CSS.Core.Compare;
