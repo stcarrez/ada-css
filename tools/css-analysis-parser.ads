@@ -16,6 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Ada.Strings.Unbounded;
+with CSS.Analysis.Rules;
 package CSS.Analysis.Parser is
 
    --  The parser token or expression.
@@ -26,14 +27,25 @@ package CSS.Analysis.Parser is
 private
 
    type YYstype is record
-      Token  : Ada.Strings.Unbounded.Unbounded_String;
-      Line   : Natural;
-      Column : Natural;
+      Token      : Ada.Strings.Unbounded.Unbounded_String;
+      Line       : Natural;
+      Column     : Natural;
+      Min_Repeat : Natural := 0;
+      Max_Repeat : Natural := 0;
+      Rule       : CSS.Analysis.Rules.Rule_Type_Access;
    end record;
 
    procedure Set_Ident (Into   : in out YYstype;
                         Text   : in String;
                         Line   : in Natural;
                         Column : in Natural);
+
+   --  Create a property rule.
+   procedure Create_Property (Name : in YYstype;
+                              Rule : in YYstype);
+
+   --  Create a definition rule.
+   procedure Create_Definition (Name : in YYstype;
+                                Rule : in YYstype);
 
 end CSS.Analysis.Parser;
