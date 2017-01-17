@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------
---  css-core-refs -- References of CSS rules
+--  css-core-compare -- Comparision on CSS rule references
 --  Copyright (C) 2017 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
@@ -22,5 +22,24 @@ package body CSS.Core.Compare is
    begin
       return Left.Value = Right.Value;
    end "=";
+
+   --  ------------------------------
+   --  Compare the two rules to order them.  Rules are compared on their
+   --  source location.  The comparison is intended to be used by the
+   --  <tt>CSS.Core.Sets</tt> package to allow the creation of sets that
+   --  contain unique rules.
+   --  ------------------------------
+   function "<" (Left, Right : in CSS.Core.Refs.Ref) return Boolean is
+      Left_Rule  : constant CSSRule_Access := Left.Value;
+      Right_Rule : constant CSSRule_Access := Right.Value;
+   begin
+      if Left_Rule = null then
+         return False;
+      elsif Right_Rule = null then
+         return True;
+      else
+         return Left_Rule.Get_Location < Right_Rule.Get_Location;
+      end if;
+   end "<";
 
 end CSS.Core.Compare;
