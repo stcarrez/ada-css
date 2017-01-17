@@ -28,6 +28,7 @@ with CSS.Parser.Lexer;
 with Ada.Exceptions;
 with Ada.Containers.Ordered_Sets;
 with CSS.Parser.Lexer_dfa;
+with CSS.Analysis.Parser.Lexer_dfa;
 with CSS.Core;
 with CSS.Core.Refs;
 with CSS.Core.Sheets;
@@ -38,7 +39,10 @@ with CSS.Core.Properties;
 with CSS.Core.Errors.Default;
 with CSS.Tools.Messages;
 with CSS.Core.Compare;
+with CSS.Core.Sets;
+with CSS.Analysis.Duplicates;
 with CSS.Printer.Text_IO;
+with CSS.Analysis.Parser;
 with System;
 procedure CssTools is
 
@@ -46,16 +50,6 @@ procedure CssTools is
    use Ada.Strings.Unbounded;
    use Ada.Containers;
 
-   function "<" (Left, Right : in CSS.Core.Refs.Ref) return Boolean is
-      use System;
-   begin
-      return Left.Value.all'Address < Right.Value.all'Address;
-   end "<";
-
-   package StyleRef_Sets is
-      new Ada.Containers.Ordered_Sets (Element_Type => CSS.Core.Refs.Ref,
-                                       "=" => CSS.Core.Compare."=",
-                                       "<" => "<");
    Debug       : Boolean := False;
    Verbose     : Boolean := False;
    Quiet       : Boolean := False;
@@ -65,7 +59,7 @@ procedure CssTools is
    Output_Path : Unbounded_String;
    Output      : CSS.Printer.Text_IO.Context_Type;
    Dup_Count   : Natural := 0;
-   Dup_Rules   : StyleRef_Sets.Set;
+   Dup_Rules   : CSS.Core.Sets.Set;
 
    procedure Print (Rule : in CSS.Core.Styles.CSSStyleRule_Access) is
       procedure Print (Prop : in CSS.Core.Properties.CSSProperty) is
@@ -99,58 +93,7 @@ procedure CssTools is
       Ada.Text_IO.Put_Line (Message);
    end Print_Message;
 
-   procedure Report_Duplicate (Rules : CSS.Core.Vectors.Vector) is
-      use type CSS.Core.CSSRule_Type;
-      use CSS.Core.Properties;
-      use CSS.Core.Styles;
-
-      function Equal (Left, Right : in CSS.Core.Refs.Ref) return Boolean is
-         L : CSS.Core.Styles.CSSStyleRule_Access := CSS.Core.Styles.CSSStyleRule'Class (Left.Value.all)'Access;
-         R : CSS.Core.Styles.CSSStyleRule_Access := CSS.Core.Styles.CSSStyleRule'Class (Right.Value.all)'Access;
-      begin
-         return CSSProperty_List (L.Style) = CSSProperty_List (R.Style);
-      end Equal;
-
-      procedure Process (Pos : in CSS.Core.Vectors.Cursor) is
-         Rule : constant CSSStyleRule_Access := Element (Pos);
-         Iter : CSS.Core.Vectors.Cursor;
-      begin
-         if Rule = null or else Dup_Rules.Contains (CSS.Core.Vectors.Element (Pos)) then
-            return;
-         end if;
-         Iter := CSS.Core.Vectors.Next (Pos);
-         while CSS.Core.Vectors.Has_Element (Iter) loop
-            declare
-               Ref   : constant CSS.Core.Refs.Ref := CSS.Core.Vectors.Element (Iter);
-               Match : constant CSSStyleRule_Access := Element (Iter);
-            begin
-               if Match /= null and not Dup_Rules.Contains (Ref) then
-                  if CSSProperty_List (Rule.Style) = CSSProperty_List (Match.Style) then
-                     Dup_Rules.Insert (Ref);
-                     Err_Handler.Warning (Match.Get_Location, "This rule has the same properties as rule at line "
-                                          & CSS.Core.To_String (Rule.Get_Location));
-                     Err_Handler.Warning (Rule.Get_Location, "Selector '"
-                                          & CSS.Core.Selectors.To_String (Match.Selectors) & "' could be added "
-                                          & "to rule at line " & CSS.Core.To_String (Match.Get_Location));
-                     if Verbose then
-                        Ada.Text_IO.Put_Line ("Identical rules:");
-                        Ada.Text_IO.Put_Line ("  " & CSS.Core.To_String (Rule.Get_Location)
-                                             & ": " & CSS.Core.Selectors.To_String (Rule.Selectors));
-                        Ada.Text_IO.Put_Line ("  " & CSS.Core.To_String (Match.Get_Location)
-                                              & ": " & CSS.Core.Selectors.To_String (Match.Selectors));
-		        Print (Rule);
-                     end if;
-                     Dup_Count := Dup_Count + 1;
-                  end if;
-               end if;
-            end;
-            CSS.Core.Vectors.Next (Iter);
-         end loop;
-      end Process;
-    begin
-       Rules.Iterate (Process'Access);
-    end Report_Duplicate;
-
+   Config_Path : Ada.Strings.Unbounded.Unbounded_String;
 begin
    Initialize_Option_Scan (Stop_At_First_Non_Switch => True, Section_Delimiters => "targs");
 
@@ -163,7 +106,7 @@ begin
 
          when 'c' =>
             --  Set_Config_Directory (Parameter);
-            null;
+            Config_Path := To_Unbounded_String (Parameter);
 
          when 'o' =>
             Output_Path := To_Unbounded_String (Parameter);
@@ -191,6 +134,11 @@ begin
    end loop;
 
    CSS.Parser.Lexer_dfa.aflex_debug := Debug;
+   CSS.Analysis.Parser.Lexer_dfa.aflex_debug := Debug;
+   if Length (Config_Path) > 0 then
+      CSS.Analysis.Parser.Load (To_String (Config_Path));
+   end if;
+
    if Length (Output_Path) > 0 then
       Ada.Text_IO.Create (Output.File, Ada.Text_IO.Out_File, To_String (Output_Path));
    end if;
@@ -201,7 +149,7 @@ begin
          exit when Path'Length = 0;
          Doc.Set_Href (Path);
          CSS.Parser.Load (Path, Doc'Unchecked_Access, Err_Handler'Unchecked_Access);
-         Report_Duplicate (Doc.Rules);
+         CSS.Analysis.Duplicates.Analyze (Doc.Rules, Err_Handler, Dup_Rules);
          Err_Handler.Iterate (Print_Message'Access);
          if Length (Output_Path) > 0 then
             Output.Print (Doc);
@@ -216,7 +164,7 @@ begin
       Ada.Text_IO.Put_Line ("Warnings        : " & Natural'Image (Err_Handler.Get_Warning_Count));
       Ada.Text_IO.Put_Line ("CSS rules       : " & Count_Type'Image (Doc.Rules.Length));
       Ada.Text_IO.Put_Line ("CSS values      : " & Natural'Image (Doc.Values.Length));
-      Ada.Text_IO.Put_Line ("Duplicate rules : " & Natural'Image (Dup_Count));
+      Ada.Text_IO.Put_Line ("Duplicate rules : " & Count_Type'Image (Dup_Rules.Length));
    end if;
 
 exception
