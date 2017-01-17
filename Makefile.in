@@ -122,6 +122,22 @@ lexer:
 	  gnatchop -w css-parser-lexer.ada && \
 	  rm -f css-parser-lexer.ada
 
+parser-tools:
+	cd tools/parser && \
+	   ayacc -n 256 -s -v -e .ada css-analysis-parser-parser.y && \
+	   gnatchop -w css-analysis-parser-parser.ada && \
+	   rm -f css-analysis-parser-parser.ada
+	#-rm -f src/parser/css-parser-lexer_io.ads
+	#-rm -f src/parser/css-parser-lexer_io.adb
+	-rm -f tools/parser/css-analysis-parser-parser.verbose
+
+lexer-tools:
+	cd tools/parser; \
+	aflex -ms -L css-analysis-parser-lexer.l
+	cd tools/parser && \
+	  gnatchop -w css-analysis-parser-lexer.ada && \
+	  rm -f css-analysis-parser-lexer.ada
+
 # Clean the root project of all build products.
 clean:
 	-$(GNATCLEAN) -q -P "$(GPRPATH)" -XCSS_LIBRARY_TYPE=static
