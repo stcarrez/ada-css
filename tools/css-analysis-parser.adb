@@ -36,4 +36,18 @@ package body CSS.Analysis.Parser is
       Into.Column := Column;
    end Set_Ident;
 
+   --  Create a property rule.
+   procedure Create_Property (Name : in YYstype;
+                              Rule : in YYstype) is
+   begin
+      null;
+   end Create_Property;
+
+   --  Create a definition rule.
+   procedure Create_Definition (Name : in YYstype;
+                                Rule : in YYstype) is
+   begin
+      null;
+   end Create_Definition;
+
 end CSS.Analysis.Parser;
