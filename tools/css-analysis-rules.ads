@@ -29,10 +29,17 @@ package CSS.Analysis.Rules is
    type Rule_Type is limited new Ada.Finalization.Limited_Controlled with private;
    type Rule_Type_Access is access all Rule_Type'Class;
 
+   --  Get the source location of the rule definition.
+   function Get_Location (Rule : in Rule_Type) return CSS.Core.Location;
+
    --  Set the min and max repeat for this rule.
    procedure Set_Repeat (Rule : in out Rule_Type;
                          Min  : in Natural;
                          Max  : in Natural);
+
+   --  Append the <tt>New_Rule</tt> at end of the rule's list.
+   procedure Append (Rule     : in out Rule_Type;
+                     New_Rule : in Rule_Type_Access);
 
    --  Check if the value matches the rule.
    function Match (Rule  : in Rule_Type;
@@ -65,28 +72,42 @@ package CSS.Analysis.Rules is
    --  The rule is empty and is ready to be defined.
    procedure Create_Property (Repository : in out Repository_Type;
                               Name       : in String;
-                              Rule       : out Rule_Type_Access);
+                              Rule       : in Rule_Type_Access);
 
    --  Create a rule definition and add it to the repository under the given name.
    --  The rule definition is used by other rules to represent complex rules.
    --  The rule is empty and is ready to be defined.
    procedure Create_Definition (Repository : in out Repository_Type;
                                 Name       : in String;
-                                Rule       : out Rule_Type_Access);
+                                Rule       : in Rule_Type_Access);
 
    --  Create a rule that describes an identifier;
-   function Create_Identifier (Name : in String) return Rule_Type_Access;
+   function Create_Identifier (Name : in String;
+                               Loc  : in CSS.Core.Location) return Rule_Type_Access;
 
    --  Create a rule that describes either a definition of a pre-defined type.
    function Create_Definition (Repository : in Repository_Type;
-                               Name       : in String) return Rule_Type_Access;
+                               Name       : in String;
+                               Loc        : in CSS.Core.Location) return Rule_Type_Access;
+
+   type Group_Type is (GROUP_ONLY_ONE, GROUP_DBAR, GROUP_AND, GROUP_PARAMS);
 
    --  Create a rule that describes a group of rules whose head is passed in <tt>Rules</tt>.
-   function Create_Group (Rules : in Rule_Type_Access) return Rule_Type_Access;
+   function Create_Group (Rules : in Rule_Type_Access;
+                          Exc   : in Boolean) return Rule_Type_Access;
+
+   --  Create a rule that describes a group of rules whose head is passed in <tt>Rules</tt>.
+   procedure Append_Group (Into   : out Rule_Type_Access;
+                           First  : in Rule_Type_Access;
+                           Second : in Rule_Type_Access;
+                           Kind   : in Group_Type);
+
+   function Rule_Repository return access Repository_Type;
 
 private
 
    type Rule_Type is limited new Ada.Finalization.Limited_Controlled with record
+      Loc        : CSS.Core.Location;
       Next       : Rule_Type_Access;
       Min_Repeat : Natural := 0;
       Max_Repeat : Natural := 0;
@@ -99,6 +120,11 @@ private
    type Definition_Rule_Type (Len : Natural) is new Rule_Type with record
       Ident : String (1 .. Len);
       Def   : Rule_Type_Access;
+   end record;
+
+   type Group_Rule_Type is new Rule_Type with record
+      List       : Rule_Type_Access;
+      Kind       : Group_Type;
    end record;
 
    type Or_Rule_Type is new Rule_Type with record
