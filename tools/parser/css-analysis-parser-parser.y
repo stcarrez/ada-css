@@ -30,6 +30,8 @@ definitions :
     definitions definition
   |
     definition
+  |
+    spaces
   ;
 
 definition :
@@ -49,21 +51,54 @@ spaces :
 property_definition :
     R_PROPERTY spaces R_DEFINE spaces rule_definition
        { Create_Property ($1, $5); }
+  |
+    R_PROPERTY error
+       { Error ($1.Line, $1.Column, "Error in property definition"); }
   ;
 
 named_definition :
     R_DEF_NAME spaces '=' spaces rule_definition
        { Create_Definition ($1, $5); }
+  |
+    R_DEF_NAME error
+       { Error ($1.Line, $1.Column, "Error in named definition"); }
   ;
 
 rule_definition :
-    rule_definition R_FOLLOW spaces one_component
+    rule_dbar_definition
+  ;
+
+param_rule_definition :
+    param_rule_definition ',' spaces rule_dbar_definition
+       { Append_Group ($$, $1, $4, Rules.GROUP_PARAMS); }
   |
-    rule_definition R_ANY spaces one_component
+    rule_dbar_definition
+  ;
+
+rule_dbar_definition :
+    rule_dbar_definition R_FOLLOW spaces rule_and_definition
+       { Append_Group ($$, $1, $4, Rules.GROUP_DBAR); }
   |
-    rule_definition '|' spaces one_component
+    rule_and_definition
+  ;
+
+rule_and_definition :
+    rule_and_definition R_ANY spaces rule_or_definition
+       { Append_Group ($$, $1, $4, Rules.GROUP_AND); }
   |
-    rule_definition one_component
+    rule_or_definition
+  ;
+
+rule_or_definition :
+    rule_or_definition '|' spaces rule_cont_definition
+       { Append_Group ($$, $1, $4, Rules.GROUP_ONLY_ONE); }
+  |
+    rule_cont_definition
+  ;
+
+rule_cont_definition :
+    rule_cont_definition spaces one_component
+       { Rules.Append ($1.Rule.all, $2.Rule); $$ := $1; }
   |
     one_component
   ;
@@ -88,19 +123,21 @@ one_component :
 single_component :
     group_definition
   |
-    R_NAME
-       { Create_Identifier ($$, $1); }
+    R_IDENT '(' param_rule_definition spaces ')'
   |
     R_IDENT
-       { Create_Definition ($$, $1); }
+       { Create_Identifier ($$, $1); }
+  |
+    R_NAME
+       { Create_Type_Or_Reference ($$, $1); }
   ;
 
 group_definition :
     '[' spaces rule_definition ']' '!'
-       { $$ := $3; $$.Rule := Create_Group ($3.Rule, True); }
+       { $$ := $3; }
   |
     '[' spaces rule_definition ']'
-       { $$ := $3; $$.Rule := Create_Group ($3.Rule, False); }
+       { $$ := $3; }
   ;
 
 spec_multi :
@@ -124,26 +161,22 @@ package CSS.Analysis.Parser.Parser is
 
    function Parse (Content  : in String) return Integer;
 
-   --  Set or clear the parser debug flag.
-   --  procedure Set_Debug (Flag : in Boolean);
-
 end CSS.Analysis.Parser.Parser;
 
 pragma Style_Checks (Off);
 with Interfaces;
+with Ada.Text_IO;
 with CSS.Analysis.Parser.Parser_Goto;
 with CSS.Analysis.Parser.Parser_Tokens; 
 with CSS.Analysis.Parser.Parser_Shift_Reduce;
 with CSS.Analysis.Parser.Lexer_IO;
 with CSS.Analysis.Parser.Lexer;
 with CSS.Analysis.Parser.Lexer_Dfa;
-with Ada.Text_IO;
 package body CSS.Analysis.Parser.Parser is
 
    use Ada;
    use CSS.Analysis.Parser.Lexer;
    use CSS.Analysis.Parser.Lexer_Dfa;
-   use type Ada.Text_IO.Count;
    use type Interfaces.Unsigned_64;
 
    procedure yyparse;
@@ -162,29 +195,17 @@ package body CSS.Analysis.Parser.Parser is
       CSS.Analysis.Parser.Lexer_Dfa.yylineno  := 1;
       CSS.Analysis.Parser.Lexer_Dfa.yylinecol := 1;
       CSS.Analysis.Parser.Lexer_IO.Open_Input (Content);
-      --  Expr := MAT.Expressions.EMPTY;
-      --  CSS.Parser.Parser.Document := Document;
       yyparse;
-      --  CSS.Parser.Parser.Document := null;
       CSS.Analysis.Parser.Lexer_IO.Close_Input;
-      --  Parser_Tokens.yylval := EMPTY;
       return Error_Count;
 
    exception
       when others =>
-         --  CSS.Parser.Parser.Document := null;
          CSS.Analysis.Parser.Lexer_IO.Close_Input;
-         --  Parser_Tokens.yylval := EMPTY;
          raise;
 
    end Parse;
 
 ##%procedure_parse
-
-   --  Set or clear the parser debug flag.
-   -- procedure Set_Debug (Flag : in Boolean) is
-   -- begin
-   --   yy.DEBUG := Flag;
-   -- end Set_Debug;
 
 end CSS.Analysis.Parser.Parser;
