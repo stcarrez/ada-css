@@ -1,5 +1,4 @@
 %unit CSS.Analysis.Parser.Lexer
-%x COMMENT
 %option case-insensitive
 %option yylineno
 
@@ -10,7 +9,7 @@ escape          {unicode}|\\[^\r\n\f0-9a-f]
 nmstart         [_a-z]|{nonascii}|{escape}
 nmchar          [_a-z0-9-]|{nonascii}|{escape}
 num             [0-9]+
-comment         \/\*[^*]*\*+([^/*][^*]*\*+)*\/
+comment         ^\#.*$
 ident           -?{nmstart}{nmchar}*(\(\))?
 name            {nmchar}+
 s               [ \t\r\n\f]+
@@ -18,13 +17,8 @@ w               {s}?
 nl              \n|\r\n|\r|\f
 
 %%
-\/\*                    Append (Current_Comment, "/*"); ENTER(COMMENT);
-<COMMENT>[^*\n]*        Append (Current_Comment, YYText);
-<COMMENT>\*+[^*/\n]*    Append (Current_Comment, YYText);
-<COMMENT>\n             Append (Current_Comment, YYText);
-<COMMENT>"*"+"/"        Append (Current_Comment, YYText); ENTER(INITIAL);
-<COMMENT><<EOF>>        Text_IO.Put_Line ("End of comment error!"); ENTER(INITIAL);
 
+^\#.*$                  null;
 \{                      return '{';
 \}                      return '}';
 \[                      return '[';
@@ -50,8 +44,8 @@ nl              \n|\r\n|\r|\f
 {ident}			{ Set_Ident (yylval, YYText, yylineno, yylinecol); return R_IDENT; }
 \<{ident}\>		{ Set_Ident (yylval, YYText, yylineno, yylinecol); return R_NAME; }
 {num}			{ Set_Ident (yylval, YYText, yylineno, yylinecol); return R_NUM; }
-
---  .               { Error (yylineno, yylinecol, "illegal character '" & YYText & "'"); }
+{comment}               { null; }
+.                       { Error (yylineno, yylinecol, "Illegal character '" & YYText & "'"); }
 
 %%
 with Ada.Strings.Unbounded;
@@ -61,8 +55,6 @@ package CSS.Analysis.Parser.Lexer is
    use CSS.Analysis.Parser.Parser_Tokens;
 
    function YYLex return Token;
-
-   Current_Comment : Ada.Strings.Unbounded.Unbounded_String;
 
 end CSS.Analysis.Parser.Lexer;
 
