@@ -177,6 +177,23 @@ package body CSS.Analysis.Rules is
       Log.Debug ("Create rule group");
    end Append_Group;
 
+   --  ------------------------------
+   --  Create a rule that describes a function call with parameters.
+   --  ------------------------------
+   function Create_Function (Name   : in String;
+                             Params : in Rule_Type_Access;
+                             Loc    : in CSS.Core.Location) return Rule_Type_Access is
+   begin
+      return new Function_Rule_Type '(Ada.Finalization.Limited_Controlled with
+                                      Len    => Name'Length,
+                                      Loc    => Loc,
+                                      Kind   => GROUP_PARAMS,
+                                      Next   => null,
+                                      List   => Params,
+                                      Ident  => Name,
+                                      others => <>);
+   end Create_Function;
+
    Repo : aliased Repository_Type;
 
    function Rule_Repository return access Repository_Type is
@@ -192,6 +209,9 @@ package body CSS.Analysis.Rules is
       if Rule in Group_Rule_Type'Class then
          List := Group_Rule_Type'Class (Rule).List;
          Kind := Group_Rule_Type'Class (Rule).Kind;
+         if Rule in Function_Rule_Type'Class then
+            Ada.Text_IO.Put (Function_Rule_Type (Rule).Ident);
+         end if;
          if Kind = GROUP_PARAMS then
             Ada.Text_IO.Put ("(");
          else
