@@ -15,12 +15,40 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
+with Ada.Directories;
 with Util.Strings;
 with CSS.Analysis.Parser.Parser;
 with CSS.Core;
 package body CSS.Analysis.Parser is
 
    use Ada.Strings.Unbounded;
+
+   --  ------------------------------
+   --  Load all the rule definition files stored in the given directory.
+   --  ------------------------------
+   procedure Load_All (Path : in String) is
+      use Ada.Directories;
+
+      Search      : Search_Type;
+      Filter      : constant Filter_Type := (Ordinary_File => True, others => False);
+      Ent         : Directory_Entry_Type;
+   begin
+      if Kind (Path) /= Directory then
+         Log.Error ("Path '{0}' is not a directory.", Path);
+         return;
+      end if;
+
+      Log.Info ("Scanning directory '{0}' for rule definitions");
+      Start_Search (Search, Directory => Path, Pattern => "*.def", Filter => Filter);
+      while More_Entries (Search) loop
+         Get_Next_Entry (Search, Ent);
+         declare
+            Full_Path : constant String := Full_Name (Ent);
+         begin
+            Load (Full_Path);
+         end;
+      end loop;
+   end Load_All;
 
    --  ------------------------------
    --  Load the rule definition file and populate the rule repository.
