@@ -10,6 +10,4 @@ package CSS.Analysis.Parser.Lexer is
 
    function YYLex return Token;
 
-   Current_Comment : Ada.Strings.Unbounded.Unbounded_String;
-
 end CSS.Analysis.Parser.Lexer;

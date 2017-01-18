@@ -1,19 +1,18 @@
 
 pragma Style_Checks (Off);
 with Interfaces;
+with Ada.Text_IO;
 with CSS.Analysis.Parser.Parser_Goto;
 with CSS.Analysis.Parser.Parser_Tokens; 
 with CSS.Analysis.Parser.Parser_Shift_Reduce;
 with CSS.Analysis.Parser.Lexer_IO;
 with CSS.Analysis.Parser.Lexer;
 with CSS.Analysis.Parser.Lexer_Dfa;
-with Ada.Text_IO;
 package body CSS.Analysis.Parser.Parser is
 
    use Ada;
    use CSS.Analysis.Parser.Lexer;
    use CSS.Analysis.Parser.Lexer_Dfa;
-   use type Ada.Text_IO.Count;
    use type Interfaces.Unsigned_64;
 
    procedure yyparse;
@@ -32,19 +31,13 @@ package body CSS.Analysis.Parser.Parser is
       CSS.Analysis.Parser.Lexer_Dfa.yylineno  := 1;
       CSS.Analysis.Parser.Lexer_Dfa.yylinecol := 1;
       CSS.Analysis.Parser.Lexer_IO.Open_Input (Content);
-      --  Expr := MAT.Expressions.EMPTY;
-      --  CSS.Parser.Parser.Document := Document;
       yyparse;
-      --  CSS.Parser.Parser.Document := null;
       CSS.Analysis.Parser.Lexer_IO.Close_Input;
-      --  Parser_Tokens.yylval := EMPTY;
       return Error_Count;
 
    exception
       when others =>
-         --  CSS.Parser.Parser.Document := null;
          CSS.Analysis.Parser.Lexer_IO.Close_Input;
-         --  Parser_Tokens.yylval := EMPTY;
          raise;
 
    end Parse;
@@ -104,7 +97,7 @@ procedure YYParse is
        index      : integer;
 
        -- Is Debugging option on or off
-        DEBUG : constant boolean := TRUE;
+        DEBUG : constant boolean := FALSE;
 
     end yy;
 
@@ -315,6 +308,132 @@ begin
 
                 case yy.rule_id is
 
+when 9 => -- #line 53
+ Create_Property (
+yy.value_stack(yy.tos-4), 
+yy.value_stack(yy.tos)); 
+
+when 10 => -- #line 56
+ Error (
+yy.value_stack(yy.tos-1).Line, 
+yy.value_stack(yy.tos-1).Column, "Error in property definition"); 
+
+when 11 => -- #line 61
+ Create_Definition (
+yy.value_stack(yy.tos-4), 
+yy.value_stack(yy.tos)); 
+
+when 12 => -- #line 64
+ Error (
+yy.value_stack(yy.tos-1).Line, 
+yy.value_stack(yy.tos-1).Column, "Error in named definition"); 
+
+when 14 => -- #line 73
+ Append_Group (
+yyval, 
+yy.value_stack(yy.tos-3), 
+yy.value_stack(yy.tos), Rules.GROUP_PARAMS); 
+
+when 16 => -- #line 80
+ Append_Group (
+yyval, 
+yy.value_stack(yy.tos-3), 
+yy.value_stack(yy.tos), Rules.GROUP_DBAR); 
+
+when 18 => -- #line 87
+ Append_Group (
+yyval, 
+yy.value_stack(yy.tos-3), 
+yy.value_stack(yy.tos), Rules.GROUP_AND); 
+
+when 20 => -- #line 94
+ Append_Group (
+yyval, 
+yy.value_stack(yy.tos-3), 
+yy.value_stack(yy.tos), Rules.GROUP_ONLY_ONE); 
+
+when 22 => -- #line 101
+ Rules.Append (
+yy.value_stack(yy.tos-2).Rule.all, 
+yy.value_stack(yy.tos-1).Rule); 
+yyval := 
+yy.value_stack(yy.tos-2); 
+
+when 24 => -- #line 108
+ 
+yy.value_stack(yy.tos-2).Rule.Set_Repeat (1, 1); 
+yyval := 
+yy.value_stack(yy.tos-2); 
+
+when 25 => -- #line 111
+ 
+yy.value_stack(yy.tos-2).Rule.Set_Repeat (1, 1); 
+yyval := 
+yy.value_stack(yy.tos-2); 
+
+when 26 => -- #line 114
+ 
+yy.value_stack(yy.tos-2).Rule.Set_Repeat (1, 1); 
+yyval := 
+yy.value_stack(yy.tos-2); 
+
+when 27 => -- #line 117
+ 
+yy.value_stack(yy.tos-2).Rule.Set_Repeat (1, 1); 
+yyval := 
+yy.value_stack(yy.tos-2); 
+
+when 28 => -- #line 120
+ 
+yy.value_stack(yy.tos-1).Rule.Set_Repeat (1, 1); 
+yyval := 
+yy.value_stack(yy.tos-1); 
+
+when 31 => -- #line 129
+ Create_Identifier (
+yyval, 
+yy.value_stack(yy.tos)); 
+
+when 32 => -- #line 132
+ Create_Type_Or_Reference (
+yyval, 
+yy.value_stack(yy.tos)); 
+
+when 33 => -- #line 137
+ 
+yyval := 
+yy.value_stack(yy.tos-2); 
+
+when 34 => -- #line 140
+ 
+yyval := 
+yy.value_stack(yy.tos-1); 
+
+when 35 => -- #line 145
+ 
+yyval.Min_Repeat := Get_Value (
+yy.value_stack(yy.tos-4)); 
+yyval.Max_Repeat := Get_Value (
+yy.value_stack(yy.tos-2)); 
+
+when 36 => -- #line 148
+ 
+yyval.Min_Repeat := Get_Value (
+yy.value_stack(yy.tos-3)); 
+yyval.Max_Repeat := Natural'Last; 
+
+when 37 => -- #line 151
+ 
+yyval.Min_Repeat := Get_Value (
+yy.value_stack(yy.tos-2)); 
+yyval.Max_Repeat := 
+yyval.Max_Repeat; 
+
+when 38 => -- #line 154
+ 
+yyval.Min_Repeat := 1; 
+yyval.Max_Repeat := 1; 
+
                     when others => null;
                 end case;
 
@@ -343,11 +462,5 @@ begin
 
 
 end yyparse;
-
-   --  Set or clear the parser debug flag.
-   -- procedure Set_Debug (Flag : in Boolean) is
-   -- begin
-   --   yy.DEBUG := Flag;
-   -- end Set_Debug;
 
 end CSS.Analysis.Parser.Parser;
