@@ -124,6 +124,7 @@ single_component :
     group_definition
   |
     R_IDENT '(' param_rule_definition spaces ')'
+       { Create_Function ($$, $1, $3); }
   |
     R_IDENT
        { Create_Identifier ($$, $1); }
