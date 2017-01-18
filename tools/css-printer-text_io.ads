@@ -21,7 +21,7 @@ with Ada.Text_IO;
 package CSS.Printer.Text_IO is
 
    type Context_Type is new CSS.Printer.Context_Type with record
-      FILE : Ada.Text_IO.File_Type;
+      File : Ada.Text_IO.File_Type;
    end record;
 
    overriding
