@@ -37,6 +37,9 @@ package CSS.Analysis.Parser is
    --  Load the rule definition file and populate the rule repository.
    procedure Load (Path : in String);
 
+   --  Load all the rule definition files stored in the given directory.
+   procedure Load_All (Path : in String);
+
 private
 
    --  Logger used by the parser to report errors or debug messages.
