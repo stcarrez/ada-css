@@ -79,6 +79,11 @@ private
    procedure Create_Identifier (Into : out YYstype;
                                 Name : in YYstype);
 
+   --  Create an function with parameter rules.
+   procedure Create_Function (Into   : out YYstype;
+                              Name   : in YYstype;
+                              Params : in YYstype);
+
    --  Append or make a group of rules.
    procedure Append_Group (Into   : out YYstype;
                            Group  : in YYstype;
