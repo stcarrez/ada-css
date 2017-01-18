@@ -389,47 +389,53 @@ yy.value_stack(yy.tos-1).Rule.Set_Repeat (1, 1);
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 31 => -- #line 129
+when 30 => -- #line 127
+ Create_Function (
+yyval, 
+yy.value_stack(yy.tos-4), 
+yy.value_stack(yy.tos-2)); 
+
+when 31 => -- #line 130
  Create_Identifier (
 yyval, 
 yy.value_stack(yy.tos)); 
 
-when 32 => -- #line 132
+when 32 => -- #line 133
  Create_Type_Or_Reference (
 yyval, 
 yy.value_stack(yy.tos)); 
 
-when 33 => -- #line 137
+when 33 => -- #line 138
  
 yyval := 
 yy.value_stack(yy.tos-2); 
 
-when 34 => -- #line 140
+when 34 => -- #line 141
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 35 => -- #line 145
+when 35 => -- #line 146
  
 yyval.Min_Repeat := Get_Value (
 yy.value_stack(yy.tos-4)); 
 yyval.Max_Repeat := Get_Value (
 yy.value_stack(yy.tos-2)); 
 
-when 36 => -- #line 148
+when 36 => -- #line 149
  
 yyval.Min_Repeat := Get_Value (
 yy.value_stack(yy.tos-3)); 
 yyval.Max_Repeat := Natural'Last; 
 
-when 37 => -- #line 151
+when 37 => -- #line 152
  
 yyval.Min_Repeat := Get_Value (
 yy.value_stack(yy.tos-2)); 
 yyval.Max_Repeat := 
 yyval.Max_Repeat; 
 
-when 38 => -- #line 154
+when 38 => -- #line 155
  
 yyval.Min_Repeat := 1; 
 yyval.Max_Repeat := 1; 
