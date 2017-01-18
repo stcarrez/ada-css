@@ -102,6 +102,11 @@ package CSS.Analysis.Rules is
                            Second : in Rule_Type_Access;
                            Kind   : in Group_Type);
 
+   --  Create a rule that describes a function call with parameters.
+   function Create_Function (Name   : in String;
+                             Params : in Rule_Type_Access;
+                             Loc    : in CSS.Core.Location) return Rule_Type_Access;
+
    function Rule_Repository return access Repository_Type;
 
 private
@@ -125,6 +130,10 @@ private
    type Group_Rule_Type is new Rule_Type with record
       List       : Rule_Type_Access;
       Kind       : Group_Type;
+   end record;
+
+   type Function_Rule_Type (Len : Natural) is new Group_Rule_Type with record
+      Ident : String (1 .. Len);
    end record;
 
    type Or_Rule_Type is new Rule_Type with record
