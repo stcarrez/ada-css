@@ -110,11 +110,13 @@ begin
 
    --  Parse the command line
    loop
-      case Getopt ("v p d q c: o: ") is
+      case Getopt ("v p d q r: c: o: ") is
          when ASCII.NUL => exit;
 
          when 'c' =>
             Set_Config_Directory (Parameter);
+
+         when 'r' =>
             Config_Path := To_Unbounded_String (Parameter);
 
          when 'o' =>
@@ -156,6 +158,9 @@ begin
 
    CSS.Parser.Lexer_dfa.aflex_debug := Debug;
    CSS.Analysis.Parser.Lexer_dfa.aflex_debug := Debug;
+   if Length (Config_Path) > 0 then
+      CSS.Analysis.Parser.Load (To_String (Config_Path));
+   end if;
    if Length (Config_Dir) > 0 then
       CSS.Analysis.Parser.Load_All (To_String (Config_Dir));
    end if;
