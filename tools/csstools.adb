@@ -21,22 +21,18 @@ with Ada.Strings.Unbounded;
 with Ada.Text_IO;
 with Ada.Command_Line;
 with Ada.Containers;
-with Util.Streams.Texts;
-with Util.Streams.Buffered;
-with CSS.Parser.Parser;
-with CSS.Parser.Lexer;
+with Ada.Directories;
 with Ada.Exceptions;
-with Ada.Containers.Ordered_Sets;
+with Util.Log.Loggers;
+with Util.Files;
+with CSS.Parser.Lexer;
 with CSS.Parser.Lexer_dfa;
 with CSS.Analysis.Parser.Lexer_dfa;
 with CSS.Core;
-with CSS.Core.Refs;
 with CSS.Core.Sheets;
-with CSS.Core.Vectors;
 with CSS.Core.Styles;
 with CSS.Core.Selectors;
 with CSS.Core.Properties;
-with CSS.Core.Errors.Default;
 with CSS.Tools.Messages;
 with CSS.Core.Compare;
 with CSS.Core.Sets;
@@ -46,35 +42,48 @@ with CSS.Analysis.Parser;
 with System;
 procedure CssTools is
 
-   use Util.Streams.Buffered;
    use Ada.Strings.Unbounded;
    use Ada.Containers;
+   use Ada.Directories;
+   use Ada.Command_Line;
 
    Debug       : Boolean := False;
    Verbose     : Boolean := False;
    Quiet       : Boolean := False;
+   Status      : Exit_Status := Success;
    Count       : constant Natural := Ada.Command_Line.Argument_Count;
    Doc         : aliased CSS.Core.Sheets.CSSStylesheet;
    Err_Handler : aliased CSS.Tools.Messages.Message_List;
    Output_Path : Unbounded_String;
+   Config_Dir  : Unbounded_String;
    Output      : CSS.Printer.Text_IO.Context_Type;
-   Dup_Count   : Natural := 0;
    Dup_Rules   : CSS.Core.Sets.Set;
 
-   procedure Print (Rule : in CSS.Core.Styles.CSSStyleRule_Access) is
-      procedure Print (Prop : in CSS.Core.Properties.CSSProperty) is
-      begin
-         Ada.Text_IO.Put ("   ");
-	 Ada.Text_IO.Put (Prop.Name.all);
-	 Ada.Text_IO.Put (": ");
-	 Ada.Text_IO.Put (Prop.Value.To_String);
-	 Ada.Text_IO.Put_Line (";");
-      end Print;
+   --  ------------------------------
+   --  Verify and set the configuration path
+   --  ------------------------------
+   procedure Set_Config_Directory (Path   : in String;
+                                   Silent : in Boolean := False) is
+      Log_Path : constant String := Ada.Directories.Compose (Path, "csstools.properties");
    begin
-      Ada.Text_IO.Put_Line (CSS.Core.Selectors.To_String (Rule.Selectors) & " {");
-      Rule.Style.Iterate (Print'Access);
-      Ada.Text_IO.Put_Line ("}");
-   end Print;
+      --  Ignore if the config directory was already set.
+      if Length (Config_Dir) > 0 then
+         return;
+      end if;
+
+      --  Check that we can read some configuration file.
+      if not Ada.Directories.Exists (Log_Path) then
+         if not Silent then
+            Ada.Text_IO.Put_Line ("Invalid config directory: " & Path);
+            Status := Failure;
+         end if;
+         return;
+      end if;
+
+      --  Configure the logs
+      Util.Log.Loggers.Initialize (Log_Path);
+      Config_Dir := To_Unbounded_String (Path);
+   end Set_Config_Directory;
 
    procedure Print_Message (Severity : in CSS.Tools.Messages.Severity_Type;
                             Loc      : in CSS.Core.Location;
@@ -105,7 +114,7 @@ begin
          when ASCII.NUL => exit;
 
          when 'c' =>
-            --  Set_Config_Directory (Parameter);
+            Set_Config_Directory (Parameter);
             Config_Path := To_Unbounded_String (Parameter);
 
          when 'o' =>
@@ -133,10 +142,22 @@ begin
       end case;
    end loop;
 
+   if Length (Config_Dir) = 0 then
+      declare
+         Name : constant String := Ada.Command_Line.Command_Name;
+         Path : constant String := Ada.Directories.Containing_Directory (Name);
+         Dir  : constant String := Ada.Directories.Containing_Directory (Path);
+      begin
+         Set_Config_Directory (Compose (Dir, "config"), True);
+         Set_Config_Directory (Util.Files.Compose (Dir, "share/csstools"), True);
+         --  Set_Config_Directory (Gen.Configs.CONFIG_DIR, True);
+      end;
+   end if;
+
    CSS.Parser.Lexer_dfa.aflex_debug := Debug;
    CSS.Analysis.Parser.Lexer_dfa.aflex_debug := Debug;
-   if Length (Config_Path) > 0 then
-      CSS.Analysis.Parser.Load (To_String (Config_Path));
+   if Length (Config_Dir) > 0 then
+      CSS.Analysis.Parser.Load_All (To_String (Config_Dir));
    end if;
 
    if Length (Output_Path) > 0 then
