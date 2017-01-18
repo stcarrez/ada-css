@@ -23,6 +23,8 @@ package body CSS.Analysis.Parser is
 
    use Ada.Strings.Unbounded;
 
+   Current_File : Unbounded_String;
+
    --  ------------------------------
    --  Load all the rule definition files stored in the given directory.
    --  ------------------------------
@@ -38,7 +40,7 @@ package body CSS.Analysis.Parser is
          return;
       end if;
 
-      Log.Info ("Scanning directory '{0}' for rule definitions");
+      Log.Info ("Scanning directory '{0}' for rule definitions", Path);
       Start_Search (Search, Directory => Path, Pattern => "*.def", Filter => Filter);
       while More_Entries (Search) loop
          Get_Next_Entry (Search, Ent);
@@ -57,6 +59,7 @@ package body CSS.Analysis.Parser is
       Res : Integer;
    begin
       Log.Info ("Loading rule definition file {0}", Path);
+      Current_File := To_Unbounded_String (Path);
       Res := CSS.Analysis.Parser.Parser.Parse (Path);
       if Res /= 0 then
          Log.Error ("Found {0} errors while parsing {1}", Util.Strings.Image (Res), Path);
@@ -127,6 +130,18 @@ package body CSS.Analysis.Parser is
       Into.Rule := Rules.Create_Identifier (To_String (Name.Token), Loc);
    end Create_Identifier;
 
+   --  ------------------------------
+   --  Create an function with parameter rules.
+   --  ------------------------------
+   procedure Create_Function (Into   : out YYstype;
+                              Name   : in YYstype;
+                              Params : in YYstype) is
+      Loc : CSS.Core.Location;
+   begin
+      Into := Name;
+      Into.Rule := Rules.Create_Function (To_String (Name.Token), Params.Rule, Loc);
+   end Create_Function;
+
    procedure Append_Group (Into   : out YYstype;
                            Group  : in YYstype;
                            Item   : in YYstype;
@@ -143,7 +158,8 @@ package body CSS.Analysis.Parser is
                     Column  : in Natural;
                     Message : in String) is
    begin
-      Log.Error ("{0}:{1}: {2}", Util.Strings.Image (Line), Util.Strings.Image (Column), Message);
+      Log.Error ("{0}:{1} {2}", To_String (Current_File) & ":"
+                 & Util.Strings.Image (Line), Util.Strings.Image (Column), Message);
    end Error;
 
 end CSS.Analysis.Parser;
