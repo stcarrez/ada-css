@@ -17,6 +17,7 @@
 -----------------------------------------------------------------------
 with Ada.Finalization;
 with CSS.Core.Errors;
+private with Util.Log.Locations;
 private with Ada.Containers.Ordered_Maps;
 package CSS.Tools.Messages is
 
@@ -64,7 +65,7 @@ private
    package Message_Sets is
      new Ada.Containers.Ordered_Maps (Key_Type     => CSS.Core.Location,
                                       Element_Type => Message_Type_Access,
-                                      "<"          => CSS.Core."<",
+                                      "<"          => Util.Log.Locations."<",
                                       "="          => "=");
 
    --  The message list is a ordered map of message list.  The map is sorted on the
