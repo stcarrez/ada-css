@@ -19,6 +19,7 @@ with Ada.Finalization;
 with Ada.Text_IO;
 with Ada.Containers.Indefinite_Ordered_Maps;
 with Util.Log.Loggers;
+with Util.Strings;
 with CSS.Core.Values;
 
 package body CSS.Analysis.Rules is
@@ -28,19 +29,25 @@ package body CSS.Analysis.Rules is
    procedure Print (Rule : in Rule_Type'Class;
                     Indent : in Natural := 0);
 
+   --  ------------------------------
    --  Get the source location of the rule definition.
-   function Get_Location (Rule : in Rule_Type) return CSS.Core.Location is
+   --  ------------------------------
+   function Get_Location (Rule : in Rule_Type) return Location is
    begin
       return Rule.Loc;
    end Get_Location;
 
+   --  ------------------------------
    --  Set the min and max repeat for this rule.
+   --  ------------------------------
    procedure Set_Repeat (Rule : in out Rule_Type;
                          Min  : in Natural;
-                         Max  : in Natural) is
+                         Max  : in Natural;
+                         Sep  : in Boolean := False) is
    begin
       Rule.Min_Repeat := Min;
       Rule.Max_Repeat := Max;
+      Rule.Comma_Sep  := Sep;
    end Set_Repeat;
 
    --  Append the <tt>New_Rule</tt> at end of the rule's list.
@@ -72,19 +79,21 @@ package body CSS.Analysis.Rules is
       return CSS.Core.Values.To_String (Value) = Rule.Ident;
    end Match;
 
-   --  Check if the value matches one of the sub rules.
-   function Match (Rule  : in Or_Rule_Type;
-                   Value : in CSS.Core.Values.Value_Type) return Boolean is
+   --  ------------------------------
+   --  Find a rule that describes a property.
+   --  Returns the rule or null if there is no rule for the property.
+   --  ------------------------------
+   function Find_Property (Repository : in Repository_Type;
+                           Name       : in String) return Rule_Type_Access is
+      Pos : constant Rule_Maps.Cursor := Repository.Properties.Find (Name);
    begin
-      return False;
-   end Match;
-
-   --  Check if the value matches the identifier defined by the rule.
-   function Match (Rule  : in And_Rule_Type;
-                   Value : in CSS.Core.Values.Value_Type) return Boolean is
-   begin
-      return False;
-   end Match;
+      if Rule_Maps.Has_Element (Pos) then
+         return Rule_Maps.Element (Pos);
+      else
+         Log.Info ("No property rule '{0}'", Name);
+         return null;
+      end if;
+   end Find_Property;
 
    --  Create a property rule and add it to the repository under the given name.
    --  The rule is empty and is ready to be defined.
@@ -123,7 +132,7 @@ package body CSS.Analysis.Rules is
 
    --  Create a rule that describes an identifier;
    function Create_Identifier (Name : in String;
-                               Loc  : in CSS.Core.Location) return Rule_Type_Access is
+                               Loc  : in Location) return Rule_Type_Access is
       Rule : constant Rule_Type_Access :=
          new Ident_Rule_Type '(Ada.Finalization.Limited_Controlled with
            Next => null, Len => Name'Length, Ident => Name, Loc => Loc, others => <>);
@@ -135,7 +144,7 @@ package body CSS.Analysis.Rules is
    --  Create a rule that describes either a definition of a pre-defined type.
    function Create_Definition (Repository : in Repository_Type;
                                Name       : in String;
-                               Loc        : in CSS.Core.Location) return Rule_Type_Access is
+                               Loc        : in Location) return Rule_Type_Access is
       Pos  : Rule_Maps.Cursor := Repository.Types.Find (Name);
    begin
       if Rule_Maps.Has_Element (Pos) then
@@ -171,7 +180,9 @@ package body CSS.Analysis.Rules is
          Into := new Group_Rule_Type '(Ada.Finalization.Limited_Controlled with
                                        Next => null, List => First,
                                        Kind => Kind,
-                                       Loc  => First.Loc, others => <>);
+                                       Loc  => First.Loc,
+                                       Min_Repeat => 1,
+                                       Max_Repeat => 1, others => <>);
          First.Next := Second;
       end if;
       Log.Debug ("Create rule group");
@@ -182,7 +193,7 @@ package body CSS.Analysis.Rules is
    --  ------------------------------
    function Create_Function (Name   : in String;
                              Params : in Rule_Type_Access;
-                             Loc    : in CSS.Core.Location) return Rule_Type_Access is
+                             Loc    : in Location) return Rule_Type_Access is
    begin
       return new Function_Rule_Type '(Ada.Finalization.Limited_Controlled with
                                       Len    => Name'Length,
@@ -247,6 +258,34 @@ package body CSS.Analysis.Rules is
          else
             Ada.Text_IO.Put ("]");
          end if;
+      end if;
+      if Rule.Comma_Sep then
+         Ada.Text_IO.Put ("#");
+         if Rule.Min_Repeat /= 1 and Rule.Max_Repeat /= 1 then
+         Ada.Text_IO.Put ("{");
+         Ada.Text_IO.Put (Util.Strings.Image (Rule.Min_Repeat));
+         if Rule.Min_Repeat /= Rule.Max_Repeat then
+            Ada.Text_IO.Put (",");
+            Ada.Text_IO.Put (Util.Strings.Image (Rule.Max_Repeat));
+         end if;
+         Ada.Text_IO.Put ("}");
+         end if;
+      elsif Rule.Min_Repeat = 0 and Rule.Max_Repeat = 1 then
+         Ada.Text_IO.Put ("?");
+      elsif Rule.Min_Repeat = 1 and Rule.Max_Repeat = Natural'Last then
+         Ada.Text_IO.Put ("+");
+      elsif Rule.Min_Repeat = 0 and Rule.Max_Repeat = Natural'Last then
+         Ada.Text_IO.Put ("*");
+      elsif Rule.Min_Repeat /= 1 and Rule.Max_Repeat /= 1 then
+         Ada.Text_IO.Put ("{");
+         Ada.Text_IO.Put (Util.Strings.Image (Rule.Min_Repeat));
+         if Rule.Min_Repeat /= Rule.Max_Repeat then
+            Ada.Text_IO.Put (",");
+            if Rule.Max_Repeat /= Natural'Last then
+               Ada.Text_IO.Put (Util.Strings.Image (Rule.Max_Repeat));
+            end if;
+         end if;
+         Ada.Text_IO.Put ("}");
       end if;
    end Print;
 
