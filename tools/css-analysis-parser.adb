@@ -17,13 +17,13 @@
 -----------------------------------------------------------------------
 with Ada.Directories;
 with Util.Strings;
+with Util.Log.Locations;
 with CSS.Analysis.Parser.Parser;
-with CSS.Core;
 package body CSS.Analysis.Parser is
 
    use Ada.Strings.Unbounded;
 
-   Current_File : Unbounded_String;
+   Current_File : Util.Log.Locations.File_Info_Access;
 
    --  ------------------------------
    --  Load all the rule definition files stored in the given directory.
@@ -59,7 +59,7 @@ package body CSS.Analysis.Parser is
       Res : Integer;
    begin
       Log.Info ("Loading rule definition file {0}", Path);
-      Current_File := To_Unbounded_String (Path);
+      Current_File := Util.Log.Locations.Create_File_Info (Path, Path'First);
       Res := CSS.Analysis.Parser.Parser.Parse (Path);
       if Res /= 0 then
          Log.Error ("Found {0} errors while parsing {1}", Util.Strings.Image (Res), Path);
@@ -113,7 +113,7 @@ package body CSS.Analysis.Parser is
    --  ------------------------------
    procedure Create_Type_Or_Reference (Into : out YYstype;
                                        Name : in YYstype) is
-      Loc : CSS.Core.Location;
+      Loc : CSS.Analysis.Rules.Location;
    begin
       Into := Name;
       Into.Rule := Rules.Rule_Repository.Create_Definition (To_String (Name.Token), Loc);
@@ -124,7 +124,8 @@ package body CSS.Analysis.Parser is
    --  ------------------------------
    procedure Create_Identifier (Into : out YYstype;
                                 Name : in YYstype) is
-      Loc : CSS.Core.Location;
+      Loc : constant Rules.Location
+         := Util.Log.Locations.Create_Line_Info (Current_File, Name.Line, Name.Column);
    begin
       Into := Name;
       Into.Rule := Rules.Create_Identifier (To_String (Name.Token), Loc);
@@ -136,7 +137,8 @@ package body CSS.Analysis.Parser is
    procedure Create_Function (Into   : out YYstype;
                               Name   : in YYstype;
                               Params : in YYstype) is
-      Loc : CSS.Core.Location;
+      Loc : constant Rules.Location
+         := Util.Log.Locations.Create_Line_Info (Current_File, Name.Line, Name.Column);
    begin
       Into := Name;
       Into.Rule := Rules.Create_Function (To_String (Name.Token), Params.Rule, Loc);
@@ -158,7 +160,7 @@ package body CSS.Analysis.Parser is
                     Column  : in Natural;
                     Message : in String) is
    begin
-      Log.Error ("{0}:{1} {2}", To_String (Current_File) & ":"
+      Log.Error ("{0}:{1} {2}", Util.Log.Locations.Relative_Path (Current_File.all) & ":"
                  & Util.Strings.Image (Line), Util.Strings.Image (Column), Message);
    end Error;
 
