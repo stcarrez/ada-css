@@ -16,11 +16,10 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 
-with CSS.Core.Groups;
 with CSS.Core.Styles;
-with CSS.Core.Refs;
 with CSS.Core.Vectors;
 with CSS.Core.Values;
+with CSS.Core.Properties;
 package CSS.Core.Sheets is
 
    type CSSStyleSheet is new CSS.Core.StyleSheet with record
@@ -36,5 +35,12 @@ package CSS.Core.Sheets is
                      Rule     : in Styles.CSSStyleRule_Access;
                      Line     : in Natural;
                      Column   : in Natural);
+
+   --  Iterate over the properties of each CSS rule.  The <tt>Process</tt> procedure
+   --  is called with the CSS rule and the property as parameter.
+   procedure Iterate_Properties (Document : in CSSStyleSheet;
+                                 Process  : not null access
+                                   procedure (Rule     : in Styles.CSSStyleRule'Class;
+                                              Property : in Properties.CSSProperty));
 
 end CSS.Core.Sheets;
