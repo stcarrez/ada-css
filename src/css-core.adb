@@ -19,55 +19,12 @@ with Ada.Unchecked_Deallocation;
 package body CSS.Core is
 
    --  ------------------------------
-   --  Get the line number.
-   --  ------------------------------
-   function Get_Line (Loc : in Location) return Natural is
-   begin
-      return Loc.Line;
-   end Get_Line;
-
-   --  ------------------------------
-   --  Get the source file or URI.
-   --  ------------------------------
-   function Get_Source (Loc : in Location) return String is
-   begin
-      if Loc.Sheet = null then
-         return "";
-      else
-         return Loc.Sheet.Get_Href;
-      end if;
-   end Get_Source;
-
-   --  ------------------------------
    --  Get a printable representation of the source file name and line number.
    --  ------------------------------
    function To_String (Loc : in Location) return String is
-      Line : constant String := Natural'Image (Loc.Line);
-      Col  : constant String := Natural'Image (Loc.Column);
    begin
-      return Get_Source (Loc) & ":" & Line (Line'First + 1 .. Line'Last)
-        & ":" & Col (Col'First + 1 .. Col'Last);
+      return Util.Log.Locations.To_String (Loc);
    end To_String;
-
-   --  ------------------------------
-   --  Compare the two source location.
-   --  ------------------------------
-   function "<" (Left, Right : in Location) return Boolean is
-   begin
-      if Left.Sheet = Right.Sheet then
-         if Left.Line = Right.Line then
-            return Left.Column < Right.Column;
-         else
-            return Left.Line < Right.Line;
-         end if;
-      elsif Left.Sheet = null then
-         return False;
-      elsif Right.Sheet = null then
-         return True;
-      else
-         return Left.Sheet.Get_Href < Right.Sheet.Get_Href;
-      end if;
-   end "<";
 
    --  ------------------------------
    --  Returns the CSS type ("text/css").
@@ -83,7 +40,7 @@ package body CSS.Core is
    --  ------------------------------
    function Get_Parent (Sheet : in Stylesheet) return Stylesheet_Access is
    begin
-      return Sheet.Loc.Sheet;
+      return Sheet.Parent;
    end Get_Parent;
 
    --  ------------------------------
@@ -95,11 +52,20 @@ package body CSS.Core is
    end Get_Href;
 
    --  ------------------------------
+   --  Get the source file information.
+   --  ------------------------------
+   function Get_File_Info (Sheet : in Stylesheet) return Util.Log.Locations.File_Info_Access is
+   begin
+      return Sheet.File;
+   end Get_File_Info;
+
+   --  ------------------------------
    --  Set the href attribute representing the stylesheet location.
    --  ------------------------------
    procedure Set_Href (Sheet : in out Stylesheet;
                        Href  : in String) is
    begin
+      Sheet.File := Util.Log.Locations.Create_File_Info (Href, Href'First);
       Ada.Strings.Unbounded.Set_Unbounded_String (Sheet.Href, Href);
    end Set_Href;
 
@@ -109,12 +75,8 @@ package body CSS.Core is
    function Create_Location (Sheet  : in Stylesheet_Access;
                              Line   : in Natural;
                              Column : in Natural) return Location is
-      Result : Location;
    begin
-      Result.Line   := Line;
-      Result.Column := Column;
-      Result.Sheet  := Sheet;
-      return Result;
+      return Util.Log.Locations.Create_Line_Info (Sheet.File, Line, Column);
    end Create_Location;
 
    function Create_Property_Name (Sheet : in Stylesheet;
@@ -143,7 +105,7 @@ package body CSS.Core is
    --  ------------------------------
    function Get_Stylesheet (Rule : in CSSRule) return Stylesheet_Access is
    begin
-      return Rule.Loc.Sheet;
+      return Rule.Sheet;
    end Get_Stylesheet;
 
    --  ------------------------------
@@ -181,9 +143,10 @@ package body CSS.Core is
                            Column : in Natural;
                            Sheet  : in Stylesheet_Access) is
    begin
-      Rule.Loc.Line   := Line;
-      Rule.Loc.Column := Column;
-      Rule.Loc.Sheet  := Sheet;
+--        Rule.Loc.Line   := Line;
+--        Rule.Loc.Column := Column;
+--        Rule.Loc.Sheet  := Sheet;
+null;
    end Set_Location;
 
 end CSS.Core;
