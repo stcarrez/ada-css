@@ -121,8 +121,13 @@ package body CSS.Tools.Messages is
          declare
             Iter : Message_Sets.Cursor := List.List.First;
             Msg  : Message_Type_Access := Message_Sets.Element (Iter);
+            Next : Message_Type_Access;
          begin
-            Free (Msg);
+            while Msg /= null loop
+               Next := Msg.Next;
+               Free (Msg);
+               Msg := Next;
+            end loop;
             List.List.Delete (Iter);
          end;
       end loop;

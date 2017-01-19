@@ -24,6 +24,7 @@ with Ada.Containers;
 with Ada.Directories;
 with Ada.Exceptions;
 with Util.Log.Loggers;
+with Util.Log.Locations;
 with Util.Files;
 with CSS.Parser.Lexer;
 with CSS.Parser.Lexer_dfa;
@@ -36,6 +37,7 @@ with CSS.Core.Properties;
 with CSS.Tools.Messages;
 with CSS.Core.Compare;
 with CSS.Core.Sets;
+with CSS.Analysis.Rules;
 with CSS.Analysis.Duplicates;
 with CSS.Printer.Text_IO;
 with CSS.Analysis.Parser;
@@ -90,7 +92,7 @@ procedure CssTools is
                             Message  : in String) is
       use CSS.Tools.Messages;
    begin
-      Ada.Text_IO.Put (CSS.Core.To_String (Loc));
+      Ada.Text_IO.Put (Util.Log.Locations.To_String (Loc));
       Ada.Text_IO.Put (":");
       if Severity = MSG_ERROR then
          Ada.Text_IO.Put ("error: ");
@@ -176,6 +178,7 @@ begin
          Doc.Set_Href (Path);
          CSS.Parser.Load (Path, Doc'Unchecked_Access, Err_Handler'Unchecked_Access);
          CSS.Analysis.Duplicates.Analyze (Doc.Rules, Err_Handler, Dup_Rules);
+         CSS.Analysis.Rules.Analyze (Doc, Err_Handler);
          Err_Handler.Iterate (Print_Message'Access);
          if Length (Output_Path) > 0 then
             Output.Print (Doc);
