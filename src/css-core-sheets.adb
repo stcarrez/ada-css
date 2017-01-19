@@ -15,12 +15,14 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-
+with CSS.Core.Refs;
 package body CSS.Core.Sheets is
 
+   --  ------------------------------
    --  Create a CSS rule.
+   --  ------------------------------
    function Create_Rule (Document : in CSSStyleSheet) return Styles.CSSStyleRule_Access is
-      Result : Styles.CSSStyleRule_Access := new Styles.CSSStyleRule;
+      Result : constant Styles.CSSStyleRule_Access := new Styles.CSSStyleRule;
    begin
       return Result;
    end Create_Rule;
@@ -29,10 +31,40 @@ package body CSS.Core.Sheets is
                      Rule     : in Styles.CSSStyleRule_Access;
                      Line     : in Natural;
                      Column   : in Natural) is
-      Ref : CSS.Core.Refs.Ref := CSS.Core.Refs.Create (Rule.all'Access);
+      Ref : constant CSS.Core.Refs.Ref := CSS.Core.Refs.Create (Rule.all'Access);
    begin
       Rule.Set_Location (Line, Column, Document'Unchecked_Access);
       Document.Rules.Append (Ref);
    end Append;
+
+   --  ------------------------------
+   --  Iterate over the properties of each CSS rule.  The <tt>Process</tt> procedure
+   --  is called with the CSS rule and the property as parameter.
+   --  ------------------------------
+   procedure Iterate_Properties (Document : in CSSStyleSheet;
+                                 Process  : not null access
+                                   procedure (Rule     : in Styles.CSSStyleRule'Class;
+                                              Property : in Properties.CSSProperty)) is
+      use Styles;
+      procedure Process_Rule (Pos : in CSS.Core.Vectors.Cursor);
+
+      procedure Process_Rule (Pos : in CSS.Core.Vectors.Cursor) is
+         procedure Process_Property (Prop : in Properties.CSSProperty);
+
+         Rule : constant CSSStyleRule_Access := Styles.Element (Pos);
+
+         procedure Process_Property (Prop : in Properties.CSSProperty) is
+         begin
+            Process (Rule.all, Prop);
+         end Process_Property;
+      begin
+         if Rule /= null then
+            Rule.Style.Iterate (Process_Property'Access);
+         end if;
+      end Process_Rule;
+
+   begin
+      Document.Rules.Iterate (Process_Rule'Access);
+   end Iterate_Properties;
 
 end CSS.Core.Sheets;
