@@ -18,7 +18,10 @@
 with Ada.Finalization;
 with Ada.Containers.Indefinite_Ordered_Maps;
 with Util.Log.Locations;
+
+with CSS.Core.Errors;
 with CSS.Core.Values;
+with CSS.Core.Sheets;
 
 --  == Analysis of CSS Rules ==
 --  The <tt>CSS.Analysis.Rules</tt> package defines the rules for the verification of
@@ -49,10 +52,15 @@ package CSS.Analysis.Rules is
    function Match (Rule  : in Rule_Type;
                    Value : in CSS.Core.Values.Value_Type) return Boolean;
 
+   --  Check if the value matches the identifier defined by the rule.
+   function Match (Rule  : in Rule_Type;
+                   Value : in CSS.Core.Values.Value_List) return Boolean;
+
    --  Rule that describes an identifier such as 'left' or 'right'.
    type Ident_Rule_Type (Len : Natural) is new Rule_Type with private;
 
    --  Check if the value matches the identifier defined by the rule.
+   overriding
    function Match (Rule  : in Ident_Rule_Type;
                    Value : in CSS.Core.Values.Value_Type) return Boolean;
 
@@ -104,6 +112,9 @@ package CSS.Analysis.Rules is
 
    function Rule_Repository return access Repository_Type;
 
+   procedure Analyze (Sheet  : in CSS.Core.Sheets.CSSStyleSheet;
+                      Report : in out CSS.Core.Errors.Error_Handler'Class);
+
 private
 
    type Rule_Type is limited new Ada.Finalization.Limited_Controlled with record
@@ -127,6 +138,16 @@ private
       List       : Rule_Type_Access;
       Kind       : Group_Type;
    end record;
+
+   --  Check if the value matches the rule.
+   overriding
+   function Match (Rule  : in Group_Rule_Type;
+                   Value : in CSS.Core.Values.Value_Type) return Boolean;
+
+   --  Check if the value matches the identifier defined by the rule.
+   overriding
+   function Match (Rule  : in Group_Rule_Type;
+                   Value : in CSS.Core.Values.Value_List) return Boolean;
 
    type Function_Rule_Type (Len : Natural) is new Group_Rule_Type with record
       Ident : String (1 .. Len);
