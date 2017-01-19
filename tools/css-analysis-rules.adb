@@ -21,6 +21,8 @@ with Ada.Containers.Indefinite_Ordered_Maps;
 with Util.Log.Loggers;
 with Util.Strings;
 with CSS.Core.Values;
+with CSS.Core.Styles;
+with CSS.Core.Properties;
 
 package body CSS.Analysis.Rules is
 
@@ -73,6 +75,14 @@ package body CSS.Analysis.Rules is
    end Match;
 
    --  Check if the value matches the identifier defined by the rule.
+   function Match (Rule  : in Rule_Type;
+                   Value : in CSS.Core.Values.Value_List) return Boolean is
+   begin
+      return False;
+   end Match;
+
+   --  Check if the value matches the identifier defined by the rule.
+   overriding
    function Match (Rule  : in Ident_Rule_Type;
                    Value : in CSS.Core.Values.Value_Type) return Boolean is
    begin
@@ -166,6 +176,40 @@ package body CSS.Analysis.Rules is
                                    Next => null, List => Rules,
                                    Loc  => Rules.Loc, others => <>);
    end Create_Group;
+
+   --  Check if the value matches the rule.
+   overriding
+   function Match (Rule  : in Group_Rule_Type;
+                   Value : in CSS.Core.Values.Value_Type) return Boolean is
+      List : Rule_Type_Access := Rule.List;
+   begin
+      if Rule.Kind = GROUP_ONLY_ONE then
+         while List /= null loop
+            if List.Match (Value) then
+               return True;
+            end if;
+            List := List.Next;
+         end loop;
+      end if;
+      return False;
+   end Match;
+
+   --  Check if the value matches the identifier defined by the rule.
+   overriding
+   function Match (Rule  : in Group_Rule_Type;
+                   Value : in CSS.Core.Values.Value_List) return Boolean is
+      Count : constant Natural := Value.Get_Count;
+   begin
+      if Rule.Kind = GROUP_ONLY_ONE then
+         for I in 1 .. Count loop
+            if not Rule.Match (Value.Get_Value (I)) then
+               return False;
+            end if;
+         end loop;
+         return True;
+      end if;
+      return False;
+   end Match;
 
    --  Create a rule that describes a group of rules whose head is passed in <tt>Rules</tt>.
    procedure Append_Group (Into   : out Rule_Type_Access;
@@ -288,5 +332,21 @@ package body CSS.Analysis.Rules is
          Ada.Text_IO.Put ("}");
       end if;
    end Print;
+
+   procedure Analyze (Sheet  : in CSS.Core.Sheets.CSSStyleSheet;
+                      Report : in out CSS.Core.Errors.Error_Handler'Class) is
+      procedure Process (Rule : in CSS.Core.Styles.CSSStyleRule'Class;
+                         Prop : in CSS.Core.Properties.CSSProperty) is
+         R : Rule_Type_Access := Repo.Find_Property (Prop.Name.all);
+      begin
+         if R = null then
+            Report.Warning (Prop.Location, "Invalid property: " & Prop.Name.all);
+         elsif not R.Match (Prop.Value) then
+            Report.Warning (Prop.Location, "Invalid values");
+         end if;
+      end Process;
+   begin
+      Sheet.Iterate_Properties (Process'Access);
+   end Analyze;
 
 end CSS.Analysis.Rules;
