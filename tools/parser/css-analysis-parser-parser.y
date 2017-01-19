@@ -105,25 +105,25 @@ rule_cont_definition :
 
 one_component :
     single_component '+' spaces
-       { $1.Rule.Set_Repeat (1, 1); $$ := $1; }
+       { $1.Rule.Set_Repeat (1, Natural'Last); $$ := $1; }
   |
     single_component '?' spec_multi
-       { $1.Rule.Set_Repeat (1, 1); $$ := $1; }
+       { $1.Rule.Set_Repeat (0, 1); $$ := $1; }
   |
     single_component '*' spec_multi
-       { $1.Rule.Set_Repeat (1, 1); $$ := $1; }
+       { $1.Rule.Set_Repeat (0, Natural'Last); $$ := $1; }
   |
     single_component '#' spec_multi
-       { $1.Rule.Set_Repeat (1, 1); $$ := $1; }
+       { $1.Rule.Set_Repeat ($3.Min_Repeat, $3.Max_Repeat, True); $$ := $1; }
   |
     single_component spec_multi
-       { $1.Rule.Set_Repeat (1, 1); $$ := $1; }
+       { $1.Rule.Set_Repeat ($2.Min_Repeat, $2.Max_Repeat); $$ := $1; }
   ;
 
 single_component :
     group_definition
   |
-    R_IDENT '(' param_rule_definition spaces ')'
+    R_IDENT '(' spaces param_rule_definition spaces ')'
        { Create_Function ($$, $1, $3); }
   |
     R_IDENT
@@ -149,7 +149,7 @@ spec_multi :
        { $$.Min_Repeat := Get_Value ($2); $$.Max_Repeat := Natural'Last; }
   |
     '{' R_NUM '}' spaces
-       { $$.Min_Repeat := Get_Value ($2); $$.Max_Repeat := $$.Max_Repeat; }
+       { $$.Min_Repeat := Get_Value ($2); $$.Max_Repeat := $$.Min_Repeat; }
   |
     spaces
        { $$.Min_Repeat := 1; $$.Max_Repeat := 1; }
