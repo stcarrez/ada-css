@@ -39,7 +39,7 @@ package body CSS.Core.Properties is
                   Result.Name  := P.Name;
                   Result.Value := P.Value;
                   Result.Rule  := List.Parent;
-                  Result.Location.Line := P.Line;
+                  Result.Location := Util.Log.Locations.Create_Line_Info (P.File, P.Line);
                end return;
             end if;
          end loop;
@@ -143,7 +143,7 @@ package body CSS.Core.Properties is
          for P of List.Properties.all loop
             Prop.Name  := P.Name;
             Prop.Value := P.Value;
-            Prop.Location.Line  := P.Line;
+            Prop.Location := Util.Log.Locations.Create_Line_Info (P.File, P.Line);
             Process (Prop);
          end loop;
       end if;
