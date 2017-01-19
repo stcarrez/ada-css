@@ -17,25 +17,29 @@
 -----------------------------------------------------------------------
 with Ada.Finalization;
 with Ada.Containers.Indefinite_Ordered_Maps;
+with Util.Log.Locations;
 with CSS.Core.Values;
 
---  == Analysis Rules ==
+--  == Analysis of CSS Rules ==
 --  The <tt>CSS.Analysis.Rules</tt> package defines the rules for the verification of
 --  value properties.  The list of definition is stored in the rule repository.
 --  Each rule is associated with a name.  The rule is represented as a tree whose nodes
 --  define what is valid for a given property value.
 package CSS.Analysis.Rules is
 
+   subtype Location is Util.Log.Locations.Line_Info;
+
    type Rule_Type is limited new Ada.Finalization.Limited_Controlled with private;
    type Rule_Type_Access is access all Rule_Type'Class;
 
    --  Get the source location of the rule definition.
-   function Get_Location (Rule : in Rule_Type) return CSS.Core.Location;
+   function Get_Location (Rule : in Rule_Type) return Location;
 
    --  Set the min and max repeat for this rule.
    procedure Set_Repeat (Rule : in out Rule_Type;
                          Min  : in Natural;
-                         Max  : in Natural);
+                         Max  : in Natural;
+                         Sep  : in Boolean := False);
 
    --  Append the <tt>New_Rule</tt> at end of the rule's list.
    procedure Append (Rule     : in out Rule_Type;
@@ -52,21 +56,12 @@ package CSS.Analysis.Rules is
    function Match (Rule  : in Ident_Rule_Type;
                    Value : in CSS.Core.Values.Value_Type) return Boolean;
 
-   --  Rule that describes a list of alternatives such as top | bottom | left | right
-   type Or_Rule_Type is new Rule_Type with private;
-
-   --  Check if the value matches one of the sub rules.
-   function Match (Rule  : in Or_Rule_Type;
-                   Value : in CSS.Core.Values.Value_Type) return Boolean;
-
-   --  Rule that describes a list of alternatives such as left && 2em
-   type And_Rule_Type is new Rule_Type with private;
-
-   --  Check if the value matches the identifier defined by the rule.
-   function Match (Rule  : in And_Rule_Type;
-                   Value : in CSS.Core.Values.Value_Type) return Boolean;
-
    type Repository_Type is limited new Ada.Finalization.Limited_Controlled with private;
+
+   --  Find a rule that describes a property.
+   --  Returns the rule or null if there is no rule for the property.
+   function Find_Property (Repository : in Repository_Type;
+                           Name       : in String) return Rule_Type_Access;
 
    --  Create a property rule and add it to the repository under the given name.
    --  The rule is empty and is ready to be defined.
@@ -83,12 +78,12 @@ package CSS.Analysis.Rules is
 
    --  Create a rule that describes an identifier;
    function Create_Identifier (Name : in String;
-                               Loc  : in CSS.Core.Location) return Rule_Type_Access;
+                               Loc  : in Location) return Rule_Type_Access;
 
    --  Create a rule that describes either a definition of a pre-defined type.
    function Create_Definition (Repository : in Repository_Type;
                                Name       : in String;
-                               Loc        : in CSS.Core.Location) return Rule_Type_Access;
+                               Loc        : in Location) return Rule_Type_Access;
 
    type Group_Type is (GROUP_ONLY_ONE, GROUP_DBAR, GROUP_AND, GROUP_PARAMS);
 
@@ -105,17 +100,18 @@ package CSS.Analysis.Rules is
    --  Create a rule that describes a function call with parameters.
    function Create_Function (Name   : in String;
                              Params : in Rule_Type_Access;
-                             Loc    : in CSS.Core.Location) return Rule_Type_Access;
+                             Loc    : in Location) return Rule_Type_Access;
 
    function Rule_Repository return access Repository_Type;
 
 private
 
    type Rule_Type is limited new Ada.Finalization.Limited_Controlled with record
-      Loc        : CSS.Core.Location;
+      Loc        : Location;
       Next       : Rule_Type_Access;
       Min_Repeat : Natural := 0;
       Max_Repeat : Natural := 0;
+      Comma_Sep  : Boolean := False;
    end record;
 
    type Ident_Rule_Type (Len : Natural) is new Rule_Type with record
@@ -134,14 +130,6 @@ private
 
    type Function_Rule_Type (Len : Natural) is new Group_Rule_Type with record
       Ident : String (1 .. Len);
-   end record;
-
-   type Or_Rule_Type is new Rule_Type with record
-      List       : Rule_Type_Access;
-   end record;
-
-   type And_Rule_Type is new Rule_Type with record
-      List       : Rule_Type_Access;
    end record;
 
    package Rule_Maps is
