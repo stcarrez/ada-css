@@ -88,7 +88,7 @@ procedure CssTools is
                             Message  : in String) is
       use CSS.Tools.Messages;
    begin
-      Ada.Text_IO.Put (Util.Log.Locations.To_String (Loc));
+      Ada.Text_IO.Put (CSS.Core.To_String (Loc));
       Ada.Text_IO.Put (":");
       if Severity = MSG_ERROR then
          Ada.Text_IO.Put ("error: ");
@@ -203,5 +203,5 @@ exception
       Ada.Text_IO.Put_Line (Ada.Exceptions.Exception_Message (E));
       Ada.Text_IO.Put_Line (GNAT.Traceback.Symbolic.Symbolic_Traceback (E));
       Ada.Command_Line.Set_Exit_Status (1);
-      raise;
+
 end CssTools;
