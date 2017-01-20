@@ -16,6 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 private with Ada.Finalization;
+private with Util.Log.Locations;
 with CSS.Core.Values;
 
 package CSS.Core.Properties is
@@ -72,6 +73,7 @@ private
    type CSSInternal_Property is record
       Name     : CSSProperty_Name;
       Value    : Value_List;
+      File     : Util.Log.Locations.File_Info_Access;
       Line     : Natural;
    end record;
 

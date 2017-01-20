@@ -91,10 +91,22 @@ package body CSS.Core.Values is
       for I in List.Values'Range loop
          if List.Values (I) = null then
             List.Values (I) := Value;
+            List.Count := List.Count + 1;
             return;
          end if;
       end loop;
    end Append;
+
+   function Get_Count (List : in Value_List) return Natural is
+   begin
+      return List.Count;
+   end Get_Count;
+
+   function Get_Value (List : in Value_List;
+                       Pos  : in Positive) return Value_Type is
+   begin
+      return List.Values (Pos);
+   end Get_Value;
 
    --  ------------------------------
    --  Get a printable representation of the list.

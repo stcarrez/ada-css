@@ -17,6 +17,7 @@
 -----------------------------------------------------------------------
 with Util.Strings;
 with Util.Refs;
+with Util.Log.Locations;
 private with CSS.Comments;
 private with Ada.Finalization;
 private with Ada.Strings.Unbounded;
@@ -29,21 +30,14 @@ package CSS.Core is
 
    type CSSProperty_Name is access all String;
    subtype CSSProperty_Value is CSSProperty_Name;
-
-   --  The <tt>Location</tt> type describes the source code location of a CSS rule.
-   type Location is private;
+   subtype Location is Util.Log.Locations.Line_Info;
+   use type Util.Log.Locations.Line_Info;
 
    --  Get the line number.
-   function Get_Line (Loc : in Location) return Natural;
-
-   --  Get the source file or URI.
-   function Get_Source (Loc : in Location) return String;
+   function Get_Line (Loc : in Location) return Natural renames Util.Log.Locations.Line;
 
    --  Get a printable representation of the source file name and line number.
    function To_String (Loc : in Location) return String;
-
-   --  Compare the two source location.
-   function "<" (Left, Right : in Location) return Boolean;
 
    --  The StyleSheet interface represents an abstract, base style sheet.
    --  See CSSOM: 5.1.1. The StyleSheet Interface
@@ -55,6 +49,9 @@ package CSS.Core is
 
    --  Get the parent CSS stylesheet if there is one or return null.
    function Get_Parent (Sheet : in Stylesheet) return Stylesheet_Access;
+
+   --  Get the source file information.
+   function Get_File_Info (Sheet : in Stylesheet) return Util.Log.Locations.File_Info_Access;
 
    --  Get the href attribute (stylesheet location).
    function Get_Href (Sheet : in Stylesheet) return String;
@@ -104,14 +101,10 @@ private
       Equivalent_Keys => Util.Strings.Equivalent_Keys);
    type String_Map_Access is access all String_Map.Map;
 
-   type Location is record
-      Sheet  : Stylesheet_Access;
-      Line   : Natural := 0;
-      Column : Natural := 0;
-   end record;
-
    type Stylesheet is new Ada.Finalization.Limited_Controlled with record
       Loc      : Location;
+      Parent   : Stylesheet_Access;
+      File     : Util.Log.Locations.File_Info_Access;
       Href     : Ada.Strings.Unbounded.Unbounded_String;
       Strings  : String_Map_Access := new String_Map.Map;
       Comments : CSS.Comments.CSSComment_List;
@@ -122,6 +115,7 @@ private
 
    type CSSRule is abstract new Util.Refs.Ref_Entity with record
       Loc      : Location;
+      Sheet    : Stylesheet_Access;
       Parent   : CSSRule_Access;
       Comments : CSS.Comments.CSSComment_List;
    end record;

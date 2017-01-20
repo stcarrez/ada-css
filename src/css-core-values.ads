@@ -79,6 +79,11 @@ package CSS.Core.Values is
    procedure Append (List  : in out Value_List;
                      Value : in Value_Type);
 
+   function Get_Count (List : in Value_List) return Natural;
+
+   function Get_Value (List : in Value_List;
+                       Pos  : in Positive) return Value_Type;
+
    --  Get a printable representation of the list.
    function To_String (List : in Value_List) return String;
 
@@ -149,6 +154,7 @@ private
    type Value_List is new Ada.Finalization.Controlled with record
       Next   : Value_List_Access;
       Values : Value_Array (1 .. 4);
+      Count  : Natural := 0;
    end record;
 
    --  Copy the value list chain if there is one.

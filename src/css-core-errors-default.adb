@@ -15,7 +15,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with Ada.Text_IO;
 package body CSS.Core.Errors.Default is
 
    --  ------------------------------
@@ -25,7 +24,7 @@ package body CSS.Core.Errors.Default is
    procedure Error (Handler : in out Error_Handler;
                     Loc     : in Location;
                     Message : in String) is
-      L : constant String := CSS.Core.To_String (Loc);
+      L : constant String := Util.Log.Locations.To_String (Loc);
    begin
       Handler.Error_Count := Handler.Error_Count + 1;
       if Ada.Text_IO.Is_Open (Handler.File) then
@@ -42,7 +41,7 @@ package body CSS.Core.Errors.Default is
    procedure Warning (Handler : in out Error_Handler;
                       Loc     : in Location;
                       Message : in String) is
-      L : constant String := CSS.Core.To_String (Loc);
+      L : constant String := Util.Log.Locations.To_String (Loc);
    begin
       Handler.Warning_Count := Handler.Warning_Count + 1;
       if Ada.Text_IO.Is_Open (Handler.File) then
