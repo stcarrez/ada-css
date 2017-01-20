@@ -20,7 +20,7 @@ with CSS.Core.Vectors;
 with CSS.Core.Styles;
 package body CSS.Printer is
 
-   procedure Do_Indent (Stream : in out Context_Type'Class) is
+   procedure Do_Indent (Stream : in out File_Type'Class) is
    begin
       if Stream.Need_Semi then
          Stream.Print (';');
@@ -35,7 +35,7 @@ package body CSS.Printer is
       end if;
    end Do_Indent;
 
-   procedure Print (Stream : in out Context_Type'Class;
+   procedure Print (Stream : in out File_Type'Class;
                     Prop   : in CSS.Core.Properties.CSSProperty) is
    begin
       Do_Indent (Stream);
@@ -48,7 +48,7 @@ package body CSS.Printer is
       Stream.Need_Semi := True;
    end Print;
 
-   procedure Print (Stream : in out Context_Type'Class;
+   procedure Print (Stream : in out File_Type'Class;
                     Rule   : in CSS.Core.Styles.CSSStyleRule_Access) is
 
       procedure Print (Prop : in CSS.Core.Properties.CSSProperty) is
@@ -83,7 +83,7 @@ package body CSS.Printer is
       end if;
    end Print;
 
-   procedure Print (Stream : in out Context_Type'Class;
+   procedure Print (Stream : in out File_Type'Class;
                     Sheet  : in CSS.Core.Sheets.CSSStylesheet) is
 
       procedure Process (Pos : in CSS.Core.Vectors.Cursor) is
