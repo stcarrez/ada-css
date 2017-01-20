@@ -49,11 +49,19 @@ spaces :
   ;
 
 property_definition :
-    R_PROPERTY spaces R_DEFINE spaces rule_definition
+    property_names spaces R_DEFINE spaces rule_definition
        { Create_Property ($1, $5); }
   |
-    R_PROPERTY error
+    property_names error
        { Error ($1.Line, $1.Column, "Error in property definition"); }
+  ;
+
+property_names :
+     property_names spaces R_PROPERTY
+        { Create_Names ($1, $3); $$ := $1; }
+  |
+     R_PROPERTY
+        { $$ := $1; $$.Names.Append (Ada.Strings.Unbounded.To_String ($1.Token)); }
   ;
 
 named_definition :
