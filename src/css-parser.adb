@@ -15,8 +15,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-pragma Ada_2012;
-with Ada.Text_IO;
+
 with Ada.Unchecked_Deallocation;
 with Util.Log.Loggers;
 with CSS.Parser.Parser;
@@ -225,7 +224,7 @@ package body CSS.Parser is
    begin
       Set_Type (Into, TYPE_STYLE, Prop.Line, Prop.Column);
       Into.Node := new Parser_Node_Type '(Kind => TYPE_STYLE, Ref_Counter => ONE, Rule => null);
-      Into.Node.Rule := new CSS.Core.Styles.CSSStyleRule;
+      Into.Node.Rule := Document.Create_Rule;
       Append_Property (Into.Node.Rule.Style, Document, Prop);
    end Set_Property_List;
 
@@ -264,10 +263,10 @@ package body CSS.Parser is
       else
          case Prop.Node.Value.Kind is
             when TYPE_VALUE =>
-               Into.Append (Name, Prop.Node.Value.V, 0);
+               Into.Append (Name, Prop.Node.Value.V, Prop.Line, Prop.Column);
 
             when TYPE_PROPERTY_LIST =>
-               Into.Append (Name, Prop.Node.Value.Values, 0);
+               Into.Append (Name, Prop.Node.Value.Values, Prop.Line, Prop.Column);
 
             when others =>
                Log.Error ("Invalid property value");
@@ -281,7 +280,7 @@ package body CSS.Parser is
                               Prop     : in YYstype) is
    begin
       if Into = null then
-         Into := new CSS.Core.Styles.CSSStyleRule;
+         Into := Document.Create_Rule;
          Document.Append (Into, Prop.Line, Prop.Column);
       end if;
       Append_Property (Into.Style, Document, Prop);
@@ -310,7 +309,7 @@ package body CSS.Parser is
       use type CSS.Core.Styles.CSSStyleRule_Access;
    begin
       if Into = null then
-         Into := new CSS.Core.Styles.CSSStyleRule;
+         Into := Document.Create_Rule;
          Document.Append (Into, Selector.Line, Selector.Column);
       end if;
       CSS.Core.Selectors.Append (Into.Selectors, Selector.Node.Selector);
@@ -466,7 +465,7 @@ package body CSS.Parser is
                            Name   : in YYstype;
                            Params : in YYstype) is
    begin
-      null;
+      Log.Debug ("Set function {0}", To_String (Name.Node.Str_Value));
    end Set_Function;
 
    procedure Error (Line    : in Natural;
