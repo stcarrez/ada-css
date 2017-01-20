@@ -16,7 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 private with Ada.Finalization;
-private with Util.Log.Locations;
+with Util.Log.Locations;
 with CSS.Core.Values;
 
 package CSS.Core.Properties is
@@ -52,17 +52,23 @@ package CSS.Core.Properties is
    --  the same properties in the same order.
    function "=" (Left, Right : in CSSProperty_List) return Boolean;
 
-   --  Append the CSS property with the value to the list.
-   procedure Append (List  : in out CSSProperty_List;
-                     Name  : in CSSProperty_Name;
-                     Value : in Value_List;
-                     Line  : in Natural := 0);
+   --  Set the file information associated with the property list.
+   procedure Set_File_Info (Into : in out CSSProperty_List;
+                            File : in Util.Log.Locations.File_Info_Access);
 
    --  Append the CSS property with the value to the list.
-   procedure Append (List  : in out CSSProperty_List;
-                     Name  : in CSSProperty_Name;
-                     Value : in Value_Type;
-                     Line  : in Natural := 0);
+   procedure Append (List   : in out CSSProperty_List;
+                     Name   : in CSSProperty_Name;
+                     Value  : in Value_List;
+                     Line   : in Natural := 0;
+                     Column : in Natural := 0);
+
+   --  Append the CSS property with the value to the list.
+   procedure Append (List   : in out CSSProperty_List;
+                     Name   : in CSSProperty_Name;
+                     Value  : in Value_Type;
+                     Line   : in Natural := 0;
+                     Column : in Natural := 0);
 
    --  Iterate over the list of properties and call the <tt>Process</tt> procedure.
    procedure Iterate (List    : in CSSProperty_List;
@@ -73,8 +79,8 @@ private
    type CSSInternal_Property is record
       Name     : CSSProperty_Name;
       Value    : Value_List;
-      File     : Util.Log.Locations.File_Info_Access;
       Line     : Natural;
+      Column   : Natural;
    end record;
 
    type CSSInternal_Property_Array is array (Positive range <>) of CSSInternal_Property;
@@ -82,6 +88,7 @@ private
 
    type CSSProperty_List is new Ada.Finalization.Limited_Controlled with record
       Parent     : CSSRule_Access;
+      File       : Util.Log.Locations.File_Info_Access;
       Properties : CSSInternal_Property_Array_Access;
    end record;
 
