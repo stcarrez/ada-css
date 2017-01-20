@@ -15,7 +15,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-pragma Ada_2012;
+
 with Ada.Unchecked_Deallocation;
 package body CSS.Core.Properties is
 
@@ -39,7 +39,7 @@ package body CSS.Core.Properties is
                   Result.Name  := P.Name;
                   Result.Value := P.Value;
                   Result.Rule  := List.Parent;
-                  Result.Location := Util.Log.Locations.Create_Line_Info (P.File, P.Line);
+                  Result.Location := Util.Log.Locations.Create_Line_Info (List.File, P.Line, P.Column);
                end return;
             end if;
          end loop;
@@ -87,12 +87,22 @@ package body CSS.Core.Properties is
    end "=";
 
    --  ------------------------------
+   --  Set the file information associated with the property list.
+   --  ------------------------------
+   procedure Set_File_Info (Into : in out CSSProperty_List;
+                            File : in Util.Log.Locations.File_Info_Access) is
+   begin
+      Into.File := File;
+   end Set_File_Info;
+
+   --  ------------------------------
    --  Append the CSS property with the value to the list.
    --  ------------------------------
-   procedure Append (List  : in out CSSProperty_List;
-                     Name  : in CSSProperty_Name;
-                     Value : in Value_List;
-                     Line  : in Natural := 0) is
+   procedure Append (List   : in out CSSProperty_List;
+                     Name   : in CSSProperty_Name;
+                     Value  : in Value_List;
+                     Line   : in Natural := 0;
+                     Column : in Natural := 0) is
       New_List : CSSInternal_Property_Array_Access;
    begin
       if List.Properties = null then
@@ -101,9 +111,10 @@ package body CSS.Core.Properties is
          New_List := new CSSInternal_Property_Array (1 .. List.Properties'Length + 1);
          New_List (List.Properties'Range) := List.Properties.all;
       end if;
-      New_List (New_List'Last).Name  := Name;
-      New_List (New_List'Last).Value := Value;
-      New_List (New_List'Last).Line  := Line;
+      New_List (New_List'Last).Name   := Name;
+      New_List (New_List'Last).Value  := Value;
+      New_List (New_List'Last).Line   := Line;
+      New_List (New_List'Last).Column := Column;
       Free (List.Properties);
       List.Properties := New_List;
    end Append;
@@ -111,10 +122,11 @@ package body CSS.Core.Properties is
    --  ------------------------------
    --  Append the CSS property with the value to the list.
    --  ------------------------------
-   procedure Append (List  : in out CSSProperty_List;
-                     Name  : in CSSProperty_Name;
-                     Value : in Value_Type;
-                     Line  : in Natural := 0) is
+   procedure Append (List   : in out CSSProperty_List;
+                     Name   : in CSSProperty_Name;
+                     Value  : in Value_Type;
+                     Line   : in Natural := 0;
+                     Column : in Natural := 0) is
       New_List : CSSInternal_Property_Array_Access;
    begin
       if List.Properties = null then
@@ -123,9 +135,10 @@ package body CSS.Core.Properties is
          New_List := new CSSInternal_Property_Array (1 .. List.Properties'Length + 1);
          New_List (List.Properties'Range) := List.Properties.all;
       end if;
-      New_List (New_List'Last).Name  := Name;
       New_List (New_List'Last).Value.Append (Value);
-      New_List (New_List'Last).Line  := Line;
+      New_List (New_List'Last).Name   := Name;
+      New_List (New_List'Last).Line   := Line;
+      New_List (New_List'Last).Column := Column;
       Free (List.Properties);
       List.Properties := New_List;
    end Append;
@@ -143,7 +156,7 @@ package body CSS.Core.Properties is
          for P of List.Properties.all loop
             Prop.Name  := P.Name;
             Prop.Value := P.Value;
-            Prop.Location := Util.Log.Locations.Create_Line_Info (P.File, P.Line);
+            Prop.Location := Util.Log.Locations.Create_Line_Info (List.File, P.Line, P.Column);
             Process (Prop);
          end loop;
       end if;
