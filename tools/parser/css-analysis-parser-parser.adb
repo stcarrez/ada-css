@@ -319,65 +319,79 @@ yy.value_stack(yy.tos-1).Line,
 yy.value_stack(yy.tos-1).Column, "Error in property definition"); 
 
 when 11 => -- #line 61
+ Create_Names (
+yy.value_stack(yy.tos-2), 
+yy.value_stack(yy.tos)); 
+yyval := 
+yy.value_stack(yy.tos-2); 
+
+when 12 => -- #line 64
+ 
+yyval := 
+yy.value_stack(yy.tos); 
+yyval.Names.Append (Ada.Strings.Unbounded.To_String (
+yy.value_stack(yy.tos).Token)); 
+
+when 13 => -- #line 69
  Create_Definition (
 yy.value_stack(yy.tos-4), 
 yy.value_stack(yy.tos)); 
 
-when 12 => -- #line 64
+when 14 => -- #line 72
  Error (
 yy.value_stack(yy.tos-1).Line, 
 yy.value_stack(yy.tos-1).Column, "Error in named definition"); 
 
-when 14 => -- #line 73
+when 16 => -- #line 81
  Append_Group (
 yyval, 
 yy.value_stack(yy.tos-3), 
 yy.value_stack(yy.tos), Rules.GROUP_PARAMS); 
 
-when 16 => -- #line 80
+when 18 => -- #line 88
  Append_Group (
 yyval, 
 yy.value_stack(yy.tos-3), 
 yy.value_stack(yy.tos), Rules.GROUP_DBAR); 
 
-when 18 => -- #line 87
+when 20 => -- #line 95
  Append_Group (
 yyval, 
 yy.value_stack(yy.tos-3), 
 yy.value_stack(yy.tos), Rules.GROUP_AND); 
 
-when 20 => -- #line 94
+when 22 => -- #line 102
  Append_Group (
 yyval, 
 yy.value_stack(yy.tos-3), 
 yy.value_stack(yy.tos), Rules.GROUP_ONLY_ONE); 
 
-when 22 => -- #line 101
+when 24 => -- #line 109
  Rules.Append (
 yy.value_stack(yy.tos-2).Rule.all, 
 yy.value_stack(yy.tos-1).Rule); 
 yyval := 
 yy.value_stack(yy.tos-2); 
 
-when 24 => -- #line 108
+when 26 => -- #line 116
  
 yy.value_stack(yy.tos-2).Rule.Set_Repeat (1, Natural'Last); 
 yyval := 
 yy.value_stack(yy.tos-2); 
 
-when 25 => -- #line 111
+when 27 => -- #line 119
  
 yy.value_stack(yy.tos-2).Rule.Set_Repeat (0, 1); 
 yyval := 
 yy.value_stack(yy.tos-2); 
 
-when 26 => -- #line 114
+when 28 => -- #line 122
  
 yy.value_stack(yy.tos-2).Rule.Set_Repeat (0, Natural'Last); 
 yyval := 
 yy.value_stack(yy.tos-2); 
 
-when 27 => -- #line 117
+when 29 => -- #line 125
  
 yy.value_stack(yy.tos-2).Rule.Set_Repeat (
 yy.value_stack(yy.tos).Min_Repeat, 
@@ -385,7 +399,7 @@ yy.value_stack(yy.tos).Max_Repeat, True);
 yyval := 
 yy.value_stack(yy.tos-2); 
 
-when 28 => -- #line 120
+when 30 => -- #line 128
  
 yy.value_stack(yy.tos-1).Rule.Set_Repeat (
 yy.value_stack(yy.tos).Min_Repeat, 
@@ -393,53 +407,53 @@ yy.value_stack(yy.tos).Max_Repeat);
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 30 => -- #line 127
+when 32 => -- #line 135
  Create_Function (
 yyval, 
 yy.value_stack(yy.tos-5), 
 yy.value_stack(yy.tos-3)); 
 
-when 31 => -- #line 130
+when 33 => -- #line 138
  Create_Identifier (
 yyval, 
 yy.value_stack(yy.tos)); 
 
-when 32 => -- #line 133
+when 34 => -- #line 141
  Create_Type_Or_Reference (
 yyval, 
 yy.value_stack(yy.tos)); 
 
-when 33 => -- #line 138
+when 35 => -- #line 146
  
 yyval := 
 yy.value_stack(yy.tos-2); 
 
-when 34 => -- #line 141
+when 36 => -- #line 149
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 35 => -- #line 146
+when 37 => -- #line 154
  
 yyval.Min_Repeat := Get_Value (
 yy.value_stack(yy.tos-4)); 
 yyval.Max_Repeat := Get_Value (
 yy.value_stack(yy.tos-2)); 
 
-when 36 => -- #line 149
+when 38 => -- #line 157
  
 yyval.Min_Repeat := Get_Value (
 yy.value_stack(yy.tos-3)); 
 yyval.Max_Repeat := Natural'Last; 
 
-when 37 => -- #line 152
+when 39 => -- #line 160
  
 yyval.Min_Repeat := Get_Value (
 yy.value_stack(yy.tos-2)); 
 yyval.Max_Repeat := 
 yyval.Min_Repeat; 
 
-when 38 => -- #line 155
+when 40 => -- #line 163
  
 yyval.Min_Repeat := 1; 
 yyval.Max_Repeat := 1; 
