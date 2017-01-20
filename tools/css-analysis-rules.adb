@@ -15,19 +15,12 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with Ada.Finalization;
-with Ada.Text_IO;
-with Ada.Containers.Indefinite_Ordered_Maps;
+
 with Util.Log.Loggers;
 with Util.Strings;
-with CSS.Core.Values;
-
 package body CSS.Analysis.Rules is
 
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("CSS.Analysis.Rules");
-
-   procedure Print (Rule : in Rule_Type'Class;
-                    Indent : in Natural := 0);
 
    --  ------------------------------
    --  Get the source location of the rule definition.
@@ -50,7 +43,9 @@ package body CSS.Analysis.Rules is
       Rule.Comma_Sep  := Sep;
    end Set_Repeat;
 
+   --  ------------------------------
    --  Append the <tt>New_Rule</tt> at end of the rule's list.
+   --  ------------------------------
    procedure Append (Rule     : in out Rule_Type;
                      New_Rule : in Rule_Type_Access) is
       Tail : Rule_Type_Access := Rule.Next;
@@ -106,9 +101,6 @@ package body CSS.Analysis.Rules is
       else
          Log.Info ("Adding property '{0}'", Name);
          Repository.Properties.Insert (Name, Rule);
-         Ada.Text_IO.Put ("Property: " & Name & " := ");
-         Print (Rule.all);
-         Ada.Text_IO.New_Line;
       end if;
    end Create_Property;
 
@@ -120,13 +112,11 @@ package body CSS.Analysis.Rules is
                                 Rule       : in Rule_Type_Access) is
    begin
       if Repository.Rules.Contains (Name) then
-         Log.Error ("Rule '{0}' is already defined", Name);
+         Log.Error ("{0}: Rule '{1}' is already defined",
+                    CSS.Core.To_String (Rule.Loc), Name);
       else
          Log.Info ("Adding rule '{0}'", Name);
          Repository.Rules.Insert (Name, Rule);
-         Ada.Text_IO.Put ("Definition: " & Name & " = ");
-         Print (Rule.all);
-         Ada.Text_IO.New_Line;
       end if;
    end Create_Definition;
 
@@ -141,11 +131,13 @@ package body CSS.Analysis.Rules is
       return Rule;
    end Create_Identifier;
 
-   --  Create a rule that describes either a definition of a pre-defined type.
+   --  ------------------------------
+   --  Create a rule that describes either a definition or a pre-defined type.
+   --  ------------------------------
    function Create_Definition (Repository : in Repository_Type;
                                Name       : in String;
                                Loc        : in Location) return Rule_Type_Access is
-      Pos  : Rule_Maps.Cursor := Repository.Types.Find (Name);
+      Pos  : constant Rule_Maps.Cursor := Repository.Types.Find (Name);
    begin
       if Rule_Maps.Has_Element (Pos) then
          Log.Debug ("Create rule type '{0}'", Name);
@@ -212,8 +204,9 @@ package body CSS.Analysis.Rules is
       return Repo'Access;
    end Rule_Repository;
 
-   procedure Print (Rule : in Rule_Type'Class;
-                    Indent : in Natural := 0) is
+   --  Print the rule definition to the print stream.
+   procedure Print (Stream : in out CSS.Printer.File_Type'Class;
+                    Rule   : in Rule_Type'Class) is
       List : Rule_Type_Access;
       Kind : Group_Type;
    begin
@@ -221,28 +214,28 @@ package body CSS.Analysis.Rules is
          List := Group_Rule_Type'Class (Rule).List;
          Kind := Group_Rule_Type'Class (Rule).Kind;
          if Rule in Function_Rule_Type'Class then
-            Ada.Text_IO.Put (Function_Rule_Type (Rule).Ident);
+            Stream.Print (Function_Rule_Type (Rule).Ident);
          end if;
          if Kind = GROUP_PARAMS then
-            Ada.Text_IO.Put ("(");
+            Stream.Print ("(");
          else
-            Ada.Text_IO.Put ("[");
+            Stream.Print ("[");
          end if;
          while List /= null loop
-            Print (List.all, Indent);
+            Print (Stream, List.all);
             if List.Next /= null then
                case Kind is
                   when GROUP_ONLY_ONE =>
-                     Ada.Text_IO.Put (" | ");
+                     Stream.Print (" | ");
 
                   when GROUP_DBAR =>
-                     Ada.Text_IO.Put (" || ");
+                     Stream.Print (" || ");
 
                   when GROUP_AND =>
-                     Ada.Text_IO.Put (" && ");
+                     Stream.Print (" && ");
 
                   when GROUP_PARAMS =>
-                     Ada.Text_IO.Put (", ");
+                     Stream.Print (", ");
 
                end case;
             end if;
@@ -250,42 +243,42 @@ package body CSS.Analysis.Rules is
          end loop;
       end if;
       if Rule in Ident_Rule_Type'Class then
-         Ada.Text_IO.Put (Ident_Rule_Type (Rule).Ident);
+         Stream.Print (Ident_Rule_Type (Rule).Ident);
       end if;
       if Rule in Group_Rule_Type'Class then
          if Kind = GROUP_PARAMS then
-            Ada.Text_IO.Put (")");
+            Stream.Print (")");
          else
-            Ada.Text_IO.Put ("]");
+            Stream.Print ("]");
          end if;
       end if;
       if Rule.Comma_Sep then
-         Ada.Text_IO.Put ("#");
+         Stream.Print ("#");
          if Rule.Min_Repeat /= 1 and Rule.Max_Repeat /= 1 then
-         Ada.Text_IO.Put ("{");
-         Ada.Text_IO.Put (Util.Strings.Image (Rule.Min_Repeat));
-         if Rule.Min_Repeat /= Rule.Max_Repeat then
-            Ada.Text_IO.Put (",");
-            Ada.Text_IO.Put (Util.Strings.Image (Rule.Max_Repeat));
-         end if;
-         Ada.Text_IO.Put ("}");
+            Stream.Print ("{");
+            Stream.Print (Util.Strings.Image (Rule.Min_Repeat));
+            if Rule.Min_Repeat /= Rule.Max_Repeat then
+               Stream.Print (",");
+               Stream.Print (Util.Strings.Image (Rule.Max_Repeat));
+            end if;
+            Stream.Print ("}");
          end if;
       elsif Rule.Min_Repeat = 0 and Rule.Max_Repeat = 1 then
-         Ada.Text_IO.Put ("?");
+         Stream.Print ("?");
       elsif Rule.Min_Repeat = 1 and Rule.Max_Repeat = Natural'Last then
-         Ada.Text_IO.Put ("+");
+         Stream.Print ("+");
       elsif Rule.Min_Repeat = 0 and Rule.Max_Repeat = Natural'Last then
-         Ada.Text_IO.Put ("*");
+         Stream.Print ("*");
       elsif Rule.Min_Repeat /= 1 and Rule.Max_Repeat /= 1 then
-         Ada.Text_IO.Put ("{");
-         Ada.Text_IO.Put (Util.Strings.Image (Rule.Min_Repeat));
+         Stream.Print ("{");
+         Stream.Print (Util.Strings.Image (Rule.Min_Repeat));
          if Rule.Min_Repeat /= Rule.Max_Repeat then
-            Ada.Text_IO.Put (",");
+            Stream.Print (",");
             if Rule.Max_Repeat /= Natural'Last then
-               Ada.Text_IO.Put (Util.Strings.Image (Rule.Max_Repeat));
+               Stream.Print (Util.Strings.Image (Rule.Max_Repeat));
             end if;
          end if;
-         Ada.Text_IO.Put ("}");
+         Stream.Print ("}");
       end if;
    end Print;
 
