@@ -96,7 +96,9 @@ package body CSS.Analysis.Parser is
    procedure Create_Property (Name : in YYstype;
                               Rule : in YYstype) is
    begin
-      Rules.Rule_Repository.Create_Property (To_String (Name.Token), Rule.Rule);
+      for Prop_Name of Name.Names loop
+         Rules.Rule_Repository.Create_Property (Prop_Name, Rule.Rule);
+      end loop;
    end Create_Property;
 
    --  ------------------------------
@@ -113,7 +115,8 @@ package body CSS.Analysis.Parser is
    --  ------------------------------
    procedure Create_Type_Or_Reference (Into : out YYstype;
                                        Name : in YYstype) is
-      Loc : CSS.Analysis.Rules.Location;
+      Loc : constant Rules.Location
+         := Util.Log.Locations.Create_Line_Info (Current_File, Name.Line, Name.Column);
    begin
       Into := Name;
       Into.Rule := Rules.Rule_Repository.Create_Definition (To_String (Name.Token), Loc);
@@ -143,6 +146,13 @@ package body CSS.Analysis.Parser is
       Into := Name;
       Into.Rule := Rules.Create_Function (To_String (Name.Token), Params.Rule, Loc);
    end Create_Function;
+
+   --  Create a list of property names.
+   procedure Create_Names (List : in out YYstype;
+                           Name : in YYstype) is
+   begin
+      List.Names.Append (To_String (Name.Token));
+   end Create_Names;
 
    procedure Append_Group (Into   : out YYstype;
                            Group  : in YYstype;
