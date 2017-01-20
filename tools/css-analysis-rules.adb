@@ -282,6 +282,21 @@ package body CSS.Analysis.Rules is
             end loop;
             return True;
          end;
+      elsif Rule.Kind = GROUP_AND then
+         declare
+            L : Rule_Type_Access := Rule.List;
+         begin
+            for I in 1 .. Count loop
+               if L = null then
+                  return False;
+               end if;
+               if not L.Match (Value.Get_Value (I)) then
+                  return False;
+               end if;
+               L := L.Next;
+            end loop;
+            return True;
+         end;
       end if;
       return False;
    end Match;
@@ -437,7 +452,13 @@ package body CSS.Analysis.Rules is
          if R = null then
             Report.Warning (Prop.Location, "Invalid property: " & Prop.Name.all);
          elsif not R.Match (Prop.Value) then
-            Report.Warning (Prop.Location, "Invalid values");
+            if Prop.Value.Get_Count = 1 then
+               Report.Warning (Prop.Location, "Invalid value '" &
+                               Prop.Value.To_String & "' for property " & Prop.Name.all);
+            else
+               Report.Warning (Prop.Location, "Invalid values '" &
+                               Prop.Value.To_String & "' for property " & Prop.Name.all);
+            end if;
          end if;
       end Process;
    begin
