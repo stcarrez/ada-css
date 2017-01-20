@@ -20,7 +20,7 @@ with CSS.Core.Styles;
 with CSS.Core.Sheets;
 package CSS.Printer is
 
-   type Context_Type is abstract tagged limited record
+   type File_Type is abstract tagged limited record
       Indent       : Natural := 0;
       Indent_Level : Natural := 0;
       Compress     : Boolean := False;
@@ -28,23 +28,23 @@ package CSS.Printer is
       Need_Semi    : Boolean := False;
    end record;
 
-   procedure New_Line (Stream : in out Context_Type) is abstract;
+   procedure New_Line (Stream : in out File_Type) is abstract;
 
-   procedure Print (Stream  : in out Context_Type;
+   procedure Print (Stream  : in out File_Type;
                     Content : in String) is abstract;
 
-   procedure Print (Stream  : in out Context_Type;
+   procedure Print (Stream  : in out File_Type;
                     Content : in Character) is abstract;
 
-   procedure Print (Stream : in out Context_Type'Class;
+   procedure Print (Stream : in out File_Type'Class;
                     Rule   : in CSS.Core.Styles.CSSStyleRule_Access);
 
-   procedure Print (Stream : in out Context_Type'Class;
+   procedure Print (Stream : in out File_Type'Class;
                     Prop   : in CSS.Core.Properties.CSSProperty);
 
-   procedure Print (Stream : in out Context_Type'Class;
+   procedure Print (Stream : in out File_Type'Class;
                     Sheet  : in CSS.Core.Sheets.CSSStylesheet);
 
-   procedure Do_Indent (Stream : in out Context_Type'Class);
+   procedure Do_Indent (Stream : in out File_Type'Class);
 
 end CSS.Printer;
