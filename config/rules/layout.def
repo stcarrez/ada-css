@@ -1,0 +1,14 @@
+# https://developer.mozilla.org/en-US/docs/Web/CSS/float
+
+float := left | right | none | inline-start | inline-end
+clear := none | left | right | both | inline-start | inline-end
+
+left
+right
+bottom
+top := <length> | <percentage> | auto
+
+position := static | relative | absolute | sticky | fixed
+
+z-index := auto | <integer>
+

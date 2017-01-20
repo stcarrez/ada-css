@@ -1,0 +1,39 @@
+# https://developer.mozilla.org/en/docs/Web/CSS/border
+
+<br-width> = <length> | thin | medium | thick
+<br-style> = none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset
+
+border-width := <br-width>{1,4}
+border-style := <br-style>{1,4}
+border-color := <color>{1,4}
+border-radius := <length-percentage>{1,4} [ / <length-percentage>{1,4} ]?
+border-image-width := [ <length-percentage> | <number> | auto ]{1,4}
+border-image-repeat := [ stretch | repeat | round | space ]{1,2}
+
+border
+border-bottom
+border-top
+border-left
+border-right := <br-width> || <br-style> || <color>
+
+border-bottom-left-radius
+border-bottom-right-radius
+border-top-left-radius
+border-top-right-radius := <length-percentage>{1,2}
+
+border-bottom-color
+border-top-color
+border-left-color
+border-right-color := <color>
+
+border-bottom-width
+border-top-width
+border-left-width
+border-right-width := <br-width>
+
+border-bottom-style
+border-top-style
+border-left-style
+border-right-style := <br-style>
+
+
