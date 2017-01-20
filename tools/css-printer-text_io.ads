@@ -15,24 +15,22 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with CSS.Core.Properties;
-with CSS.Core.Styles;
 with Ada.Text_IO;
 package CSS.Printer.Text_IO is
 
-   type Context_Type is new CSS.Printer.Context_Type with record
+   type File_Type is new CSS.Printer.File_Type with record
       File : Ada.Text_IO.File_Type;
    end record;
 
    overriding
-   procedure New_Line (Stream : in out Context_Type);
+   procedure New_Line (Stream : in out File_Type);
 
    overriding
-   procedure Print (Stream  : in out Context_Type;
+   procedure Print (Stream  : in out File_Type;
                     Content : in String);
 
    overriding
-   procedure Print (Stream  : in out Context_Type;
+   procedure Print (Stream  : in out File_Type;
                     Content : in Character);
 
 end CSS.Printer.Text_IO;
