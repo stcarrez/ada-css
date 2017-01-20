@@ -19,6 +19,7 @@ with Ada.Finalization;
 with Ada.Containers.Indefinite_Ordered_Maps;
 with Util.Log.Locations;
 with CSS.Core.Values;
+with CSS.Printer;
 
 --  == Analysis of CSS Rules ==
 --  The <tt>CSS.Analysis.Rules</tt> package defines the rules for the verification of
@@ -27,7 +28,7 @@ with CSS.Core.Values;
 --  define what is valid for a given property value.
 package CSS.Analysis.Rules is
 
-   subtype Location is Util.Log.Locations.Line_Info;
+   subtype Location is CSS.Core.Location;
 
    type Rule_Type is limited new Ada.Finalization.Limited_Controlled with private;
    type Rule_Type_Access is access all Rule_Type'Class;
@@ -48,6 +49,10 @@ package CSS.Analysis.Rules is
    --  Check if the value matches the rule.
    function Match (Rule  : in Rule_Type;
                    Value : in CSS.Core.Values.Value_Type) return Boolean;
+
+   --  Print the rule definition to the print stream.
+   procedure Print (Stream : in out CSS.Printer.File_Type'Class;
+                    Rule   : in Rule_Type'Class);
 
    --  Rule that describes an identifier such as 'left' or 'right'.
    type Ident_Rule_Type (Len : Natural) is new Rule_Type with private;
@@ -80,7 +85,7 @@ package CSS.Analysis.Rules is
    function Create_Identifier (Name : in String;
                                Loc  : in Location) return Rule_Type_Access;
 
-   --  Create a rule that describes either a definition of a pre-defined type.
+   --  Create a rule that describes either a definition or a pre-defined type.
    function Create_Definition (Repository : in Repository_Type;
                                Name       : in String;
                                Loc        : in Location) return Rule_Type_Access;
