@@ -16,6 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with CSS.Core.Refs;
+with Util.Log.Locations;
 package body CSS.Core.Sheets is
 
    --  ------------------------------
@@ -23,7 +24,9 @@ package body CSS.Core.Sheets is
    --  ------------------------------
    function Create_Rule (Document : in CSSStyleSheet) return Styles.CSSStyleRule_Access is
       Result : constant Styles.CSSStyleRule_Access := new Styles.CSSStyleRule;
+      File   : constant Util.Log.Locations.File_Info_Access := Document.File;
    begin
+      Result.Style.Set_File_Info (File);
       return Result;
    end Create_Rule;
 
