@@ -139,6 +139,9 @@ single_component :
   |
     R_NAME
        { Create_Type_Or_Reference ($$, $1); }
+  |
+    R_NUM
+       { Create_Identifier ($$, $1); }
   ;
 
 group_definition :
