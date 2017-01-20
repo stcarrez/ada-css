@@ -31,7 +31,10 @@ with Ada.Finalization;
 package CSS.Core.Values is
 
    --  The optional value token unit.  For example, 12px has the unit <tt>UNIT_PX</tt>.
-   type Unit_Type is (UNIT_NONE, UNIT_PX, UNIT_EX,
+   type Unit_Type is (UNIT_NONE,
+                      UNIT_PERCENT,
+                      UNIT_PX,
+                      UNIT_EX,
                       UNIT_EM,
                       UNIT_REM,       --  relative font-size of the root element
                       UNIT_LH,        --  relative to line height of the element
@@ -46,6 +49,10 @@ package CSS.Core.Values is
                       UNIT_CM, UNIT_MM, UNIT_IN, UNIT_PI, UNIT_PC, UNIT_PT,
                       UNIT_DEG, UNIT_RAD, UNIT_GRAD,
                       UNIT_MS, UNIT_SEC, UNIT_HZ, UNIT_KHZ);
+
+   subtype Length_Unit_Type is Unit_Type range UNIT_PX .. UNIT_PT;
+   subtype Time_Unit_Type is Unit_Type range UNIT_MS .. UNIT_SEC;
+   subtype Angle_Unit_Type is Unit_Type range UNIT_DEG .. UNIT_GRAD;
 
    --  The type of the value.
    type Value_Kind is (VALUE_NULL,
