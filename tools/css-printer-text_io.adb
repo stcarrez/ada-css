@@ -15,26 +15,23 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with CSS.Core.Properties;
-with CSS.Core.Styles;
-with Ada.Text_IO;
 package body CSS.Printer.Text_IO is
 
    overriding
-   procedure New_Line (Stream : in out Context_Type) is
+   procedure New_Line (Stream : in out File_Type) is
    begin
       Ada.Text_IO.New_Line (Stream.File);
    end New_Line;
 
    overriding
-   procedure Print (Stream  : in out Context_Type;
+   procedure Print (Stream  : in out File_Type;
                     Content : in String) is
    begin
       Ada.Text_IO.Put (Stream.File, Content);
    end Print;
 
    overriding
-   procedure Print (Stream  : in out Context_Type;
+   procedure Print (Stream  : in out File_Type;
                     Content : in Character) is
    begin
       Ada.Text_IO.Put (Stream.File, Content);
