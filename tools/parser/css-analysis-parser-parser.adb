@@ -423,37 +423,42 @@ when 34 => -- #line 141
 yyval, 
 yy.value_stack(yy.tos)); 
 
-when 35 => -- #line 146
- 
-yyval := 
-yy.value_stack(yy.tos-2); 
+when 35 => -- #line 144
+ Create_Identifier (
+yyval, 
+yy.value_stack(yy.tos)); 
 
 when 36 => -- #line 149
  
 yyval := 
+yy.value_stack(yy.tos-2); 
+
+when 37 => -- #line 152
+ 
+yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 37 => -- #line 154
+when 38 => -- #line 157
  
 yyval.Min_Repeat := Get_Value (
 yy.value_stack(yy.tos-4)); 
 yyval.Max_Repeat := Get_Value (
 yy.value_stack(yy.tos-2)); 
 
-when 38 => -- #line 157
+when 39 => -- #line 160
  
 yyval.Min_Repeat := Get_Value (
 yy.value_stack(yy.tos-3)); 
 yyval.Max_Repeat := Natural'Last; 
 
-when 39 => -- #line 160
+when 40 => -- #line 163
  
 yyval.Min_Repeat := Get_Value (
 yy.value_stack(yy.tos-2)); 
 yyval.Max_Repeat := 
 yyval.Min_Repeat; 
 
-when 40 => -- #line 163
+when 41 => -- #line 166
  
 yyval.Min_Repeat := 1; 
 yyval.Max_Repeat := 1; 
