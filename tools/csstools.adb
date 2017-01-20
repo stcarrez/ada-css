@@ -160,7 +160,7 @@ begin
       CSS.Analysis.Parser.Load (To_String (Config_Path));
    end if;
    if Length (Config_Dir) > 0 then
-      CSS.Analysis.Parser.Load_All (To_String (Config_Dir));
+      CSS.Analysis.Parser.Load_All (To_String (Config_Dir) & "/rules");
    end if;
 
    if Length (Output_Path) > 0 then
