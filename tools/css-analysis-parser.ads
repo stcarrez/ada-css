@@ -16,6 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Util.Log.Loggers;
+with Util.Strings.Vectors;
 with Ada.Strings.Unbounded;
 with CSS.Analysis.Rules;
 
@@ -52,6 +53,7 @@ private
       Min_Repeat : Natural := 0;
       Max_Repeat : Natural := 0;
       Rule       : CSS.Analysis.Rules.Rule_Type_Access;
+      Names      : Util.Strings.Vectors.Vector;
    end record;
 
    --  Get the value token as an integer.
@@ -83,6 +85,10 @@ private
    procedure Create_Function (Into   : out YYstype;
                               Name   : in YYstype;
                               Params : in YYstype);
+
+   --  Create a list of property names.
+   procedure Create_Names (List : in out YYstype;
+                           Name : in YYstype);
 
    --  Append or make a group of rules.
    procedure Append_Group (Into   : out YYstype;
