@@ -30,16 +30,12 @@ with CSS.Parser.Lexer_dfa;
 with CSS.Analysis.Parser.Lexer_dfa;
 with CSS.Core;
 with CSS.Core.Sheets;
-with CSS.Core.Styles;
 with CSS.Core.Selectors;
-with CSS.Core.Properties;
 with CSS.Tools.Messages;
-with CSS.Core.Compare;
 with CSS.Core.Sets;
 with CSS.Analysis.Duplicates;
 with CSS.Printer.Text_IO;
 with CSS.Analysis.Parser;
-with System;
 procedure CssTools is
 
    use Ada.Strings.Unbounded;
@@ -56,7 +52,7 @@ procedure CssTools is
    Err_Handler : aliased CSS.Tools.Messages.Message_List;
    Output_Path : Unbounded_String;
    Config_Dir  : Unbounded_String;
-   Output      : CSS.Printer.Text_IO.Context_Type;
+   Output      : CSS.Printer.Text_IO.File_Type;
    Dup_Rules   : CSS.Core.Sets.Set;
 
    --  ------------------------------
