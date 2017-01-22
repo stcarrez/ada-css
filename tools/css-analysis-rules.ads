@@ -60,7 +60,8 @@ package CSS.Analysis.Rules is
 
    --  Check if the value matches the identifier defined by the rule.
    function Match (Rule  : in Rule_Type;
-                   Value : in CSS.Core.Values.Value_List) return Boolean;
+                   Value : in CSS.Core.Values.Value_List;
+                   Pos   : in Positive := 1) return Natural;
 
    --  Rule that describes an identifier such as 'left' or 'right'.
    type Ident_Rule_Type (Len : Natural) is new Rule_Type with private;
@@ -158,12 +159,14 @@ private
                    Value : in CSS.Core.Values.Value_Type) return Boolean;
 
    --  Check if the value matches the identifier defined by the rule.
-   overriding
-   function Match (Rule  : in Definition_Rule_Type;
-                   Value : in CSS.Core.Values.Value_List) return Boolean;
+--     overriding
+--     function Match (Rule  : in Definition_Rule_Type;
+--                     Value : in CSS.Core.Values.Value_List;
+--                     Pos   : in Positive := 1) return Natural;
 
    type Group_Rule_Type is new Rule_Type with record
       List       : Rule_Type_Access;
+      Count      : Natural := 0;
       Kind       : Group_Type;
    end record;
 
@@ -174,8 +177,9 @@ private
 
    --  Check if the value matches the identifier defined by the rule.
    overriding
-   function Match (Rule  : in Group_Rule_Type;
-                   Value : in CSS.Core.Values.Value_List) return Boolean;
+   function Match (Group : in Group_Rule_Type;
+                   Value : in CSS.Core.Values.Value_List;
+                   Pos   : in Positive := 1) return Natural;
 
    type Function_Rule_Type (Len : Natural) is new Group_Rule_Type with record
       Ident : String (1 .. Len);
