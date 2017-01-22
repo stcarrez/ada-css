@@ -1,5 +1,5 @@
 pragma Style_Checks (Off);
-package Css.Analysis.Parser.Parser_Shift_Reduce is
+package CSS.Analysis.Parser.Parser_Shift_Reduce is
 
     type Small_Integer is range -32_000 .. 32_000;
 
@@ -185,4 +185,4 @@ SHIFT_REDUCE_OFFSET : array (0.. 78) of Integer :=
  77, 78, 79, 81, 83, 85, 91, 93, 95, 97, 100, 103, 106, 107, 109, 115,
  121, 127, 133, 134, 137, 139, 140, 141, 142, 148, 150, 152, 154, 160, 163, 165,
  168, 170, 172, 174, 176, 178, 181, 183, 184, 186, 188, 189, 195, 197);
-end Css.Analysis.Parser.Parser_Shift_Reduce;
+end CSS.Analysis.Parser.Parser_Shift_Reduce;

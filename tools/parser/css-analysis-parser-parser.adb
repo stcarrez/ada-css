@@ -50,11 +50,11 @@ procedure YYParse is
 
    -- Rename User Defined Packages to Internal Names.
     package yy_goto_tables         renames
-      Css.Analysis.Parser.Parser_Goto;
+      CSS.Analysis.Parser.Parser_Goto;
     package yy_shift_reduce_tables renames
-      Css.Analysis.Parser.Parser_Shift_Reduce;
+      CSS.Analysis.Parser.Parser_Shift_Reduce;
     package yy_tokens              renames
-      Css.Analysis.Parser.Parser_Tokens;
+      CSS.Analysis.Parser.Parser_Tokens;
 
    use yy_tokens, yy_goto_tables, yy_shift_reduce_tables;
 
@@ -308,90 +308,90 @@ begin
 
                 case yy.rule_id is
 
-when 9 => -- #line 53
+when 9 => -- #line 54
  Create_Property (
 yy.value_stack(yy.tos-4), 
 yy.value_stack(yy.tos)); 
 
-when 10 => -- #line 56
+when 10 => -- #line 57
  Error (
 yy.value_stack(yy.tos-1).Line, 
 yy.value_stack(yy.tos-1).Column, "Error in property definition"); 
 
-when 11 => -- #line 61
+when 11 => -- #line 62
  Create_Names (
 yy.value_stack(yy.tos-2), 
 yy.value_stack(yy.tos)); 
 yyval := 
 yy.value_stack(yy.tos-2); 
 
-when 12 => -- #line 64
+when 12 => -- #line 65
  
 yyval := 
 yy.value_stack(yy.tos); 
 yyval.Names.Append (Ada.Strings.Unbounded.To_String (
 yy.value_stack(yy.tos).Token)); 
 
-when 13 => -- #line 69
+when 13 => -- #line 70
  Create_Definition (
 yy.value_stack(yy.tos-4), 
 yy.value_stack(yy.tos)); 
 
-when 14 => -- #line 72
+when 14 => -- #line 73
  Error (
 yy.value_stack(yy.tos-1).Line, 
 yy.value_stack(yy.tos-1).Column, "Error in named definition"); 
 
-when 16 => -- #line 81
+when 16 => -- #line 82
  Append_Group (
 yyval, 
 yy.value_stack(yy.tos-3), 
 yy.value_stack(yy.tos), Rules.GROUP_PARAMS); 
 
-when 18 => -- #line 88
+when 18 => -- #line 89
  Append_Group (
 yyval, 
 yy.value_stack(yy.tos-3), 
 yy.value_stack(yy.tos), Rules.GROUP_DBAR); 
 
-when 20 => -- #line 95
+when 20 => -- #line 96
  Append_Group (
 yyval, 
 yy.value_stack(yy.tos-3), 
 yy.value_stack(yy.tos), Rules.GROUP_AND); 
 
-when 22 => -- #line 102
+when 22 => -- #line 103
  Append_Group (
 yyval, 
 yy.value_stack(yy.tos-3), 
 yy.value_stack(yy.tos), Rules.GROUP_ONLY_ONE); 
 
-when 24 => -- #line 109
+when 24 => -- #line 110
  Rules.Append (
 yy.value_stack(yy.tos-2).Rule.all, 
 yy.value_stack(yy.tos-1).Rule); 
 yyval := 
 yy.value_stack(yy.tos-2); 
 
-when 26 => -- #line 116
+when 26 => -- #line 117
  
 yy.value_stack(yy.tos-2).Rule.Set_Repeat (1, Natural'Last); 
 yyval := 
 yy.value_stack(yy.tos-2); 
 
-when 27 => -- #line 119
+when 27 => -- #line 120
  
 yy.value_stack(yy.tos-2).Rule.Set_Repeat (0, 1); 
 yyval := 
 yy.value_stack(yy.tos-2); 
 
-when 28 => -- #line 122
+when 28 => -- #line 123
  
 yy.value_stack(yy.tos-2).Rule.Set_Repeat (0, Natural'Last); 
 yyval := 
 yy.value_stack(yy.tos-2); 
 
-when 29 => -- #line 125
+when 29 => -- #line 126
  
 yy.value_stack(yy.tos-2).Rule.Set_Repeat (
 yy.value_stack(yy.tos).Min_Repeat, 
@@ -399,7 +399,7 @@ yy.value_stack(yy.tos).Max_Repeat, True);
 yyval := 
 yy.value_stack(yy.tos-2); 
 
-when 30 => -- #line 128
+when 30 => -- #line 129
  
 yy.value_stack(yy.tos-1).Rule.Set_Repeat (
 yy.value_stack(yy.tos).Min_Repeat, 
@@ -407,58 +407,58 @@ yy.value_stack(yy.tos).Max_Repeat);
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 32 => -- #line 135
+when 32 => -- #line 136
  Create_Function (
 yyval, 
 yy.value_stack(yy.tos-5), 
 yy.value_stack(yy.tos-3)); 
 
-when 33 => -- #line 138
+when 33 => -- #line 139
  Create_Identifier (
 yyval, 
 yy.value_stack(yy.tos)); 
 
-when 34 => -- #line 141
+when 34 => -- #line 142
  Create_Type_Or_Reference (
 yyval, 
 yy.value_stack(yy.tos)); 
 
-when 35 => -- #line 144
+when 35 => -- #line 145
  Create_Identifier (
 yyval, 
 yy.value_stack(yy.tos)); 
 
-when 36 => -- #line 149
+when 36 => -- #line 150
  
 yyval := 
 yy.value_stack(yy.tos-2); 
 
-when 37 => -- #line 152
+when 37 => -- #line 153
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 38 => -- #line 157
+when 38 => -- #line 158
  
 yyval.Min_Repeat := Get_Value (
 yy.value_stack(yy.tos-4)); 
 yyval.Max_Repeat := Get_Value (
 yy.value_stack(yy.tos-2)); 
 
-when 39 => -- #line 160
+when 39 => -- #line 161
  
 yyval.Min_Repeat := Get_Value (
 yy.value_stack(yy.tos-3)); 
 yyval.Max_Repeat := Natural'Last; 
 
-when 40 => -- #line 163
+when 40 => -- #line 164
  
 yyval.Min_Repeat := Get_Value (
 yy.value_stack(yy.tos-2)); 
 yyval.Max_Repeat := 
 yyval.Min_Repeat; 
 
-when 41 => -- #line 166
+when 41 => -- #line 167
  
 yyval.Min_Repeat := 1; 
 yyval.Max_Repeat := 1; 
