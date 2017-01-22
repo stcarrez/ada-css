@@ -91,8 +91,10 @@ package CSS.Core.Values is
    function Get_Value (List : in Value_List;
                        Pos  : in Positive) return Value_Type;
 
-   --  Get a printable representation of the list.
-   function To_String (List : in Value_List) return String;
+   --  Get a printable representation of the list or a subset of the list.
+   function To_String (List : in Value_List;
+                       From : in Positive := 1;
+                       To   : in Positive := Positive'Last) return String;
 
    --  Compare the two values for identity.
    function Compare (Left, Right : in Value_Type) return Boolean;
