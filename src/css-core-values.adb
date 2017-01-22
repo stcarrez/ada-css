@@ -97,11 +97,17 @@ package body CSS.Core.Values is
       end loop;
    end Append;
 
+   --  ------------------------------
+   --  Get the number of values in the list.
+   --  ------------------------------
    function Get_Count (List : in Value_List) return Natural is
    begin
       return List.Count;
    end Get_Count;
 
+   --  ------------------------------
+   --  Get the value at the given list position.
+   --  ------------------------------
    function Get_Value (List : in Value_List;
                        Pos  : in Positive) return Value_Type is
    begin
@@ -138,7 +144,7 @@ package body CSS.Core.Values is
 
    function Create_Value (Repository : in out Repository_Type;
                           Value      : in Value_Type) return Value_Type is
-      Pos : Value_Sets.Cursor := Repository.Root.Find (Value);
+      Pos : constant Value_Sets.Cursor := Repository.Root.Find (Value);
    begin
       if Value_Sets.Has_Element (Pos) then
          return Value_Sets.Element (Pos);
