@@ -27,7 +27,10 @@ project Css_Tools is
    end binder;
 
    package Builder renames Config.Builder;
-   package Compiler renames Config.Compiler;
+   package Compiler is
+      for Default_Switches ("Ada") use
+             Config.Compiler'Default_Switches ("Ada") & ("-gnat2012");
+   end Compiler;
    package Linker renames Config.Linker;
 
 end Css_Tools;
