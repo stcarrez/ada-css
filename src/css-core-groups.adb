@@ -23,6 +23,7 @@ package body CSS.Core.Groups is
    --  ------------------------------
    overriding
    function Get_Type (Rule : in CSSGroupingRule) return CSSRule_Type is
+      pragma Unreferenced (Rule);
    begin
       return STYLE_RULE;
    end Get_Type;
