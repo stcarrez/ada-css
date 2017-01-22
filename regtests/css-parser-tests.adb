@@ -56,6 +56,7 @@ package body CSS.Parser.Tests is
       else
          Util.Tests.Assert_Equals (T, 0, Errors.Error_Count,
                                    "Errors reported for '" & Name & "'");
+         Ada.Directories.Delete_File (To_String (T.Result));
       end if;
 
    exception
