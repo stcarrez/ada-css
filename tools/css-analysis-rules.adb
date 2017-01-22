@@ -74,9 +74,24 @@ package body CSS.Analysis.Rules is
 
    --  Check if the value matches the identifier defined by the rule.
    function Match (Rule  : in Rule_Type;
-                   Value : in CSS.Core.Values.Value_List) return Boolean is
+                   Value : in CSS.Core.Values.Value_List;
+                   Pos   : in Positive := 1) return Natural is
+      Count : constant Natural := Value.Get_Count;
+      Match_Count : Natural := 0;
    begin
-      return False;
+      for I in Pos .. Count loop
+         if not Rule_Type'Class (Rule).Match (Value.Get_Value (I)) then
+            return Match_Count;
+         end if;
+         Match_Count := Match_Count + 1;
+         if Match_Count >= Rule.Max_Repeat then
+            return Match_Count;
+         end if;
+      end loop;
+      if Match_Count < Rule.Min_Repeat then
+         return 0;
+      end if;
+      return Match_Count;
    end Match;
 
    --  Check if the value matches the identifier defined by the rule.
@@ -207,14 +222,6 @@ package body CSS.Analysis.Rules is
       end if;
    end Match;
 
-   --  Check if the value matches the identifier defined by the rule.
-   overriding
-   function Match (Rule  : in Definition_Rule_Type;
-                   Value : in CSS.Core.Values.Value_List) return Boolean is
-   begin
-      return Rule.Rule.Match (Value);
-   end Match;
-
    --  Create a rule that describes a group of rules whose head is passed in <tt>Rules</tt>.
    function Create_Group (Rules : in Rule_Type_Access;
                           Exc   : in Boolean) return Rule_Type_Access is
@@ -244,61 +251,89 @@ package body CSS.Analysis.Rules is
 
    --  Check if the value matches the identifier defined by the rule.
    overriding
-   function Match (Rule  : in Group_Rule_Type;
-                   Value : in CSS.Core.Values.Value_List) return Boolean is
-      Count : constant Natural := Value.Get_Count;
+   function Match (Group : in Group_Rule_Type;
+                   Value : in CSS.Core.Values.Value_List;
+                   Pos   : in Positive := 1) return Natural is
+      Count       : constant Natural := Value.Get_Count;
+      Rule        : Rule_Type_Access;
+      Match_Count : Natural := 0;
+      N           : Natural;
+      Repeat      : Natural := 0;
+      Cur_Pos     : Positive := Pos;
    begin
-      if Rule.Kind = GROUP_ONLY_ONE then
-         for I in 1 .. Count loop
-            if not Rule.Match (Value.Get_Value (I)) then
-               return False;
+      if Group.Kind = GROUP_ONLY_ONE then
+         loop
+            Rule := Group.List;
+            while Rule /= null loop
+               N := Rule.Match (Value, Cur_Pos);
+               if N > 0 then
+                  Repeat := Repeat + 1;
+                  Match_Count := Match_Count + N;
+                  Cur_Pos := Cur_Pos + N;
+                  exit;
+               end if;
+               Rule := Rule.Next;
+            end loop;
+            if Rule = null or Repeat = Group.Max_Repeat or Cur_Pos > Count then
+               if Repeat < Group.Min_Repeat then
+                  return 0;
+               end if;
+               if Repeat > Group.Max_Repeat then
+                  return 0;
+               end if;
+               return Match_Count;
             end if;
          end loop;
-         return True;
-      elsif Rule.Kind = GROUP_DBAR then
+
+      elsif Group.Kind = GROUP_DBAR then
          declare
-            M : Rule_Type_Access_Array (1 .. Count);
-            L : Rule_Type_Access;
+            M : Rule_Type_Access_Array (1 .. Group.Count);
+            I : Positive := 1;
          begin
-            for I in 1 .. Count loop
-               L := Rule.List;
-               while L /= null loop
-                  if L.Match (Value.Get_Value (I)) then
-                     M (I) := L;
+            while Cur_Pos <= Count loop
+               Rule := Group.List;
+               while Rule /= null loop
+                  N := Rule.Match (Value, Cur_Pos);
+                  if N > 0 then
+                     Cur_Pos := Cur_Pos + N;
+                     M (I) := Rule;
+                     I := I + 1;
                      exit;
                   end if;
-                  L := L.Next;
+                  Rule := Rule.Next;
                end loop;
-               if M (I) = null then
-                  return False;
-               end if;
+               exit when N = 0 or I = M'Last + 1;
+               Match_Count := Match_Count + N;
             end loop;
             for I in M'Range loop
                for J in I + 1 .. M'Last loop
                   if M (I) = M (J) then
-                     return False;
+                     return 0;
                   end if;
                end loop;
             end loop;
-            return True;
+            return Match_Count;
          end;
-      elsif Rule.Kind = GROUP_AND then
+      elsif Group.Kind = GROUP_AND then
          declare
-            L : Rule_Type_Access := Rule.List;
+            P : Positive := Pos;
+            N : Natural;
          begin
-            for I in 1 .. Count loop
-               if L = null then
-                  return False;
+            Rule := Group.List;
+            while Cur_Pos <= Count loop
+               exit when Rule = null;
+               N := Rule.Match (Value, Cur_Pos);
+               if N = 0 then
+                  return 0;
                end if;
-               if not L.Match (Value.Get_Value (I)) then
-                  return False;
-               end if;
-               L := L.Next;
+               Match_Count := Match_Count + N;
+               Cur_Pos := Cur_Pos + N;
+               Rule := Rule.Next;
             end loop;
-            return True;
+            return Match_Count;
          end;
       end if;
-      return False;
+      return Match_Count;
    end Match;
 
    --  Create a rule that describes a group of rules whose head is passed in <tt>Rules</tt>.
@@ -309,12 +344,14 @@ package body CSS.Analysis.Rules is
    begin
       if First.all in Group_Rule_Type'Class and then Group_Rule_Type (First.all).Kind = Kind then
          Append (Group_Rule_Type (First.all).List.all, Second);
+         Group_Rule_Type (First.all).Count := Group_Rule_Type (First.all).Count;
          Into := First;
       else
          Into := new Group_Rule_Type '(Ada.Finalization.Limited_Controlled with
                                        Next => null, List => First,
                                        Kind => Kind,
                                        Loc  => First.Loc,
+                                       Count      => 1,
                                        Min_Repeat => 1,
                                        Max_Repeat => 1, others => <>);
          First.Next := Second;
@@ -448,16 +485,20 @@ package body CSS.Analysis.Rules is
       procedure Process (Rule : in CSS.Core.Styles.CSSStyleRule'Class;
                          Prop : in CSS.Core.Properties.CSSProperty) is
          R : Rule_Type_Access := Repo.Find_Property (Prop.Name.all);
+         Match_Count : Natural;
       begin
          if R = null then
             Report.Warning (Prop.Location, "Invalid property: " & Prop.Name.all);
-         elsif not R.Match (Prop.Value) then
-            if Prop.Value.Get_Count = 1 then
-               Report.Warning (Prop.Location, "Invalid value '" &
-                               Prop.Value.To_String & "' for property " & Prop.Name.all);
-            else
-               Report.Warning (Prop.Location, "Invalid values '" &
-                               Prop.Value.To_String & "' for property " & Prop.Name.all);
+         else
+            Match_Count := R.Match (Prop.Value);
+            if Match_Count /= Prop.Value.Get_Count then
+               if Prop.Value.Get_Count = 1 then
+                  Report.Warning (Prop.Location, "Invalid value '" &
+                                    Prop.Value.To_String & "' for property " & Prop.Name.all);
+               else
+                  Report.Warning (Prop.Location, "Invalid values '" &
+                                    Prop.Value.To_String & "' for property " & Prop.Name.all);
+               end if;
             end if;
          end if;
       end Process;
