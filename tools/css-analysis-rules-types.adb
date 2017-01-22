@@ -97,4 +97,15 @@ package body CSS.Analysis.Rules.Types is
       return Get_Type (Value) = VALUE_URL;
    end Match;
 
+   --  ------------------------------
+   --  Check if the value represents an hexadecimal color.
+   --  ------------------------------
+   overriding
+   function Match (Rule  : in Color_Rule_Type;
+                   Value : in CSS.Core.Values.Value_Type) return Boolean is
+      pragma Unreferenced (Rule);
+   begin
+      return Get_Type (Value) = VALUE_COLOR;
+   end Match;
+
 end CSS.Analysis.Rules.Types;
