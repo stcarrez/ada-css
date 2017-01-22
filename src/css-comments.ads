@@ -46,7 +46,7 @@ package CSS.Comments is
 
    --  Definition of the list of comments found in the CSS document.
    type CSSComment_List is tagged limited private;
-   
+
    --  Insert in the comment list the comment described by <tt>Text</tt>
    --  and associated with source line number <tt>Line</tt>.  After insertion
    --  the comment reference is returned to identify the new comment.
@@ -60,12 +60,12 @@ private
    type Comment;
    type Const_Comment_Access is access constant Comment;
    type Comment_Access is access all Comment;
-   
+
    type Line_Info is record
       Start  : Natural := 0;
       Finish : Natural := 0;
    end record;
-   
+
    type Line_Info_Array is array (Natural range <>) of Line_Info;
 
    type Comment (Len : Natural; Line_Count : Natural) is limited record
