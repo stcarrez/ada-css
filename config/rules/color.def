@@ -1,3 +1,4 @@
+# https://developer.mozilla.org/en-US/docs/Web/CSS/color
 
 <rgb-component> = <integer> | <percentage>
 <alpha-value> = <number>
@@ -20,3 +21,7 @@
 <rgb()> = rgb( <rgb-component>#{3} )
 
 <color> = <rgb()> | <rgba()> | <hsl()> | <hsla()> | <hex-color> | <named-color> | currentcolor | <deprecated-system-color>
+
+opacity := <number>
+
+color := <color>
