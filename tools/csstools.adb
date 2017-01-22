@@ -24,14 +24,12 @@ with Ada.Containers;
 with Ada.Directories;
 with Ada.Exceptions;
 with Util.Log.Loggers;
-with Util.Log.Locations;
 with Util.Files;
 with CSS.Parser.Lexer;
 with CSS.Parser.Lexer_dfa;
 with CSS.Analysis.Parser.Lexer_dfa;
 with CSS.Core;
 with CSS.Core.Sheets;
-with CSS.Core.Selectors;
 with CSS.Tools.Messages;
 with CSS.Core.Sets;
 with CSS.Analysis.Rules;
@@ -45,17 +43,36 @@ procedure CssTools is
    use Ada.Directories;
    use Ada.Command_Line;
 
+   procedure Usage;
+   procedure Print_Message (Severity : in CSS.Tools.Messages.Severity_Type;
+                            Loc      : in CSS.Core.Location;
+                            Message  : in String);
+   procedure Set_Config_Directory (Path   : in String;
+                                   Silent : in Boolean := False);
+
    Debug       : Boolean := False;
    Verbose     : Boolean := False;
    Quiet       : Boolean := False;
    Status      : Exit_Status := Success;
-   Count       : constant Natural := Ada.Command_Line.Argument_Count;
    Doc         : aliased CSS.Core.Sheets.CSSStylesheet;
    Err_Handler : aliased CSS.Tools.Messages.Message_List;
    Output_Path : Unbounded_String;
    Config_Dir  : Unbounded_String;
    Output      : CSS.Printer.Text_IO.File_Type;
    Dup_Rules   : CSS.Core.Sets.Set;
+
+   procedure Usage is
+   begin
+      Ada.Text_IO.Put_Line ("CSS Analysis tools");
+      Ada.Text_IO.New_Line;
+      Ada.Text_IO.Put_Line ("csstools [-dpqv] [-o file] [-c dir] file...");
+      Ada.Text_IO.Put_Line ("  -d       Turn on debugging");
+      Ada.Text_IO.Put_Line ("  -v       Verbose mode");
+      Ada.Text_IO.Put_Line ("  -q       Quiet mode");
+      Ada.Text_IO.Put_Line ("  -p       Pretty print CSS output");
+      Ada.Text_IO.Put_Line ("  -o file  Generate the CSS output file");
+      Ada.Text_IO.Put_Line ("  -c dir   Define the path for the configuration directory");
+   end Usage;
 
    --  ------------------------------
    --  Verify and set the configuration path
@@ -107,40 +124,49 @@ begin
    Output.Compress := True;
 
    --  Parse the command line
-   loop
-      case Getopt ("v p d q r: c: o: ") is
-         when ASCII.NUL => exit;
+   begin
+      loop
+         case Getopt ("v p d q r: c: o: ") is
+            when ASCII.NUL => exit;
 
-         when 'c' =>
-            Set_Config_Directory (Parameter);
+            when 'c' =>
+               Set_Config_Directory (Parameter);
 
-         when 'r' =>
-            Config_Path := To_Unbounded_String (Parameter);
+            when 'r' =>
+               Config_Path := To_Unbounded_String (Parameter);
 
-         when 'o' =>
-            Output_Path := To_Unbounded_String (Parameter);
+            when 'o' =>
+               Output_Path := To_Unbounded_String (Parameter);
 
-         when 'd' =>
-            Debug := True;
+            when 'd' =>
+               Debug := True;
 
-         when 'p' =>
-            Output.Indent_Level := 4;
-            Output.Full_Semi    := True;
-            Output.Compress     := False;
+            when 'p' =>
+               Output.Indent_Level := 4;
+               Output.Full_Semi    := True;
+               Output.Compress     := False;
 
-         when 'v' =>
-            Verbose := True;
+            when 'v' =>
+               Verbose := True;
 
-         when 'q' =>
-            Quiet := True;
+            when 'q' =>
+               Quiet := True;
 
-         when '*' =>
-            exit;
+            when '*' =>
+               exit;
 
-         when others =>
-            null;
-      end case;
-   end loop;
+            when others =>
+               null;
+         end case;
+      end loop;
+
+   exception
+      when others =>
+         Usage;
+         Ada.Command_Line.Set_Exit_Status (2);
+         return;
+
+   end;
 
    if Length (Config_Dir) = 0 then
       declare
@@ -179,6 +205,9 @@ begin
          if Length (Output_Path) > 0 then
             Output.Print (Doc);
          end if;
+         if Err_Handler.Get_Error_Count > 0 then
+            Status := Failure;
+         end if;
       end;
    end loop;
    if not Quiet then
@@ -191,11 +220,12 @@ begin
       Ada.Text_IO.Put_Line ("CSS values      : " & Natural'Image (Doc.Values.Length));
       Ada.Text_IO.Put_Line ("Duplicate rules : " & Count_Type'Image (Dup_Rules.Length));
    end if;
+   Ada.Command_Line.Set_Exit_Status (Status);
 
 exception
    when E : Invalid_Switch =>
       Ada.Text_IO.Put_Line ("Invalid option: " & Ada.Exceptions.Exception_Message (E));
-      --  Gen.Commands.Short_Help_Usage;
+      Usage;
       Ada.Command_Line.Set_Exit_Status (2);
 
    when E : others =>
