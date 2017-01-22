@@ -1,5 +1,5 @@
 pragma Style_Checks (Off);
-package Css.Parser.Parser_Goto is
+package CSS.Parser.Parser_Goto is
 
     type Small_Integer is range -32_000 .. 32_000;
 
@@ -363,4 +363,4 @@ subtype Nonterminal is Integer;
 -58,-45,-45,-45,-45,-40,-40,-40,-40,-40,-40,-59,-59,-61,
 -60,-60,-60,-62,-62,-62,-62,-62,-62,-62,-62,-34,-34,-34,
 -34,-34,-34,-34,-34,-64,-64,-65,-65,-66,-66,-63);
-end Css.Parser.Parser_Goto;
+end CSS.Parser.Parser_Goto;

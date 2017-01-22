@@ -1,5 +1,5 @@
 pragma Style_Checks (Off);
-package Css.Parser.Parser_Tokens is
+package CSS.Parser.Parser_Tokens is
 
 
    subtype yystype is CSS.Parser.YYstype;
@@ -32,4 +32,4 @@ package Css.Parser.Parser_Tokens is
 
     Syntax_Error : exception;
 
-end Css.Parser.Parser_Tokens;
+end CSS.Parser.Parser_Tokens;

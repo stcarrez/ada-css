@@ -65,11 +65,11 @@ procedure YYParse is
 
    -- Rename User Defined Packages to Internal Names.
     package yy_goto_tables         renames
-      Css.Parser.Parser_Goto;
+      CSS.Parser.Parser_Goto;
     package yy_shift_reduce_tables renames
-      Css.Parser.Parser_Shift_Reduce;
+      CSS.Parser.Parser_Shift_Reduce;
     package yy_tokens              renames
-      Css.Parser.Parser_Tokens;
+      CSS.Parser.Parser_Tokens;
 
    use yy_tokens, yy_goto_tables, yy_shift_reduce_tables;
 
