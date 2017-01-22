@@ -22,23 +22,23 @@ with CSS.Core.Values;
 with CSS.Core.Properties;
 package CSS.Core.Sheets is
 
-   type CSSStyleSheet is new CSS.Core.StyleSheet with record
+   type CSSStylesheet is new CSS.Core.StyleSheet with record
       Rules  : CSS.Core.Vectors.Vector;
       Values : CSS.Core.Values.Repository_Type;
    end record;
-   type CSSStyleSheet_Access is access all CSSStyleSheet'Class;
+   type CSSStylesheet_Access is access all CSSStylesheet'Class;
 
    --  Create a CSS rule.
    function Create_Rule (Document : in CSSStyleSheet) return Styles.CSSStyleRule_Access;
 
-   procedure Append (Document : in out CSSStyleSheet;
+   procedure Append (Document : in out CSSStylesheet;
                      Rule     : in Styles.CSSStyleRule_Access;
                      Line     : in Natural;
                      Column   : in Natural);
 
    --  Iterate over the properties of each CSS rule.  The <tt>Process</tt> procedure
    --  is called with the CSS rule and the property as parameter.
-   procedure Iterate_Properties (Document : in CSSStyleSheet;
+   procedure Iterate_Properties (Document : in CSSStylesheet;
                                  Process  : not null access
                                    procedure (Rule     : in Styles.CSSStyleRule'Class;
                                               Property : in Properties.CSSProperty));
