@@ -222,16 +222,6 @@ package body CSS.Analysis.Rules is
       end if;
    end Match;
 
-   --  Create a rule that describes a group of rules whose head is passed in <tt>Rules</tt>.
-   function Create_Group (Rules : in Rule_Type_Access;
-                          Exc   : in Boolean) return Rule_Type_Access is
-   begin
-      Log.Debug ("Create rule group");
-      return new Group_Rule_Type '(Ada.Finalization.Limited_Controlled with
-                                   Next => null, List => Rules,
-                                   Loc  => Rules.Loc, others => <>);
-   end Create_Group;
-
    --  Check if the value matches the rule.
    overriding
    function Match (Rule  : in Group_Rule_Type;
