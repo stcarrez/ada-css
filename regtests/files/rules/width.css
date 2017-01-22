@@ -1,0 +1,22 @@
+div {
+  width: 10em border-box;
+}
+p {
+  width: 5px content-box;
+}
+a {
+  width: min-content
+}
+ul {
+  width: max-content
+}
+li {
+  width: fit-content
+}
+li {
+  width: available
+}
+li {
+  width: auto 3px
+}
+
