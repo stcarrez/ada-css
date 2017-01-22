@@ -15,7 +15,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-pragma Ada_2012;
 with Ada.Containers.Ordered_Sets;
 with Ada.Finalization;
 
@@ -86,8 +85,10 @@ package CSS.Core.Values is
    procedure Append (List  : in out Value_List;
                      Value : in Value_Type);
 
+   --  Get the number of values in the list.
    function Get_Count (List : in Value_List) return Natural;
 
+   --  Get the value at the given list position.
    function Get_Value (List : in Value_List;
                        Pos  : in Positive) return Value_Type;
 
@@ -131,7 +132,8 @@ private
    type Value_Node;
    type Value_Type is access all Value_Node;
    type Value_Node (Len  : Natural;
-                    Kind : Value_Kind) is limited record
+                    Kind : Value_Kind) is
+   limited record
       Unit    : Unit_Type;
       Value   : String (1 .. Len);
    end record;
