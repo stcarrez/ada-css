@@ -41,7 +41,6 @@ package body CSS.Parser.Parser is
       CSS.Parser.Lexer_Dfa.yylineno  := 1;
       CSS.Parser.Lexer_Dfa.yylinecol := 1;
       CSS.Parser.Lexer_IO.Open_Input (Content);
-      --  Expr := MAT.Expressions.EMPTY;
       CSS.Parser.Parser.Document := Document;
       yyparse;
       CSS.Parser.Parser.Document := null;
@@ -779,11 +778,5 @@ yy.value_stack(yy.tos-1));
 
 
 end yyparse;
-
-   --  Set or clear the parser debug flag.
-   -- procedure Set_Debug (Flag : in Boolean) is
-   -- begin
-   --   yy.DEBUG := Flag;
-   -- end Set_Debug;
 
 end CSS.Parser.Parser;
