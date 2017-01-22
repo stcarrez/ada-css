@@ -109,12 +109,15 @@ package body CSS.Core.Values is
    end Get_Value;
 
    --  ------------------------------
-   --  Get a printable representation of the list.
+   --  Get a printable representation of the list or a subset of the list.
    --  ------------------------------
-   function To_String (List : in Value_List) return String is
+   function To_String (List : in Value_List;
+                       From : in Positive := 1;
+                       To   : in Positive := Positive'Last) return String is
       Result : Ada.Strings.Unbounded.Unbounded_String;
    begin
-      for I in List.Values'Range loop
+      for I in From .. To loop
+         exit when I > List.Count;
          if List.Values (I) /= null then
             if Ada.Strings.Unbounded.Length (Result) > 0 then
                Ada.Strings.Unbounded.Append (Result, " ");
