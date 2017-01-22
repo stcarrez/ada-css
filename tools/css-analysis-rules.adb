@@ -19,7 +19,6 @@
 with Util.Log.Loggers;
 with Util.Strings;
 
-with CSS.Core.Values;
 with CSS.Core.Styles;
 with CSS.Core.Properties;
 with CSS.Analysis.Rules.Types;
@@ -65,14 +64,19 @@ package body CSS.Analysis.Rules is
       end if;
    end Append;
 
+   --  ------------------------------
    --  Check if the value matches the rule.
+   --  ------------------------------
    function Match (Rule  : in Rule_Type;
                    Value : in CSS.Core.Values.Value_Type) return Boolean is
+      pragma Unreferenced (Rule, Value);
    begin
       return False;
    end Match;
 
+   --  ------------------------------
    --  Check if the value matches the identifier defined by the rule.
+   --  ------------------------------
    function Match (Rule  : in Rule_Type;
                    Value : in CSS.Core.Values.Value_List;
                    Pos   : in Positive := 1) return Natural is
@@ -306,7 +310,6 @@ package body CSS.Analysis.Rules is
          end;
       elsif Group.Kind = GROUP_AND then
          declare
-            P : Positive := Pos;
             N : Natural;
          begin
             Rule := Group.List;
@@ -476,11 +479,16 @@ package body CSS.Analysis.Rules is
       end loop;
    end Resolve;
 
-   procedure Analyze (Sheet  : in CSS.Core.Sheets.CSSStyleSheet;
+   procedure Analyze (Sheet  : in CSS.Core.Sheets.CSSStylesheet;
                       Report : in out CSS.Core.Errors.Error_Handler'Class) is
       procedure Process (Rule : in CSS.Core.Styles.CSSStyleRule'Class;
+                         Prop : in CSS.Core.Properties.CSSProperty);
+
+      procedure Process (Rule : in CSS.Core.Styles.CSSStyleRule'Class;
                          Prop : in CSS.Core.Properties.CSSProperty) is
-         R : Rule_Type_Access := Repo.Find_Property (Prop.Name.all);
+         pragma Unreferenced (Rule);
+
+         R           : constant Rule_Type_Access := Repo.Find_Property (Prop.Name.all);
          Match_Count : Natural;
          Count       : Natural;
       begin
