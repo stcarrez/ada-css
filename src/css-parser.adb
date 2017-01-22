@@ -181,7 +181,7 @@ package body CSS.Parser is
    --  Report an error if the color is invalid.
    --  ------------------------------
    procedure Set_Color (Into  : in out YYstype;
-                        Value : in YYStype) is
+                        Value : in YYstype) is
    begin
       Set_Type (Into, TYPE_COLOR, Value.Line, Value.Column);
       Into.Kind := TYPE_COLOR;
@@ -238,16 +238,6 @@ package body CSS.Parser is
       end if;
    end Get_Property_Name;
 
-   function Get_Property_Value (Document : in CSS.Core.Sheets.CSSStylesheet_Access;
-                                Prop     : in YYstype) return CSS.Core.CSSProperty_Name is
-   begin
-      if Prop.Node = null then
-         return null;
-      else
-         return Document.Create_Property_Name (To_String (Prop.Node.Value));
-      end if;
-   end Get_Property_Value;
-
    --  ------------------------------
    --  Append to the CSSStyleRule the property held by the parser token.
    --  ------------------------------
@@ -257,7 +247,7 @@ package body CSS.Parser is
       Name  : CSS.Core.CSSProperty_Name := Get_Property_Name (Document, Prop);
    begin
       if Prop.Node = null then
-         Log.Debug ("Property has an invalid name and is dropped");      
+         Log.Debug ("Property has an invalid name and is dropped");
       elsif Prop.Node.Value = null then
          Log.Debug ("Property {0} was incorrect and is dropped", Name.all);
       else
@@ -306,7 +296,6 @@ package body CSS.Parser is
    procedure Add_Selector_List (Into     : in out CSS.Core.Styles.CSSStyleRule_Access;
                                 Document : in CSS.Core.Sheets.CSSStylesheet_Access;
                                 Selector : in YYstype) is
-      use type CSS.Core.Styles.CSSStyleRule_Access;
    begin
       if Into = null then
          Into := Document.Create_Rule;
@@ -350,7 +339,8 @@ package body CSS.Parser is
       Into.Node := new Parser_Node_Type '(Kind        => TYPE_SELECTOR,
                                           Ref_Counter => ONE,
                                           Selector    => <>);
-      Into.Node.Selector := CSS.Core.Selectors.Create (Kind, To_String (Param1), To_String (Param2));
+      Into.Node.Selector := CSS.Core.Selectors.Create (Kind, To_String (Param1),
+                                                       To_String (Param2));
    end Set_Selector;
 
    --  ------------------------------
@@ -458,7 +448,8 @@ package body CSS.Parser is
                        Right : in YYstype) is
    begin
       Log.Error (Natural'Image (Left.Line) & ":" & Natural'Image (Left.Column)
-                 & "Expression {0} {1} {2}", To_String (Left), To_String (Oper), To_String (Right));
+                 & "Expression {0} {1} {2}", To_String (Left), To_String (Oper),
+                 To_String (Right));
    end Set_Expr;
 
    procedure Set_Function (Into   : in out YYstype;
@@ -471,7 +462,8 @@ package body CSS.Parser is
    procedure Error (Line    : in Natural;
                     Column  : in Natural;
                     Message : in String) is
-      Loc : constant Core.Location := Core.Create_Location (Current_Sheet.all'Access, Line, Column);
+      Loc : constant Core.Location := Core.Create_Location (Current_Sheet.all'Access,
+                                                            Line, Column);
    begin
       Report_Handler.Error (Loc, Message);
    end Error;
@@ -479,7 +471,8 @@ package body CSS.Parser is
    procedure Warning (Line    : in Natural;
                       Column  : in Natural;
                       Message : in String) is
-      Loc : constant Core.Location := Core.Create_Location (Current_Sheet.all'Access, Line, Column);
+      Loc : constant Core.Location := Core.Create_Location (Current_Sheet.all'Access,
+                                                            Line, Column);
    begin
       Report_Handler.Warning (Loc, Message);
    end Warning;
