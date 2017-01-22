@@ -518,6 +518,7 @@ package body CSS.Analysis.Rules is
    Angle_Rule   : aliased Types.Angle_Rule_Type;
    String_Rule  : aliased Types.String_Rule_Type;
    URL_Rule     : aliased Types.URL_Rule_Type;
+   Color_Rule   : aliased Types.Color_Rule_Type;
 
 begin
    Repo.Types.Insert ("<angle>", Angle_Rule'Access);
@@ -527,4 +528,5 @@ begin
    Repo.Types.Insert ("<percentage>", Percent_Rule'Access);
    Repo.Types.Insert ("<string>", String_Rule'Access);
    Repo.Types.Insert ("<url>", URL_Rule'Access);
+   Repo.Types.Insert ("<hex-color>", Color_Rule'Access);
 end CSS.Analysis.Rules;
