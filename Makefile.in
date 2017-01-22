@@ -81,7 +81,7 @@ endif
 
 # Build executables for all mains defined by the project.
 build: setup
-	$(GNATMAKE) -m -p -P"$(GPRPATH)" $(MAKE_ARGS)
+	$(GNATMAKE) -p -P"$(GPRPATH)" $(MAKE_ARGS)
 
 static:
 	$(MAKE) CSS_LIBRARY_TYPE=static build
@@ -95,7 +95,7 @@ obj/css/static lib/css/static:
 	$(MKDIR) -p $@
 
 tools:
-	$(GNATMAKE) -m -p -Pcss_tools $(MAKE_ARGS)
+	$(GNATMAKE) -p -Pcss_tools $(MAKE_ARGS)
 
 # Not intended for manual invocation.
 # Invoked if automatic builds are enabled.
