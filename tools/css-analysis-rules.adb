@@ -476,18 +476,32 @@ package body CSS.Analysis.Rules is
                          Prop : in CSS.Core.Properties.CSSProperty) is
          R : Rule_Type_Access := Repo.Find_Property (Prop.Name.all);
          Match_Count : Natural;
+         Count       : Natural;
       begin
          if R = null then
             Report.Warning (Prop.Location, "Invalid property: " & Prop.Name.all);
          else
+            Count := Prop.Value.Get_Count;
             Match_Count := R.Match (Prop.Value);
-            if Match_Count /= Prop.Value.Get_Count then
-               if Prop.Value.Get_Count = 1 then
-                  Report.Warning (Prop.Location, "Invalid value '" &
-                                    Prop.Value.To_String & "' for property " & Prop.Name.all);
+            if Match_Count /= Count then
+               if Count = 1 then
+                  Report.Warning (Prop.Location, "Invalid value '"
+                                  & Prop.Value.To_String & "' for property " & Prop.Name.all);
+               elsif Match_Count = 0 then
+                  Report.Warning (Prop.Location, "Invalid values '"
+                                  & Prop.Value.To_String & "' for property " & Prop.Name.all);
+               elsif Match_Count = Count - 1 then
+                  Report.Warning (Prop.Location, "Unexpected value '"
+                                  & Prop.Value.To_String (Match_Count + 1, Positive'Last)
+                                  & "' after '"
+                                  & Prop.Value.To_String (1, Match_Count)
+                                  & "' for property " & Prop.Name.all);
                else
-                  Report.Warning (Prop.Location, "Invalid values '" &
-                                    Prop.Value.To_String & "' for property " & Prop.Name.all);
+                  Report.Warning (Prop.Location, "Unexpected values '"
+                                  & Prop.Value.To_String (Match_Count + 1, Positive'Last)
+                                  & "' after '"
+                                  & Prop.Value.To_String (1, Match_Count)
+                                  & "' for property " & Prop.Name.all);
                end if;
             end if;
          end if;
