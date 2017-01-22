@@ -19,6 +19,7 @@ with CSS.Core.Tests;
 with CSS.Core.Properties.Tests;
 with CSS.Comments.Tests;
 with CSS.Parser.Tests;
+with CSS.Analysis.Rules.Tests;
 package body CSS.Testsuite is
 
    Tests : aliased Util.Tests.Test_Suite;
@@ -30,6 +31,7 @@ package body CSS.Testsuite is
       CSS.Core.Tests.Add_Tests (Ret);
       CSS.Core.Properties.Tests.Add_Tests (Ret);
       CSS.Parser.Tests.Add_Tests (Ret);
+      CSS.Analysis.Rules.Tests.Add_Tests (Ret);
       return Ret;
    end Suite;
 
