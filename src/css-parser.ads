@@ -79,7 +79,7 @@ private
    --  Set the parser token with a color.
    --  Report an error if the color is invalid.
    procedure Set_Color (Into  : in out YYstype;
-                        Value : in YYStype);
+                        Value : in YYstype);
 
    --  Set the parser token to represent a property identifier and its value expression.
    --  The value may be a multi-value (ex: 1px 2em 3 4).  The priority indicates whether
@@ -198,12 +198,15 @@ private
       end case;
    end record;
 
+   function Create_Value (Document : in CSS.Core.Sheets.CSSStylesheet_Access;
+                          From     : in YYstype) return CSS.Core.Values.Value_Type;
+
    function To_String (Val : in Parser_Node_Access) return String;
 
    type YYstype is new Ada.Finalization.Controlled with record
       Line     : Natural    := 0;
       Column   : Natural    := 0;
-      Unit     : CSS.Core.Values.Unit_Type  := CSS.Core.VAlues.UNIT_NONE;
+      Unit     : CSS.Core.Values.Unit_Type  := CSS.Core.Values.UNIT_NONE;
       Kind     : Node_Type := TYPE_NULL;
       Sel      : CSS.Core.Selectors.Selector_Type := CSS.Core.Selectors.SEL_CLASS;
       Node     : Parser_Node_Access;
