@@ -85,6 +85,7 @@ package body CSS.Printer is
 
    procedure Print (Stream : in out File_Type'Class;
                     Sheet  : in CSS.Core.Sheets.CSSStylesheet) is
+      procedure Process (Pos : in CSS.Core.Vectors.Cursor);
 
       procedure Process (Pos : in CSS.Core.Vectors.Cursor) is
          Rule : constant CSS.Core.Styles.CSSStyleRule_Access := CSS.Core.Styles.Element (Pos);
