@@ -53,12 +53,26 @@ package body CSS.Comments is
    function Get_Text (Comment : in Comment_Type;
                       Line    : in Positive;
                       Strip   : in Boolean := False) return String is
+      Start, Finish : Positive;
    begin
       if Line > Comment.Object.Line_Count then
          return "";
       else
-         return Comment.Object.Text (Comment.Object.Lines (Line).Start ..
-                                     Comment.Object.Lines (Line).Finish);
+         Start  := Comment.Object.Lines (Line).Start;
+         Finish := Comment.Object.Lines (Line).Finish;
+         if Strip then
+            while Start <= Finish loop
+               exit when Comment.Object.Text (Start) /= ' '
+                 and Comment.Object.Text (Start) /= ASCII.HT;
+               Start := Start + 1;
+            end loop;
+            while Start <= Finish loop
+               exit when Comment.Object.Text (Finish) /= ' '
+                 and Comment.Object.Text (Finish) /= ASCII.HT;
+               Finish := Finish - 1;
+            end loop;
+         end if;
+         return Comment.Object.Text (Start .. Finish);
       end if;
    end Get_Text;
 
@@ -110,7 +124,7 @@ package body CSS.Comments is
    procedure Finalize (List : in out CSSComment_List) is
       procedure Free is
          new Ada.Unchecked_Deallocation (Comment, Comment_Access);
-         
+
       Current : Comment_Access := List.Chain;
    begin
       while Current /= null loop
