@@ -103,10 +103,6 @@ package CSS.Analysis.Rules is
    type Group_Type is (GROUP_ONLY_ONE, GROUP_DBAR, GROUP_AND, GROUP_PARAMS);
 
    --  Create a rule that describes a group of rules whose head is passed in <tt>Rules</tt>.
-   function Create_Group (Rules : in Rule_Type_Access;
-                          Exc   : in Boolean) return Rule_Type_Access;
-
-   --  Create a rule that describes a group of rules whose head is passed in <tt>Rules</tt>.
    procedure Append_Group (Into   : out Rule_Type_Access;
                            First  : in Rule_Type_Access;
                            Second : in Rule_Type_Access;
@@ -157,12 +153,6 @@ private
    overriding
    function Match (Rule  : in Definition_Rule_Type;
                    Value : in CSS.Core.Values.Value_Type) return Boolean;
-
-   --  Check if the value matches the identifier defined by the rule.
---     overriding
---     function Match (Rule  : in Definition_Rule_Type;
---                     Value : in CSS.Core.Values.Value_List;
---                     Pos   : in Positive := 1) return Natural;
 
    type Group_Rule_Type is new Rule_Type with record
       List       : Rule_Type_Access;
