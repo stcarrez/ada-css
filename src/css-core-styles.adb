@@ -18,9 +18,12 @@
 
 package body CSS.Core.Styles is
 
+   --  ------------------------------
    --  Get the type that identifies the rule.
+   --  ------------------------------
    overriding
    function Get_Type (Rule : in CSSStyleRule) return CSSRule_Type is
+      pragma Unreferenced (Rule);
    begin
       return STYLE_RULE;
    end Get_Type;
@@ -60,6 +63,7 @@ package body CSS.Core.Styles is
    --  ------------------------------
    overriding
    function Get_Type (Rule : in CSSPageRule) return CSSRule_Type is
+      pragma Unreferenced (Rule);
    begin
       return PAGE_RULE;
    end Get_Type;
