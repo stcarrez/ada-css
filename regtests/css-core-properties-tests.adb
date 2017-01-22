@@ -35,8 +35,8 @@ package body CSS.Core.Properties.Tests is
       Sheet : Stylesheet;
       List  : CSSProperty_List;
       Repo  : CSS.Core.Values.Repository_Type;
-      N     : CSSProperty_Name := Sheet.Create_Property_Name ("border");
-      V     : Value_Type := Repo.Create_Number ("23");
+      N     : constant CSSProperty_Name := Sheet.Create_Property_Name ("border");
+      V     : constant Value_Type := Repo.Create_Number ("23");
       P     : CSSProperty;
    begin
       Util.Tests.Assert_Equals (T, 0, List.Get_Length, "Get_Length returned invalid length");
@@ -44,7 +44,8 @@ package body CSS.Core.Properties.Tests is
       Util.Tests.Assert_Equals (T, 1, List.Get_Length, "Get_Length returned invalid length");
       P := List.Get_Property ("border");
       Util.Tests.Assert_Equals (T, "border", P.Name.all, "Get_Property returned invalid property");
-      Util.Tests.Assert_Equals (T, "23", P.Value.To_String, "Get_Property returned invalid property");
+      Util.Tests.Assert_Equals (T, "23", P.Value.To_String,
+                                "Get_Property returned invalid property");
    end Test_Append;
 
 end CSS.Core.Properties.Tests;

@@ -23,7 +23,6 @@ with Util.Measures;
 
 with CSS.Core.Sheets;
 with CSS.Core.Errors.Default;
-with CSS.Parser.Parser;
 package body CSS.Parser.Tests is
 
    use Ada.Strings.Unbounded;
@@ -44,12 +43,17 @@ package body CSS.Parser.Tests is
    procedure Run_Test (T : in out Test) is
       Name   : constant String := Ada.Strings.Unbounded.To_String (T.Name);
       Path   : constant String := Ada.Strings.Unbounded.To_String (T.File);
-      Doc    : aliased CSS.Core.Sheets.CSSStyleSheet;
+      Doc    : aliased CSS.Core.Sheets.CSSStylesheet;
       Errors : aliased CSS.Core.Errors.Default.Error_Handler;
    begin
       Doc.Set_Href (Name);
       Ada.Text_IO.Create (Errors.File, Ada.Text_IO.Out_File, To_String (T.Result));
-      CSS.Parser.Load (Path, Doc'Unchecked_Access, Errors'Unchecked_Access);
+      declare
+         Time : Util.Measures.Stamp;
+      begin
+         CSS.Parser.Load (Path, Doc'Unchecked_Access, Errors'Unchecked_Access);
+         Util.Measures.Report (Time, "CSS parse " & Name);
+      end;
       Ada.Text_IO.Close (Errors.File);
       if T.Has_Error then
          T.Assert (Errors.Error_Count > 0, "No error reported for '" & Name & "'");

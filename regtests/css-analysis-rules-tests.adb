@@ -23,7 +23,7 @@ with Util.Measures;
 
 with CSS.Core.Sheets;
 with CSS.Core.Errors.Default;
-with CSS.Parser.Parser;
+with CSS.Parser;
 with CSS.Analysis.Parser;
 package body CSS.Analysis.Rules.Tests is
 
@@ -46,7 +46,7 @@ package body CSS.Analysis.Rules.Tests is
       Rules_Path : constant String := Util.Tests.Get_Path ("config/rules");
       Name   : constant String := Ada.Strings.Unbounded.To_String (T.Name);
       Path   : constant String := Ada.Strings.Unbounded.To_String (T.File);
-      Doc    : aliased CSS.Core.Sheets.CSSStyleSheet;
+      Doc    : aliased CSS.Core.Sheets.CSSStylesheet;
       Errors : aliased CSS.Core.Errors.Default.Error_Handler;
    begin
       CSS.Analysis.Parser.Load_All (Rules_Path);
