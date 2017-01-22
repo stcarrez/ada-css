@@ -1,0 +1,60 @@
+# https://developer.mozilla.org/en-US/docs/Web/CSS/font
+
+<family-name> = <string> | <custom-ident>+
+<generic-family> = serif | sans-serif | cursive | fantasy | monospace
+<absolute-size> = xx-small | x-small | small | medium | large | x-large | xx-large
+<relative-size> = larger | smaller
+
+<east-asian-width-values> = [ full-width | proportional-width ]
+<east-asian-variant-values> = [ jis78 | jis83 | jis90 | jis04 | simplified | traditional ]
+<numeric-fraction-values> = [ diagonal-fractions | stacked-fractions ]
+<numeric-figure-values> = [ lining-nums | oldstyle-nums ]
+<feature-value-name> = <custom-ident>
+<common-lig-values> = [ common-ligatures | no-common-ligatures ]
+<discretionary-lig-values> = [ discretionary-ligatures | no-discretionary-ligatures ]
+<historical-lig-values> = [ historical-ligatures | no-historical-ligatures ]
+<contextual-alt-values> = [ contextual | no-contextual ]
+<numeric-spacing-values> = [ proportional-nums | tabular-nums ]
+
+<feature-tag-value> = <string> [ <integer> | on | off ]?
+
+font-style := normal | italic | oblique
+font-family := [ <family-name> | <generic-family> ]#
+
+font-weight := normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900
+
+font-size := <absolute-size> | <relative-size> | <length-percentage>
+
+font-feature-settings := normal | <feature-tag-value>#
+font-kerning := auto | normal | none
+font-language-override := normal | <string>
+
+font-variant := normal | none | [ <common-lig-values>
+  || <discretionary-lig-values>
+  || <historical-lig-values>
+  || <contextual-alt-values>
+  || stylistic( <feature-value-name> )
+  || historical-forms
+  || styleset( <feature-value-name># )
+  || character-variant( <feature-value-name># )
+  || swash( <feature-value-name> )
+  || ornaments( <feature-value-name> )
+  || annotation( <feature-value-name> )
+  || [ small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps ]
+  || <numeric-figure-values>
+  || <numeric-spacing-values>
+  || <numeric-fraction-values>
+  || ordinal
+  || slashed-zero
+  || <east-asian-variant-values>
+  || <east-asian-width-values>
+  || ruby ]
+
+font-variant-alternates := normal | [ stylistic( <feature-value-name> ) || historical-forms || styleset( <feature-value-name># ) || character-variant( <feature-value-name># ) || swash( <feature-value-name> ) || ornaments( <feature-value-name> ) || annotation( <feature-value-name> ) ] 
+font-variant-caps := normal | small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps
+font-variant-east-asian := normal | [ <east-asian-variant-values> || <east-asian-width-values> || ruby ]
+font-variant-ligatures := normal | none | [ <common-lig-values> || <discretionary-lig-values> || <historical-lig-values> || <contextual-alt-values> ]
+font-variant-numeric := normal | [ <numeric-figure-values> || <numeric-spacing-values> || <numeric-fraction-values> || ordinal || slashed-zero ]
+font-variant-position := normal | sub | super
+
+line-height := normal | <number> | <length> | <percentage>
