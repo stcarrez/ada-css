@@ -331,17 +331,23 @@ package body CSS.Analysis.Rules is
                            First  : in Rule_Type_Access;
                            Second : in Rule_Type_Access;
                            Kind   : in Group_Type) is
+      Count : Natural := 1;
+      Rule  : Rule_Type_Access := Second;
    begin
+      while Rule /= null loop
+         Count := Count + 1;
+         Rule := Rule.Next;
+      end loop;
       if First.all in Group_Rule_Type'Class and then Group_Rule_Type (First.all).Kind = Kind then
          Append (Group_Rule_Type (First.all).List.all, Second);
-         Group_Rule_Type (First.all).Count := Group_Rule_Type (First.all).Count;
+         Group_Rule_Type (First.all).Count := Group_Rule_Type (First.all).Count + Count;
          Into := First;
       else
          Into := new Group_Rule_Type '(Ada.Finalization.Limited_Controlled with
                                        Next => null, List => First,
                                        Kind => Kind,
                                        Loc  => First.Loc,
-                                       Count      => 1,
+                                       Count      => Count,
                                        Min_Repeat => 1,
                                        Max_Repeat => 1, others => <>);
          First.Next := Second;
