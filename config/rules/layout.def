@@ -10,5 +10,32 @@ top := <length> | <percentage> | auto
 
 position := static | relative | absolute | sticky | fixed
 
+overflow-x
+overflow-y
+overflow := visible | hidden | scroll | auto
+
+visibility := visible | hidden | collapse
+
 z-index := auto | <integer>
 
+padding := [ <length> | <percentage> ]{1,4}
+padding-bottom
+padding-left
+padding-right
+padding-top := <length> | <percentage>
+
+margin := [ <length> | <percentage> | auto ]{1,4}
+
+margin-bottom
+margin-left
+margin-right
+margin-top := <length> | <percentage> | auto
+
+width := [ [ <length> | <percentage> ] && [ border-box | content-box ]? ]
+  | available | min-content | max-content | fit-content | auto
+
+min-width
+min-height := <length> | <percentage> | auto | max-content | min-content | fit-content | fill-available
+
+max-width
+max-height := <length> | <percentage> | none | max-content | min-content | fit-content | fill-available
