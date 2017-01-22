@@ -18,7 +18,6 @@
 with Ada.Finalization;
 private with Ada.Containers.Indefinite_Ordered_Maps;
 private with Ada.Containers.Vectors;
-with Util.Log.Locations;
 
 with CSS.Core.Errors;
 with CSS.Core.Values;
@@ -115,7 +114,7 @@ package CSS.Analysis.Rules is
 
    function Rule_Repository return access Repository_Type;
 
-   procedure Analyze (Sheet  : in CSS.Core.Sheets.CSSStyleSheet;
+   procedure Analyze (Sheet  : in CSS.Core.Sheets.CSSStylesheet;
                       Report : in out CSS.Core.Errors.Error_Handler'Class);
 
 private
