@@ -18,6 +18,7 @@
 with CSS.Core.Selectors;
 with CSS.Core.Vectors;
 with CSS.Core.Styles;
+with CSS.Core.Medias;
 package body CSS.Printer is
 
    procedure Do_Indent (Stream : in out File_Type'Class) is
@@ -49,6 +50,52 @@ package body CSS.Printer is
    end Print;
 
    procedure Print (Stream : in out File_Type'Class;
+                    Rule   : in CSS.Core.Medias.CSSMediaRule_Access) is
+      procedure Process (Pos : in CSS.Core.Vectors.Cursor);
+
+      procedure Process (Pos : in CSS.Core.Vectors.Cursor) is
+         Rule : constant CSS.Core.Styles.CSSStyleRule_Access := CSS.Core.Styles.Element (Pos);
+      begin
+         Print (Stream, Rule);
+      end Process;
+      Need_Comma : Boolean := False;
+   begin
+      Stream.Print ("@media");
+      if not Stream.Compress or not Rule.Medias.Is_Empty then
+         Stream.Print (' ');
+      end if;
+      for S of Rule.Medias loop
+         if Need_Comma then
+            Stream.Print (',');
+            if not Stream.Compress then
+               Stream.Print (' ');
+            end if;
+         end if;
+         Stream.Print (S);
+         Need_Comma := True;
+      end loop;
+      if not Stream.Compress then
+         Stream.Print (' ');
+      end if;
+      Stream.Print ('{');
+      if not Stream.Compress then
+         Stream.New_Line;
+      end if;
+      Stream.Indent := Stream.Indent + Stream.Indent_Level;
+      Stream.Need_Semi := False;
+      Rule.Rules.Iterate (Process'Access);
+      Stream.Need_Semi := False;
+      Stream.Indent := Stream.Indent - Stream.Indent_Level;
+      if not Stream.Compress then
+         Stream.New_Line;
+      end if;
+      Stream.Print ('}');
+      if not Stream.Compress then
+         Stream.New_Line;
+      end if;
+   end Print;
+
+   procedure Print (Stream : in out File_Type'Class;
                     Rule   : in CSS.Core.Styles.CSSStyleRule_Access) is
 
       procedure Print (Prop : in CSS.Core.Properties.CSSProperty) is
@@ -58,6 +105,7 @@ package body CSS.Printer is
 
       Sel : constant String := CSS.Core.Selectors.To_String (Rule.Selectors);
    begin
+      Do_Indent (Stream);
       Stream.Print (Sel);
       if not Stream.Compress then
          Stream.Print (' ');
@@ -76,6 +124,7 @@ package body CSS.Printer is
             Stream.Print (';');
          end if;
          Stream.New_Line;
+         Do_Indent (Stream);
       end if;
       Stream.Print ('}');
       if not Stream.Compress then
@@ -88,9 +137,19 @@ package body CSS.Printer is
       procedure Process (Pos : in CSS.Core.Vectors.Cursor);
 
       procedure Process (Pos : in CSS.Core.Vectors.Cursor) is
-         Rule : constant CSS.Core.Styles.CSSStyleRule_Access := CSS.Core.Styles.Element (Pos);
+         Rule : CSS.Core.CSSRule_Access := CSS.Core.Vectors.Element (Pos).Value;
       begin
-         Print (Stream, Rule);
+         case Rule.Get_Type is
+            when CSS.Core.STYLE_RULE =>
+               Print (Stream, CSS.Core.Styles.Element (Pos));
+
+            when CSS.Core.MEDIA_RULE =>
+               Print (Stream, CSS.Core.Medias.CSSMediaRule'Class (Rule.all)'Access);
+
+            when others =>
+               null;
+
+         end case;
       end Process;
 
    begin
