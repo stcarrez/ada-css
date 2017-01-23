@@ -22,7 +22,7 @@ package body CSS.Core.Sheets is
    --  ------------------------------
    --  Create a CSS rule.
    --  ------------------------------
-   function Create_Rule (Document : in CSSStyleSheet) return Styles.CSSStyleRule_Access is
+   function Create_Rule (Document : in CSSStylesheet) return Styles.CSSStyleRule_Access is
       Result : constant Styles.CSSStyleRule_Access := new Styles.CSSStyleRule;
       File   : constant Util.Log.Locations.File_Info_Access := Document.File;
    begin
@@ -30,8 +30,55 @@ package body CSS.Core.Sheets is
       return Result;
    end Create_Rule;
 
-   procedure Append (Document : in out CSSStyleSheet;
+   --  ------------------------------
+   --  Create a CSS media rule.
+   --  ------------------------------
+   function Create_Rule (Document : in CSSStylesheet) return Medias.CSSMediaRule_Access is
+      Result : constant Medias.CSSMediaRule_Access := new Medias.CSSMediaRule;
+      File   : constant Util.Log.Locations.File_Info_Access := Document.File;
+   begin
+      --  Result.Style.Set_File_Info (File);
+      return Result;
+   end Create_Rule;
+
+   --  ------------------------------
+   --  Append the CSS rule to the document.
+   --  ------------------------------
+   procedure Append (Document : in out CSSStylesheet;
                      Rule     : in Styles.CSSStyleRule_Access;
+                     Line     : in Natural;
+                     Column   : in Natural) is
+      Ref : constant CSS.Core.Refs.Ref := CSS.Core.Refs.Create (Rule.all'Access);
+   begin
+      Rule.Set_Location (Line, Column, Document'Unchecked_Access);
+      Document.Rules.Append (Ref);
+   end Append;
+
+   --  ------------------------------
+   --  Append the media rule to the document.
+   --  ------------------------------
+   procedure Append (Document : in out CSSStylesheet;
+                     Media    : in Medias.CSSMediaRule_Access;
+                     Rule     : in Styles.CSSStyleRule_Access;
+                     Line     : in Natural;
+                     Column   : in Natural) is
+      use type Medias.CSSMediaRule_Access;
+
+      Ref : constant CSS.Core.Refs.Ref := CSS.Core.Refs.Create (Rule.all'Access);
+   begin
+      Rule.Set_Location (Line, Column, Document'Unchecked_Access);
+      if Media /= null then
+         Media.Rules.Append (Ref);
+      else
+         Document.Rules.Append (Ref);
+      end if;
+   end Append;
+
+   --  ------------------------------
+   --  Append the CSS rule to the media.
+   --  ------------------------------
+   procedure Append (Document : in out CSSStylesheet;
+                     Rule     : in Medias.CSSMediaRule_Access;
                      Line     : in Natural;
                      Column   : in Natural) is
       Ref : constant CSS.Core.Refs.Ref := CSS.Core.Refs.Create (Rule.all'Access);
@@ -44,7 +91,7 @@ package body CSS.Core.Sheets is
    --  Iterate over the properties of each CSS rule.  The <tt>Process</tt> procedure
    --  is called with the CSS rule and the property as parameter.
    --  ------------------------------
-   procedure Iterate_Properties (Document : in CSSStyleSheet;
+   procedure Iterate_Properties (Document : in CSSStylesheet;
                                  Process  : not null access
                                    procedure (Rule     : in Styles.CSSStyleRule'Class;
                                               Property : in Properties.CSSProperty)) is
