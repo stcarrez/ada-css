@@ -148,10 +148,10 @@ string_or_uri :
 
 media :
      media_start '{' spaces ruleset_list '}' spaces
-        { Current_Rule := null; }
+        { Current_Media := null; }
   |
      error '{' spaces ruleset_list '}' spaces
-        { Current_Rule := null; }
+        { Current_Media := null; }
   ;
 
 ruleset_list :
@@ -162,7 +162,6 @@ ruleset_list :
 
 media_start :
      T_MEDIA_SYM spaces media_list
-        { Current_Rule := null; Error ($1.line, $2.line, "Found @media rule"); }
   |
     error
         { Current_Rule := null; Error (yylval.Line, yylval.Column, "Media condition error"); }
@@ -182,10 +181,11 @@ at_rule_start :
   ;
 
 media_list :
-     media_list ',' medium
-         { Error ($3.line, $3.column, "Found media_list"); }
+     media_list ',' spaces medium
+         { Append_Media (Current_Media, Document, $4); }
   |
      medium
+         { Append_Media (Current_Media, Document, $1); }
   ;
 
 medium :
@@ -196,20 +196,26 @@ media_query :
      media_condition 
   |
      T_NOT spaces T_IDENT spaces media_optional_condition
+        { Set_String ($$, "not ", $1.Line, $1.Column); Append_String ($$, $3, $5); }
   |
      T_ONLY spaces T_IDENT spaces media_optional_condition
+        { Set_String ($$, "only ", $1.Line, $1.Column); Append_String ($$, $3, $5); }
   |
      T_IDENT spaces media_optional_condition
+        { $$ := $1; Append_String ($$, $3); }
   ;
 
 media_optional_condition :
     T_AND spaces media_condition_no_or
+        { Set_String ($$, " and ", $1.Line, $1.Column); Append_String ($$, $3); }
   |
     --  Empty
+        { Set_String ($$, "", yylval.Line, yylval.Column); }
   ;
 
 media_condition :
      T_NOT spaces media_in_parens
+        { Set_String ($$, "not ", $1.Line, $1.Column); Append_String ($$, $3); }
   |
      media_in_parens
   |
@@ -220,63 +226,89 @@ media_condition :
 
 media_condition_no_or :
      T_NOT spaces media_in_parens
+        { Set_String ($$, "not ", $1.Line, $1.Column); Append_String ($$, $3); }
   |
      media_in_parens media_and_list
+        { $$ := $1; Append_String ($$, " "); Append_String ($$, $2); }
   |
      media_in_parens
   ;
 
 media_and_list :
     media_and_list media_and
+        { $$ := $1; Append_String ($$, " "); Append_String ($$, $2); }
   |
     media_and
   ;
 
 media_and :
      T_AND spaces media_in_parens
+        { Set_String ($$, "and ", $1.Line, $1.Column); Append_String ($$, $3); }
   ;
 
 media_or_list :
     media_or_list media_or
+        { $$ := $1; Append_String ($$, " "); Append_String ($$, $2); }
   |
     media_or
   ;
 
 media_or :
      T_OR media_in_parens
+        { Set_String ($$, "or ", $1.Line, $1.Column); Append_String ($$, $2); }
   ;
 
 media_in_parens :
     '(' spaces media_condition spaces ')' spaces
+        { Set_String ($$, "(", $3.Line, $3.Column); Append_String ($$, $3); Append_String ($$, ")"); }
   |
     '(' spaces media_feature spaces ')' spaces
+        { Set_String ($$, "(", $3.Line, $3.Column); Append_String ($$, $3); Append_String ($$, ")"); }
   |
     '(' spaces T_IDENT spaces ')' spaces
+        { Set_String ($$, "(", $3.Line, $3.Column); Append_String ($$, $3); Append_String ($$, ")"); }
   |
     '(' error ')' spaces
-       { Error (yylval.Line, yylval.Column, "Invalid media in parens"); }
+       { Error (yylval.Line, yylval.Column, "Invalid media in parens");
+         Set_String ($$, "", yylval.Line, yylval.Column); yyerrok; }
   ;
 
 media_op :
     '<' '='
+       { Set_String ($$, "<=", yylval.Line, yylval.Column); }
   |
     '>' '='
+       { Set_String ($$, ">=", yylval.Line, yylval.Column); }
   |
     '>'
+       { Set_String ($$, ">", yylval.Line, yylval.Column); }
   |
     '<'
+       { Set_String ($$, "<", yylval.Line, yylval.Column); }
   ;
 
 media_feature :
     T_IDENT spaces media_op spaces num_value
+        { $$ := $1; Append_String ($$, $3); Append_String ($$, $5); }
   |
     num_value spaces media_op spaces T_IDENT spaces num_value
+        { $$ := $1; Append_String ($$, $3); Append_String ($$, $5); Append_String ($$, $7); }
   |
     num_value spaces media_op spaces T_IDENT
+        { $$ := $1; Append_String ($$, $3); Append_String ($$, $5); }
   |
-    T_IDENT spaces ':' spaces num_value
+    T_IDENT spaces ':' spaces mf_value
+        { $$ := $1; Append_String ($$, ": "); Append_String ($$, $5); }    
   |
     T_IDENT
+  ;
+
+mf_value :
+    num_value
+       { $$ := $1; }
+  |
+    T_IDENT
+       { $$ := $1; }
   ;
 
 page :
@@ -367,10 +399,10 @@ rule_selectors :
 
 selector_list :
     selector_list ',' spaces selector
-       { Add_Selector_List (Current_Rule, Document, $4); }
+       { Add_Selector_List (Current_Rule, Current_Media, Document, $4); }
   |
     selector
-       { Add_Selector_List (Current_Rule, Document, $1); }
+       { Add_Selector_List (Current_Rule, Current_Media, Document, $1); }
   ;
 
 selector :
@@ -513,16 +545,17 @@ pseudo_value :
  
 declaration_list :
     declaration_list ';' spaces declaration spaces
-       { Append_Property (Current_Rule, Document, $4); }
+       { Append_Property (Current_Rule, Current_Media, Document, $4); }
   |
     declaration_list error ';' spaces declaration spaces
-       { Append_Property (Current_Rule, Document, $5); Error ($2.Line, $2.Column, "Invalid property"); yyerrok; }
+       { Append_Property (Current_Rule, Current_Media, Document, $5);
+         Error ($2.Line, $2.Column, "Invalid property"); yyerrok; }
   |
     declaration_list error ';' spaces
        { $$ := $1; Error ($2.Line, $2.Column, "Invalid property (2)"); yyerrok; }
   |
     declaration spaces
-       { Append_Property (Current_Rule, Document, $1); }
+       { Append_Property (Current_Rule, Current_Media, Document, $1); }
   ;
 
 declaration :
@@ -670,6 +703,7 @@ with CSS.Parser.Lexer;
 with CSS.Parser.Lexer_Dfa;
 with CSS.Core.Selectors;
 with CSS.Core.Styles;
+with CSS.Core.Medias;
 with Ada.Text_IO;
 package body CSS.Parser.Parser is
 
@@ -687,6 +721,7 @@ package body CSS.Parser.Parser is
    Document      : CSS.Core.Sheets.CSSStylesheet_Access;
    Current_Page  : CSS.Core.Styles.CSSPageRule_Access;
    Current_Rule  : CSS.Core.Styles.CSSStyleRule_Access;
+   Current_Media : CSS.Core.Medias.CSSMediaRule_Access;
 
    procedure yyerror (Message : in String := "syntax error") is
       pragma Unreferenced (Message);
