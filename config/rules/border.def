@@ -37,3 +37,32 @@ border-left-style
 border-right-style := <br-style>
 
 
+<bg-layer> = <bg-image> || <position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <box>{1,2}
+<final-bg-layer> = <bg-image> || <position> [ / <bg-size> ]? || <repeat-style> || <attachment>
+  || <box> || <box> || <'background-color'>
+<bg-image> = none | <image>
+<position> = [[ left | center | right | top | bottom | <length-percentage> ] | [ left | center | right | <length-percentage> ] [ top | center | bottom | <length-percentage> ] | [ center | [ left | right ] <length-percentage>? ] && [ center | [ top | bottom ] <length-percentage>? ]]
+<bg-size> = [ <length-percentage> | auto ]{1,2} | cover | contain
+<repeat-style> = repeat-x | repeat-y | [ repeat | space | round | no-repeat ]{1,2}
+<attachment> = scroll | fixed | local
+<box> = border-box | padding-box | content-box
+<image> = <url> | <image()> | <image-set()> | <element()> | <cross-fade()> | <gradient>
+<image()> = image( [ [ <image> | <string> ]? , <color>? ]! )
+<image-set()> = image-set( <image-set-option># )
+<element()> = element( <id-selector> )
+<cross-fade()> = cross-fade( <cf-mixing-image> , <cf-final-image>? )
+<gradient> = <linear-gradient()> | <repeating-linear-gradient()> | <radial-gradient()> | <repeating-radial-gradient()>
+
+# background := [ <bg-layer> , ]* <final-bg-layer>
+
+# background := <final-bg-layer>
+background := <bg-image> <bg-size> <repeat-style>
+
+background-size := <bg-size>#
+background-repeat := <repeat-style>#
+background-position := <position>#
+background-position-x := [ center | [ left | right | x-start | x-end ]? <length-percentage>? ]#
+background-position-y := [ center | [ top | bottom | y-start | y-end ]? <length-percentage>? ]#
+background-origin := <box>#
+background-color := <color>
+background-image := <bg-image>#
