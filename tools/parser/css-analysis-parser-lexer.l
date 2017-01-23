@@ -33,6 +33,7 @@ nl              \n|\r\n|\r|\f
 \+                      return '+';
 \!                      return '!';
 \,                      return ',';
+\/                      return '/';
 {s}		        return S;
 
 ":="			{ return R_DEFINE; }
