@@ -48,7 +48,7 @@ package body CSS.Parser is
          return "null";
       end if;
       case Val.Kind is
-         when TYPE_STRING | TYPE_IDENT =>
+         when TYPE_STRING | TYPE_IDENT | TYPE_NUMBER =>
             return Ada.Strings.Unbounded.To_String (Val.Str_Value);
 
          when TYPE_STYLE =>
@@ -72,7 +72,7 @@ package body CSS.Parser is
          when TYPE_NULL =>
             return "null";
 
-         when TYPE_STRING | TYPE_IDENT =>
+         when TYPE_STRING | TYPE_IDENT | TYPE_NUMBER =>
             return To_String (Val.Node);
 
          when TYPE_URI =>
@@ -266,15 +266,54 @@ package body CSS.Parser is
    end Append_Property;
 
    procedure Append_Property (Into     : in out CSS.Core.Styles.CSSStyleRule_Access;
+                              Media    : in CSS.Core.Medias.CSSMediaRule_Access;
                               Document : in CSS.Core.Sheets.CSSStylesheet_Access;
                               Prop     : in YYstype) is
    begin
       if Into = null then
          Into := Document.Create_Rule;
-         Document.Append (Into, Prop.Line, Prop.Column);
+         Document.Append (Media, Into, Prop.Line, Prop.Column);
       end if;
       Append_Property (Into.Style, Document, Prop);
    end Append_Property;
+
+   --  ------------------------------
+   --  Append the token as a string.
+   --  ------------------------------
+   procedure Append_String (Into   : in out YYstype;
+                            Value  : in YYstype) is
+   begin
+      Ada.Strings.Unbounded.Append (Into.Node.Str_Value, To_String (Value));
+   end Append_String;
+
+   procedure Append_String (Into   : in out YYstype;
+                            Value  : in String) is
+   begin
+      Ada.Strings.Unbounded.Append (Into.Node.Str_Value, Value);
+   end Append_String;
+
+   procedure Append_String (Into   : in out YYstype;
+                            Value1 : in YYstype;
+                            Value2 : in YYstype) is
+   begin
+      Ada.Strings.Unbounded.Append (Into.Node.Str_Value, To_String (Value1));
+      Ada.Strings.Unbounded.Append (Into.Node.Str_Value, To_String (Value2));
+   end Append_String;
+
+   --  ------------------------------
+   --  Set the parser token to represent the CSS selector.
+   --  ------------------------------
+   procedure Append_Media (Into     : in out CSS.Core.Medias.CSSMediaRule_Access;
+                           Document : in CSS.Core.Sheets.CSSStylesheet_Access;
+                           List     : in YYstype) is
+      use type CSS.Core.Medias.CSSMediaRule_Access;
+   begin
+      if Into = null then
+         Into := Document.Create_Rule;
+         Document.Append (Into, List.Line, List.Column);
+      end if;
+      Into.Medias.Append (To_String (List));
+   end Append_Media;
 
    --  ------------------------------
    --  Set the parser token to represent the CSS selector list.
@@ -294,12 +333,13 @@ package body CSS.Parser is
    --  It is then added to the list.
    --  ------------------------------
    procedure Add_Selector_List (Into     : in out CSS.Core.Styles.CSSStyleRule_Access;
+                                Media    : in CSS.Core.Medias.CSSMediaRule_Access;
                                 Document : in CSS.Core.Sheets.CSSStylesheet_Access;
                                 Selector : in YYstype) is
    begin
       if Into = null then
          Into := Document.Create_Rule;
-         Document.Append (Into, Selector.Line, Selector.Column);
+         Document.Append (Media, Into, Selector.Line, Selector.Column);
       end if;
       CSS.Core.Selectors.Append (Into.Selectors, Selector.Node.Selector);
    end Add_Selector_List;
