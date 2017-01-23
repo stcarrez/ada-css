@@ -60,6 +60,13 @@ package CSS.Analysis.Rules.Types is
    function Match (Rule  : in String_Rule_Type;
                    Value : in CSS.Core.Values.Value_Type) return Boolean;
 
+   type Identifier_Rule_Type is new Rule_Type with null record;
+
+   --  Check if the value represents a custom identifier.
+   overriding
+   function Match (Rule  : in Identifier_Rule_Type;
+                   Value : in CSS.Core.Values.Value_Type) return Boolean;
+
    type URL_Rule_Type is new Rule_Type with null record;
 
    --  Check if the value represents a string.
