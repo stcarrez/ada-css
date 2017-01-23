@@ -108,4 +108,15 @@ package body CSS.Analysis.Rules.Types is
       return Get_Type (Value) = VALUE_COLOR;
    end Match;
 
+   --  ------------------------------
+   --  Check if the value represents a custom identifier.
+   --  ------------------------------
+   overriding
+   function Match (Rule  : in Identifier_Rule_Type;
+                   Value : in CSS.Core.Values.Value_Type) return Boolean is
+      pragma Unreferenced (Rule);
+   begin
+      return Get_Type (Value) = VALUE_IDENT;
+   end Match;
+
 end CSS.Analysis.Rules.Types;
