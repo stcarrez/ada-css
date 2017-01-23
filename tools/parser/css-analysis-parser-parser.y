@@ -81,7 +81,15 @@ param_rule_definition :
     param_rule_definition ',' spaces rule_dbar_definition
        { Append_Group ($$, $1, $4, Rules.GROUP_PARAMS); }
   |
+    param_rule_definition ',' spaces param_optional_definition
+       { Append_Group ($$, $1, $4, Rules.GROUP_PARAMS); }
+  |
+    param_rule_definition spaces param_optional_definition
+       { Append_Group ($$, $1, $3, Rules.GROUP_PARAMS); }
+  |
     rule_dbar_definition
+  |
+    group_definition
   ;
 
 rule_dbar_definition :
@@ -107,7 +115,13 @@ rule_or_definition :
 
 rule_cont_definition :
     rule_cont_definition spaces one_component
-       { Rules.Append ($1.Rule.all, $2.Rule); $$ := $1; }
+       { Append_Group ($$, $1, $3, Rules.GROUP_SEQ); }
+  |
+    rule_cont_definition spaces ',' spaces one_component
+       { Append_Group ($$, $1, $5, Rules.GROUP_SEQ); }
+  |
+    one_component ',' spaces
+       { $$ := $1; }
   |
     one_component
   ;
@@ -143,6 +157,14 @@ single_component :
   |
     R_NUM
        { Create_Identifier ($$, $1); }
+  ;
+
+param_optional_definition :
+    '[' spaces ',' spaces rule_definition ']' '?'
+       { $$ := $5; }
+  |
+    '[' spaces ',' spaces rule_definition ']'
+       { $$ := $5; }
   ;
 
 group_definition :
