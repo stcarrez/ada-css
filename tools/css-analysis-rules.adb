@@ -226,6 +226,18 @@ package body CSS.Analysis.Rules is
       end if;
    end Match;
 
+   overriding
+   function Match (Rule  : in Definition_Rule_Type;
+                   Value : in CSS.Core.Values.Value_List;
+                   Pos   : in Positive := 1) return Natural is
+   begin
+      if Rule.Rule = null then
+         return 0;
+      else
+         return Rule.Rule.Match (Value, Pos);
+      end if; 
+   end Match;
+
    --  Check if the value matches the rule.
    overriding
    function Match (Rule  : in Group_Rule_Type;
@@ -279,7 +291,7 @@ package body CSS.Analysis.Rules is
             end if;
          end loop;
 
-      elsif Group.Kind = GROUP_DBAR then
+      elsif Group.Kind = GROUP_AND then
          declare
             M : Rule_Type_Access_Array (1 .. Group.Count);
             I : Positive := 1;
@@ -308,8 +320,30 @@ package body CSS.Analysis.Rules is
             end loop;
             return Match_Count;
          end;
-      elsif Group.Kind = GROUP_AND then
+
+      elsif Group.Kind = GROUP_DBAR then
          declare
+            M : Rule_Type_Access_Array (1 .. Group.Count);
+            I : Positive := 1;
+            N : Natural;
+         begin
+            Rule := Group.List;
+            while Cur_Pos <= Count loop
+               exit when Rule = null;
+               N := Rule.Match (Value, Cur_Pos);
+               if N = 0 then
+                  return 0;
+               end if;
+               Match_Count := Match_Count + N;
+               Cur_Pos := Cur_Pos + N;
+               Rule := Rule.Next;
+            end loop;
+            return Match_Count;
+         end;
+
+      elsif Group.Kind = GROUP_SEQ then
+         declare
+            I : Positive := 1;
             N : Natural;
          begin
             Rule := Group.List;
@@ -414,6 +448,9 @@ package body CSS.Analysis.Rules is
 
                   when GROUP_PARAMS =>
                      Stream.Print (", ");
+
+                  when GROUP_SEQ =>
+                     Stream.Print (" ");
 
                end case;
             end if;
@@ -533,6 +570,7 @@ package body CSS.Analysis.Rules is
    String_Rule  : aliased Types.String_Rule_Type;
    URL_Rule     : aliased Types.URL_Rule_Type;
    Color_Rule   : aliased Types.Color_Rule_Type;
+   Ident_Rule   : aliased Types.Identifier_Rule_Type;
 
 begin
    Repo.Types.Insert ("<angle>", Angle_Rule'Access);
@@ -543,4 +581,5 @@ begin
    Repo.Types.Insert ("<string>", String_Rule'Access);
    Repo.Types.Insert ("<url>", URL_Rule'Access);
    Repo.Types.Insert ("<hex-color>", Color_Rule'Access);
+   Repo.Types.Insert ("<custom-ident>", Ident_Rule'Access);
 end CSS.Analysis.Rules;
