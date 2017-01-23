@@ -15,7 +15,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-pragma Ada_2012;
 with Ada.Strings.Unbounded;
 with CSS.Core;
 with CSS.Core.Sheets;
@@ -23,6 +22,7 @@ with CSS.Core.Errors;
 private with CSS.Core.Selectors;
 private with Util.Concurrent.Counters;
 private with CSS.Core.Styles;
+private with CSS.Core.Medias;
 private with CSS.Core.Values;
 private with Ada.Finalization;
 package CSS.Parser is
@@ -53,6 +53,15 @@ private
                          Value  : in String;
                          Line   : in Natural;
                          Column : in Natural);
+
+   --  Append the token as a string.
+   procedure Append_String (Into   : in out YYstype;
+                            Value  : in YYstype);
+   procedure Append_String (Into   : in out YYstype;
+                            Value  : in String);
+   procedure Append_String (Into   : in out YYstype;
+                            Value1 : in YYstype;
+                            Value2 : in YYstype);
 
    --  Set the parser token with a string that represent an identifier.
    --  The line and column number are recorded in the token.
@@ -101,8 +110,13 @@ private
                               Document : in CSS.Core.Sheets.CSSStylesheet_Access;
                               Prop     : in YYstype);
    procedure Append_Property (Into     : in out CSS.Core.Styles.CSSStyleRule_Access;
+                              Media    : in CSS.Core.Medias.CSSMediaRule_Access;
                               Document : in CSS.Core.Sheets.CSSStylesheet_Access;
                               Prop     : in YYstype);
+
+   procedure Append_Media (Into     : in out CSS.Core.Medias.CSSMediaRule_Access;
+                           Document : in CSS.Core.Sheets.CSSStylesheet_Access;
+                           List     : in YYstype);
 
    --  Set the parser token to represent the CSS selector list.
    --  The first selector searched in the document, inserted in the document
@@ -115,6 +129,7 @@ private
    --  searched in the document CSS selector tree and inserted in the tree.
    --  It is then added to the list.
    procedure Add_Selector_List (Into     : in out CSS.Core.Styles.CSSStyleRule_Access;
+                                Media    : in CSS.Core.Medias.CSSMediaRule_Access;
                                 Document : in CSS.Core.Sheets.CSSStylesheet_Access;
                                 Selector : in YYstype);
 
