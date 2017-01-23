@@ -1,0 +1,10 @@
+@media screen and 
+
+(-ms-high-contrast: active)
+
+{
+    /* for IE10+ */
+    select:-ms-expand {
+        display: none;
+    }
+}

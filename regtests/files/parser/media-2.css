@@ -1,0 +1,10 @@
+@media screen {
+    div.container_12 {
+        width: 100%;
+    }
+}
+@media printer {
+      div.container_6 {
+        width: 10%;
+      }
+}
