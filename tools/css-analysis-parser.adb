@@ -35,6 +35,11 @@ package body CSS.Analysis.Parser is
       Filter      : constant Filter_Type := (Ordinary_File => True, others => False);
       Ent         : Directory_Entry_Type;
    begin
+      if not Exists (Path) then
+         Log.Info ("Path {0} does not exist.", Path);
+         return;
+      end if;
+
       if Kind (Path) /= Directory then
          Log.Error ("Path '{0}' is not a directory.", Path);
          return;
