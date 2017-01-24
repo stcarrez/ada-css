@@ -32,6 +32,9 @@ package CSS.Core.Sheets is
    --  Create a CSS rule.
    function Create_Rule (Document : in CSSStyleSheet) return Styles.CSSStyleRule_Access;
 
+   --  Create a CSS font-face rule.
+   function Create_Rule (Document : in CSSStyleSheet) return Styles.CSSFontfaceRule_Access;
+
    --  Create a CSS media rule.
    function Create_Rule (Document : in CSSStyleSheet) return Medias.CSSMediaRule_Access;
 
@@ -44,6 +47,12 @@ package CSS.Core.Sheets is
    --  Append the media rule to the document.
    procedure Append (Document : in out CSSStylesheet;
                      Rule     : in Medias.CSSMediaRule_Access;
+                     Line     : in Natural;
+                     Column   : in Natural);
+
+   --  Append the font-face rule to the document.
+   procedure Append (Document : in out CSSStylesheet;
+                     Rule     : in Styles.CSSFontfaceRule_Access;
                      Line     : in Natural;
                      Column   : in Natural);
 
