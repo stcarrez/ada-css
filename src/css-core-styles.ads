@@ -52,4 +52,13 @@ package CSS.Core.Styles is
    overriding
    function Get_Type (Rule : in CSSPageRule) return CSSRule_Type;
 
+   type CSSFontfaceRule is new CSS.Core.CSSRule with record
+      Style     : CSSStyle_Declaration;
+   end record;
+   type CSSFontfaceRule_Access is access all CSSFontfaceRule'Class;
+
+   --  Get the type that identifies the rule.
+   overriding
+   function Get_Type (Rule : in CSSFontfaceRule) return CSSRule_Type;
+
 end CSS.Core.Styles;
