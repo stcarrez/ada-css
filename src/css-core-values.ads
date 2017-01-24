@@ -35,16 +35,16 @@ package CSS.Core.Values is
                       UNIT_PX,
                       UNIT_EX,
                       UNIT_EM,
-                      UNIT_REM,       --  relative font-size of the root element
-                      UNIT_LH,        --  relative to line height of the element
-                      UNIT_RLH,       --  relative to the line height of the root element
-                      UNIT_IC,        --  average character advance of a fullwidth glyph in the element’s font
-                      UNIT_VW,        --  relative to 1% of the width of the viewport
-                      UNIT_VH,        --  relative to 1% of the height of the viewport
-                      UNIT_VI,        --  1% of viewport’s size in the root element’s inline axis
-                      UNIT_VB,        --  1% of viewport’s size in the root element’s block axis
-                      UNIT_VMIN,      --  1% of viewport’s smaller dimension
-                      UNIT_VMAX,      --  1% of viewport’s larger dimension
+                      UNIT_REM,  --  relative font-size of the root element
+                      UNIT_LH,   --  relative to line height of the element
+                      UNIT_RLH,  --  relative to the line height of the root element
+                      UNIT_IC,   --  average character advance of a fullwidth glyph
+                      UNIT_VW,   --  relative to 1% of the width of the viewport
+                      UNIT_VH,   --  relative to 1% of the height of the viewport
+                      UNIT_VI,   --  1% of viewport’s size in the root element’s inline axis
+                      UNIT_VB,   --  1% of viewport’s size in the root element’s block axis
+                      UNIT_VMIN, --  1% of viewport’s smaller dimension
+                      UNIT_VMAX, --  1% of viewport’s larger dimension
                       UNIT_CM, UNIT_MM, UNIT_IN, UNIT_PI, UNIT_PC, UNIT_PT,
                       UNIT_DEG, UNIT_RAD, UNIT_GRAD,
                       UNIT_MS, UNIT_SEC, UNIT_HZ, UNIT_KHZ);
@@ -59,7 +59,8 @@ package CSS.Core.Values is
                        VALUE_STRING,   --  String: "..." or '...'
                        VALUE_URL,      --  URL: url(http://...) or url("../img.png")
                        VALUE_NUMBER,   --  Number: .2em or 10
-                       VALUE_COLOR);   --  Color: #fed or rgb(10, 20, 30)
+                       VALUE_COLOR,    --  Color: #fed or rgb(10, 20, 30)
+                       VALUE_FUNCTION);
 
    type Value_Type is private;
 
@@ -81,6 +82,8 @@ package CSS.Core.Values is
 
    type Value_List is tagged private;
 
+   function "<" (Left, Right : in Value_List) return Boolean;
+
    --  Append the value to the list.
    procedure Append (List  : in out Value_List;
                      Value : in Value_Type);
@@ -95,10 +98,13 @@ package CSS.Core.Values is
    --  Get a printable representation of the list or a subset of the list.
    function To_String (List : in Value_List;
                        From : in Positive := 1;
-                       To   : in Positive := Positive'Last) return String;
+                       To   : in Positive := Positive'Last;
+                       Sep  : in Character := ' ') return String;
 
    --  Compare the two values for identity.
    function Compare (Left, Right : in Value_Type) return Boolean;
+
+   EMPTY_LIST : constant Value_List;
 
    --  A repository of all known values.
    type Repository_Type is new Ada.Finalization.Limited_Controlled with private;
@@ -119,6 +125,11 @@ package CSS.Core.Values is
    function Create_Ident (Repository : in out Repository_Type;
                           Value      : in String) return Value_Type;
 
+   --  Create a function value with parameters.
+   function Create_Function (Repository : in out Repository_Type;
+                             Name       : in String;
+                             Parameters : in Value_List'Class) return Value_Type;
+
    --  Create a number value with an optional unit.
    function Create_Number (Repository : in out Repository_Type;
                            Value      : in String;
@@ -129,12 +140,15 @@ package CSS.Core.Values is
 
 private
 
+   type Value_List_Access is access all Value_List;
+
    type Value_Node;
    type Value_Type is access all Value_Node;
    type Value_Node (Len  : Natural;
                     Kind : Value_Kind) is
    limited record
       Unit    : Unit_Type;
+      Params  : Value_List_Access;
       Value   : String (1 .. Len);
    end record;
 
@@ -160,7 +174,6 @@ private
    procedure Finalize (Object : in out Repository_Type);
 
    type Value_Array is array (Positive range <>) of Value_Type;
-   type Value_List_Access is access all Value_List;
 
    type Value_List is new Ada.Finalization.Controlled with record
       Next   : Value_List_Access;
@@ -176,6 +189,10 @@ private
    overriding
    procedure Finalize (Object : in out Value_List);
 
-   EMPTY : constant Value_Type := null;
+   EMPTY      : constant Value_Type := null;
+   EMPTY_LIST : constant Value_List := Value_List '(Ada.Finalization.Controlled with
+                                                    Next   => null,
+                                                    Values => (others => null),
+                                                    Count  => 0);
 
 end CSS.Core.Values;
