@@ -1,0 +1,5 @@
+@media only screen and (min-width: 500px) {
+    .page-diag .btn-container {
+        width: 240px;
+    }
+}
