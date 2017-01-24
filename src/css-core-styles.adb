@@ -68,4 +68,14 @@ package body CSS.Core.Styles is
       return PAGE_RULE;
    end Get_Type;
 
+   --  ------------------------------
+   --  Get the type that identifies the rule.
+   --  ------------------------------
+   overriding
+   function Get_Type (Rule : in CSSFontfaceRule) return CSSRule_Type is
+      pragma Unreferenced (Rule);
+   begin
+      return FONT_FACE_RULE;
+   end Get_Type;
+
 end CSS.Core.Styles;
