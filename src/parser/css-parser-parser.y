@@ -175,13 +175,13 @@ media_start :
   ;
 
 at_rule :
-     at_rule_start spaces ruleset '}' spaces
+     at_rule_start spaces ruleset_list '}' spaces
         { Current_Rule := null; }
   ;
 
 at_rule_start :
      T_ATKEYWORD spaces function_params '{'
-        { Current_Rule := null; Error ($1.line, $2.line, "Found @<keyword> rule"); }
+        { Current_Rule := null; }
   |
      T_ATKEYWORD error '{'
        { Error ($1.Line, $1.Column, "Invalid media selection after " & To_String ($1));  yyerrok; }
@@ -627,6 +627,9 @@ prio :
 
 function :
      T_FUNCTION spaces function_params ')' spaces
+        { CSS.Parser.Set_Function ($$, Document, $1, $3); }
+  |
+     T_FUNCTION spaces ')' spaces
         { CSS.Parser.Set_Function ($$, Document, $1, $3); }
   |
      T_FUNCTION error ')' spaces
