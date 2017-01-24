@@ -31,6 +31,17 @@ package body CSS.Core.Sheets is
    end Create_Rule;
 
    --  ------------------------------
+   --  Create a CSS font-face rule.
+   --  ------------------------------
+   function Create_Rule (Document : in CSSStylesheet) return Styles.CSSFontfaceRule_Access is
+      Result : constant Styles.CSSFontfaceRule_Access := new Styles.CSSFontfaceRule;
+      File   : constant Util.Log.Locations.File_Info_Access := Document.File;
+   begin
+      Result.Style.Set_File_Info (File);
+      return Result;
+   end Create_Rule;
+
+   --  ------------------------------
    --  Create a CSS media rule.
    --  ------------------------------
    function Create_Rule (Document : in CSSStylesheet) return Medias.CSSMediaRule_Access is
@@ -46,6 +57,19 @@ package body CSS.Core.Sheets is
    --  ------------------------------
    procedure Append (Document : in out CSSStylesheet;
                      Rule     : in Styles.CSSStyleRule_Access;
+                     Line     : in Natural;
+                     Column   : in Natural) is
+      Ref : constant CSS.Core.Refs.Ref := CSS.Core.Refs.Create (Rule.all'Access);
+   begin
+      Rule.Set_Location (Line, Column, Document'Unchecked_Access);
+      Document.Rules.Append (Ref);
+   end Append;
+
+   --  ------------------------------
+   --  Append the CSS rule to the document.
+   --  ------------------------------
+   procedure Append (Document : in out CSSStylesheet;
+                     Rule     : in Styles.CSSFontfaceRule_Access;
                      Line     : in Natural;
                      Column   : in Natural) is
       Ref : constant CSS.Core.Refs.Ref := CSS.Core.Refs.Create (Rule.all'Access);
