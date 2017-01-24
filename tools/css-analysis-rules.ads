@@ -207,4 +207,12 @@ private
 
    procedure Resolve (Repository : in out Repository_Type);
 
+   --  Release the rules allocated dynamically.
+   overriding
+   procedure Finalize (Repository : in out Repository_Type);
+
+   --  Erase all the rules that have been loaded in the repository.
+   procedure Clear (Repository : in out Repository_Type);
+   procedure Clear (Rules : in out Rule_Maps.Map);
+
 end CSS.Analysis.Rules;
