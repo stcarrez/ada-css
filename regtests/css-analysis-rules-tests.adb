@@ -49,6 +49,7 @@ package body CSS.Analysis.Rules.Tests is
       Doc    : aliased CSS.Core.Sheets.CSSStylesheet;
       Errors : aliased CSS.Core.Errors.Default.Error_Handler;
    begin
+      Rule_Repository.Clear;
       CSS.Analysis.Parser.Load_All (Rules_Path);
       declare
          Time   : Util.Measures.Stamp;
