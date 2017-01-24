@@ -324,19 +324,33 @@ package body CSS.Analysis.Rules is
       elsif Group.Kind = GROUP_DBAR then
          declare
             M : Rule_Type_Access_Array (1 .. Group.Count);
-            I : Positive := 1;
             N : Natural;
+            Cnt : Natural := 0;
+            Found : Boolean;
          begin
             Rule := Group.List;
-            while Cur_Pos <= Count loop
-               exit when Rule = null;
-               N := Rule.Match (Value, Cur_Pos);
-               if N = 0 then
-                  return 0;
-               end if;
-               Match_Count := Match_Count + N;
-               Cur_Pos := Cur_Pos + N;
+            while Rule /= null loop
+               Cnt := Cnt + 1;
+               M (Cnt) := Rule;
                Rule := Rule.Next;
+            end loop;
+            while Cur_Pos <= Count loop
+               Found := False;
+               for I in 1 .. Cnt loop
+                  Rule := M (I);
+                  N := Rule.Match (Value, Cur_Pos);
+                  if N > 0 then
+                     Match_Count := Match_Count + N;
+                     if I /= Cnt then
+                        M (I .. Cnt - 1) := M (I + 1 .. Cnt);
+                     end if;
+                     Cnt := Cnt - 1;
+                     Cur_Pos := Cur_Pos + N;
+                     Found := True;
+                     exit;
+                  end if;
+               end loop;
+               exit when Cnt = 0 or not Found;
             end loop;
             return Match_Count;
          end;
@@ -350,7 +364,7 @@ package body CSS.Analysis.Rules is
             while Cur_Pos <= Count loop
                exit when Rule = null;
                N := Rule.Match (Value, Cur_Pos);
-               if N = 0 then
+               if N = 0 and Rule.Min_Repeat > 0 then
                   return 0;
                end if;
                Match_Count := Match_Count + N;
