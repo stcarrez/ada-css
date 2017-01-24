@@ -1,0 +1,79 @@
+@-moz-document url-prefix() {
+  div { float: left }
+  p { float: right }
+    /* for Firefox */
+    select {
+        -moz-appearance: none;
+        text-indent: 0.01px;
+        text-overflow: ""
+    }
+
+    /* hides the dotted outline on focus in FF (See SO#3773430) */
+    select-moz-focusring {
+        color: transparent;
+        text-shadow: 0 0 0 #000;
+    }
+}
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    /* for Webkit */
+    select {
+        -webkit-appearance: none;
+    }
+}
+
+@-moz-document url-prefix() {
+    /* for Firefox */
+    select {
+        -moz-appearance: none;
+        text-indent: 0.01px;
+        text-overflow: "";
+    }
+
+    /* hides the dotted outline on focus in FF (See SO#3773430) */
+    select:-moz-focusring {
+        color: transparent;
+        text-shadow: 0 0 0 #000;
+    }
+}
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+    /* for IE10+ */
+    select:-ms-expand {
+        display: none;
+    }
+}
+
+
+
+/**************
+ * COMPONENTS *
+ **************/
+
+
+/* ACTION MENUS */
+
+.contextual-actions {
+    display: block;
+    width: 340px;
+}
+@media screen and (min-width: 500px) {
+    .contextual-actions {
+        width: 340px;
+    }
+}
+@media screen and (min-width: 980px) {
+    .contextual-actions {
+        width: 380px;
+    }
+}
+@media screen and (min-width: 980px) {
+    .contextual-actions {
+        width: 300px;
+    }
+}
+@media screen and (min-width: 1220px) {
+    .contextual-actions {
+        width: 380px;
+    }
+}
+
