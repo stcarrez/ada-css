@@ -492,11 +492,25 @@ package body CSS.Parser is
                  To_String (Right));
    end Set_Expr;
 
-   procedure Set_Function (Into   : in out YYstype;
-                           Name   : in YYstype;
-                           Params : in YYstype) is
+   procedure Set_Function (Into     : in out YYstype;
+                           Document : in CSS.Core.Sheets.CSSStylesheet_Access;
+                           Name     : in YYstype;
+                           Params   : in YYstype) is
+      Func_Name : constant String := To_String (Name.Node.Str_Value);
    begin
-      Log.Debug ("Set function {0}", To_String (Name.Node.Str_Value));
+      Log.Debug ("Set function {0}", Func_Name);
+
+      Set_Type (Into, TYPE_VALUE, Name.Line, Name.Column);
+      Into.Node := new Parser_Node_Type '(Kind        => TYPE_VALUE,
+                                          Ref_Counter => ONE,
+                                          V    => <>);
+      if Params.Kind /= TYPE_PROPERTY_LIST then
+         Into.Node.V := Document.Values.Create_Function
+            (Func_Name (Func_Name'First .. Func_Name'Last - 1), CSS.Core.Values.EMPTY_LIST);
+      else
+         Into.Node.V := Document.Values.Create_Function
+            (Func_Name (Func_Name'First .. Func_Name'Last - 1), Params.Node.Values);
+      end if;
    end Set_Function;
 
    procedure Error (Line    : in Natural;
