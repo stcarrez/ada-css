@@ -1,7 +1,7 @@
 
 # cursor := [ [ <url> [ <x> <y> ]? , ]*
 
-cursor := [ [ <url> [ <x> <y> ]? ]*
+cursor := [ 
   [ auto | default | none | context-menu | help | pointer | progress | wait
     | cell | crosshair | text | vertical-text | alias | copy | move | no-drop
     | not-allowed | e-resize | n-resize | ne-resize | nw-resize | s-resize

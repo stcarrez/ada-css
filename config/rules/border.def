@@ -39,9 +39,11 @@ border-right-style := <br-style>
 
 <bg-layer> = <bg-image> || <position> [ / <bg-size> ]? || <repeat-style> || <attachment> || <box>{1,2}
 <final-bg-layer> = <bg-image> || <position> [ / <bg-size> ]? || <repeat-style> || <attachment>
-  || <box> || <box> || <'background-color'>
+  || <box> || <box> || <color>
 <bg-image> = none | <image>
-<position> = [[ left | center | right | top | bottom | <length-percentage> ] | [ left | center | right | <length-percentage> ] [ top | center | bottom | <length-percentage> ] | [ center | [ left | right ] <length-percentage>? ] && [ center | [ top | bottom ] <length-percentage>? ]]
+<position> = [[ left | center | right | top | bottom | <length-percentage> ]
+  | [ left | center | right | <length-percentage> ] [ top | center | bottom | <length-percentage> ]
+  | [ center | [ left | right ] <length-percentage>? ] && [ center | [ top | bottom ] <length-percentage>? ]]
 <bg-size> = [ <length-percentage> | auto ]{1,2} | cover | contain
 <repeat-style> = repeat-x | repeat-y | [ repeat | space | round | no-repeat ]{1,2}
 <attachment> = scroll | fixed | local
@@ -53,10 +55,10 @@ border-right-style := <br-style>
 <cross-fade()> = cross-fade( <cf-mixing-image> , <cf-final-image>? )
 <gradient> = <linear-gradient()> | <repeating-linear-gradient()> | <radial-gradient()> | <repeating-radial-gradient()>
 
-# background := [ <bg-layer> , ]* <final-bg-layer>
+#background := [ <bg-layer> , ]* <final-bg-layer>
 
-# background := <final-bg-layer>
-background := <bg-image> <bg-size> <repeat-style>
+background := <final-bg-layer>
+#background := <bg-image> <bg-size> <repeat-style>
 
 background-size := <bg-size>#
 background-repeat := <repeat-style>#

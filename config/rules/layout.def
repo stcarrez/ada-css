@@ -49,3 +49,14 @@ min-height := <length> | <percentage> | auto | max-content | min-content | fit-c
 
 max-width
 max-height := <length> | <percentage> | none | max-content | min-content | fit-content | fill-available
+
+
+border-collapse := collapse | separate
+border-spacing  := <length> <length>?
+caption-side    := top | bottom | block-start | block-end | inline-start | inline-end
+empty-cells     := show | hide
+table-layout    := auto | fixed
+vertical-align  := baseline | sub | super | text-top | text-bottom | middle | <length> | <percentage>
+  | top | bottom
+
+
