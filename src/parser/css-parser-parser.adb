@@ -343,9 +343,7 @@ when 38 => -- #line 179
  Current_Rule := null; 
 
 when 39 => -- #line 184
- Current_Rule := null; Error (
-yy.value_stack(yy.tos-3).line, 
-yy.value_stack(yy.tos-2).line, "Found @<keyword> rule"); 
+ Current_Rule := null; 
 
 when 40 => -- #line 187
  Error (
@@ -867,65 +865,66 @@ yy.value_stack(yy.tos-4),
 yy.value_stack(yy.tos-2)); 
 
 when 167 => -- #line 633
+ CSS.Parser.Set_Function (
+yyval, Document, 
+yy.value_stack(yy.tos-3), 
+yy.value_stack(yy.tos-1)); 
+
+when 168 => -- #line 636
  Error (
 yy.value_stack(yy.tos-3).Line, 
 yy.value_stack(yy.tos-3).Column, "Invalid function parameter"); 
 
-when 168 => -- #line 638
+when 169 => -- #line 641
  CSS.Parser.Set_Expr (
 yyval, 
 yy.value_stack(yy.tos-3), 
 yy.value_stack(yy.tos)); 
 
-when 169 => -- #line 641
+when 170 => -- #line 644
  CSS.Parser.Set_Expr (
 yyval, 
 yy.value_stack(yy.tos-1), 
 yy.value_stack(yy.tos)); 
 
-when 170 => -- #line 644
+when 171 => -- #line 647
  
 yyval := 
 yy.value_stack(yy.tos); 
-
-when 171 => -- #line 649
- CSS.Parser.Set_Expr (
-yyval, 
-yy.value_stack(yy.tos-3), 
-yy.value_stack(yy.tos)); 
 
 when 172 => -- #line 652
  CSS.Parser.Set_Expr (
 yyval, 
-yy.value_stack(yy.tos-1), 
+yy.value_stack(yy.tos-3), 
 yy.value_stack(yy.tos)); 
 
 when 173 => -- #line 655
+ CSS.Parser.Set_Expr (
+yyval, 
+yy.value_stack(yy.tos-1), 
+yy.value_stack(yy.tos)); 
+
+when 174 => -- #line 658
  
 yyval := 
 yy.value_stack(yy.tos); 
 
-when 174 => -- #line 658
+when 175 => -- #line 661
  
 yyval := 
 yy.value_stack(yy.tos-1); --  CSS.Parser.Set_Parameter ($$, Document, $1, $5);
         
 
-when 175 => -- #line 664
+when 176 => -- #line 667
  CSS.Parser.Set_Expr (
 yyval, 
 yy.value_stack(yy.tos-2), 
 yy.value_stack(yy.tos)); 
 
-when 176 => -- #line 667
+when 177 => -- #line 670
  CSS.Parser.Set_Expr (
 yyval, 
 yy.value_stack(yy.tos-1), 
-yy.value_stack(yy.tos)); 
-
-when 178 => -- #line 674
- CSS.Parser.Set_Value (
-yyval, Document, 
 yy.value_stack(yy.tos)); 
 
 when 179 => -- #line 677
@@ -941,7 +940,7 @@ yy.value_stack(yy.tos));
 when 181 => -- #line 683
  CSS.Parser.Set_Value (
 yyval, Document, 
-yy.value_stack(yy.tos-1)); 
+yy.value_stack(yy.tos)); 
 
 when 182 => -- #line 686
  CSS.Parser.Set_Value (
@@ -956,23 +955,23 @@ yy.value_stack(yy.tos-1));
 when 184 => -- #line 692
  CSS.Parser.Set_Value (
 yyval, Document, 
-yy.value_stack(yy.tos)); 
+yy.value_stack(yy.tos-1)); 
 
 when 185 => -- #line 695
+ CSS.Parser.Set_Value (
+yyval, Document, 
+yy.value_stack(yy.tos)); 
+
+when 186 => -- #line 698
  
 yyval := 
 yy.value_stack(yy.tos); 
 
-when 186 => -- #line 698
+when 187 => -- #line 701
  Error (
 yy.value_stack(yy.tos).Line, 
 yy.value_stack(yy.tos).Column, "Invalid url()"); 
 yyval := EMPTY; 
-
-when 187 => -- #line 703
- 
-yyval := 
-yy.value_stack(yy.tos-1); 
 
 when 188 => -- #line 706
  
@@ -1009,7 +1008,12 @@ when 194 => -- #line 724
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 195 => -- #line 729
+when 195 => -- #line 727
+ 
+yyval := 
+yy.value_stack(yy.tos-1); 
+
+when 196 => -- #line 732
  Set_Color (
 yyval, 
 yy.value_stack(yy.tos-1)); 
