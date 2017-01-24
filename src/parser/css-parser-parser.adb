@@ -325,40 +325,54 @@ begin
 
                 case yy.rule_id is
 
-when 4 => -- #line 75
+when 4 => -- #line 78
  Error (
 yy.value_stack(yy.tos).Line, 
 yy.value_stack(yy.tos).Column, "Invalid CSS selector component"); 
 
-when 30 => -- #line 151
+when 31 => -- #line 156
  Current_Media := null; 
 
-when 31 => -- #line 154
+when 32 => -- #line 159
  Current_Media := null; 
 
-when 35 => -- #line 167
+when 37 => -- #line 174
  Current_Rule := null; Error (yylval.Line, yylval.Column, "Media condition error"); 
 
-when 36 => -- #line 172
+when 38 => -- #line 179
  Current_Rule := null; 
 
-when 37 => -- #line 175
- Current_Rule := null; 
-
-when 38 => -- #line 180
+when 39 => -- #line 184
  Current_Rule := null; Error (
-yy.value_stack(yy.tos-2).line, 
-yy.value_stack(yy.tos-1).line, "Found @<keyword> rule"); 
+yy.value_stack(yy.tos-3).line, 
+yy.value_stack(yy.tos-2).line, "Found @<keyword> rule"); 
 
-when 39 => -- #line 185
+when 40 => -- #line 187
+ Error (
+yy.value_stack(yy.tos-2).Line, 
+yy.value_stack(yy.tos-2).Column, "Invalid media selection after " & To_String (
+yy.value_stack(yy.tos-2)));  yyerrok; 
+
+when 41 => -- #line 192
+ Current_Rule := null; 
+
+when 42 => -- #line 195
+ Current_Rule := null; 
+
+when 43 => -- #line 200
+ Current_Rule := null; Error (
+yy.value_stack(yy.tos-1).line, 
+yy.value_stack(yy.tos).line, "Found @<font-face> rule"); 
+
+when 44 => -- #line 205
  Append_Media (Current_Media, Document, 
 yy.value_stack(yy.tos)); 
 
-when 40 => -- #line 188
+when 45 => -- #line 208
  Append_Media (Current_Media, Document, 
 yy.value_stack(yy.tos)); 
 
-when 43 => -- #line 199
+when 48 => -- #line 219
  Set_String (
 yyval, "not ", 
 yy.value_stack(yy.tos-4).Line, 
@@ -367,7 +381,7 @@ yyval,
 yy.value_stack(yy.tos-2), 
 yy.value_stack(yy.tos)); 
 
-when 44 => -- #line 202
+when 49 => -- #line 222
  Set_String (
 yyval, "only ", 
 yy.value_stack(yy.tos-4).Line, 
@@ -376,14 +390,14 @@ yyval,
 yy.value_stack(yy.tos-2), 
 yy.value_stack(yy.tos)); 
 
-when 45 => -- #line 205
+when 50 => -- #line 225
  
 yyval := 
 yy.value_stack(yy.tos-2); Append_String (
 yyval, 
 yy.value_stack(yy.tos)); 
 
-when 46 => -- #line 210
+when 51 => -- #line 230
  Set_String (
 yyval, " and ", 
 yy.value_stack(yy.tos-2).Line, 
@@ -391,11 +405,11 @@ yy.value_stack(yy.tos-2).Column); Append_String (
 yyval, 
 yy.value_stack(yy.tos)); 
 
-when 47 => -- #line 213
+when 52 => -- #line 233
  Set_String (
 yyval, "", yylval.Line, yylval.Column); 
 
-when 48 => -- #line 218
+when 53 => -- #line 238
  Set_String (
 yyval, "not ", 
 yy.value_stack(yy.tos-2).Line, 
@@ -403,7 +417,7 @@ yy.value_stack(yy.tos-2).Column); Append_String (
 yyval, 
 yy.value_stack(yy.tos)); 
 
-when 52 => -- #line 229
+when 57 => -- #line 249
  Set_String (
 yyval, "not ", 
 yy.value_stack(yy.tos-2).Line, 
@@ -411,7 +425,7 @@ yy.value_stack(yy.tos-2).Column); Append_String (
 yyval, 
 yy.value_stack(yy.tos)); 
 
-when 53 => -- #line 232
+when 58 => -- #line 252
  
 yyval := 
 yy.value_stack(yy.tos-1); Append_String (
@@ -419,7 +433,7 @@ yyval, " "); Append_String (
 yyval, 
 yy.value_stack(yy.tos)); 
 
-when 55 => -- #line 239
+when 60 => -- #line 259
  
 yyval := 
 yy.value_stack(yy.tos-1); Append_String (
@@ -427,7 +441,7 @@ yyval, " "); Append_String (
 yyval, 
 yy.value_stack(yy.tos)); 
 
-when 57 => -- #line 246
+when 62 => -- #line 266
  Set_String (
 yyval, "and ", 
 yy.value_stack(yy.tos-2).Line, 
@@ -435,7 +449,7 @@ yy.value_stack(yy.tos-2).Column); Append_String (
 yyval, 
 yy.value_stack(yy.tos)); 
 
-when 58 => -- #line 251
+when 63 => -- #line 271
  
 yyval := 
 yy.value_stack(yy.tos-1); Append_String (
@@ -443,7 +457,7 @@ yyval, " "); Append_String (
 yyval, 
 yy.value_stack(yy.tos)); 
 
-when 60 => -- #line 258
+when 65 => -- #line 278
  Set_String (
 yyval, "or ", 
 yy.value_stack(yy.tos-1).Line, 
@@ -451,7 +465,7 @@ yy.value_stack(yy.tos-1).Column); Append_String (
 yyval, 
 yy.value_stack(yy.tos)); 
 
-when 61 => -- #line 263
+when 66 => -- #line 283
  Set_String (
 yyval, "(", 
 yy.value_stack(yy.tos-3).Line, 
@@ -460,7 +474,7 @@ yyval,
 yy.value_stack(yy.tos-3)); Append_String (
 yyval, ")"); 
 
-when 62 => -- #line 266
+when 67 => -- #line 286
  Set_String (
 yyval, "(", 
 yy.value_stack(yy.tos-3).Line, 
@@ -469,7 +483,7 @@ yyval,
 yy.value_stack(yy.tos-3)); Append_String (
 yyval, ")"); 
 
-when 63 => -- #line 269
+when 68 => -- #line 289
  Set_String (
 yyval, "(", 
 yy.value_stack(yy.tos-3).Line, 
@@ -478,28 +492,28 @@ yyval,
 yy.value_stack(yy.tos-3)); Append_String (
 yyval, ")"); 
 
-when 64 => -- #line 272
+when 69 => -- #line 292
  Error (yylval.Line, yylval.Column, "Invalid media in parens");
          Set_String (
 yyval, "", yylval.Line, yylval.Column); yyerrok; 
 
-when 65 => -- #line 278
+when 70 => -- #line 298
  Set_String (
 yyval, "<=", yylval.Line, yylval.Column); 
 
-when 66 => -- #line 281
+when 71 => -- #line 301
  Set_String (
 yyval, ">=", yylval.Line, yylval.Column); 
 
-when 67 => -- #line 284
+when 72 => -- #line 304
  Set_String (
 yyval, ">", yylval.Line, yylval.Column); 
 
-when 68 => -- #line 287
+when 73 => -- #line 307
  Set_String (
 yyval, "<", yylval.Line, yylval.Column); 
 
-when 69 => -- #line 292
+when 74 => -- #line 312
  
 yyval := 
 yy.value_stack(yy.tos-4); Append_String (
@@ -508,7 +522,7 @@ yy.value_stack(yy.tos-2)); Append_String (
 yyval, 
 yy.value_stack(yy.tos)); 
 
-when 70 => -- #line 295
+when 75 => -- #line 315
  
 yyval := 
 yy.value_stack(yy.tos-6); Append_String (
@@ -519,7 +533,7 @@ yy.value_stack(yy.tos-2)); Append_String (
 yyval, 
 yy.value_stack(yy.tos)); 
 
-when 71 => -- #line 298
+when 76 => -- #line 318
  
 yyval := 
 yy.value_stack(yy.tos-4); Append_String (
@@ -528,7 +542,7 @@ yy.value_stack(yy.tos-2)); Append_String (
 yyval, 
 yy.value_stack(yy.tos)); 
 
-when 72 => -- #line 301
+when 77 => -- #line 321
  
 yyval := 
 yy.value_stack(yy.tos-4); Append_String (
@@ -536,266 +550,286 @@ yyval, ": "); Append_String (
 yyval, 
 yy.value_stack(yy.tos)); 
 
-when 74 => -- #line 308
+when 79 => -- #line 328
  
 yyval := 
 yy.value_stack(yy.tos); 
 
-when 75 => -- #line 311
+when 80 => -- #line 331
  
 yyval := 
 yy.value_stack(yy.tos); 
 
-when 76 => -- #line 316
+when 81 => -- #line 336
  Current_Page := null; 
 
-when 77 => -- #line 319
+when 82 => -- #line 339
  Current_Page := null; 
 
-when 78 => -- #line 324
+when 83 => -- #line 344
  null; 
 
-when 79 => -- #line 327
+when 84 => -- #line 347
  null; 
 
-when 80 => -- #line 332
+when 85 => -- #line 352
  Current_Page := new CSS.Core.Styles.CSSPageRule; 
 
-when 84 => -- #line 345
+when 89 => -- #line 365
  Set_Selector (
 yyval, SEL_PSEUDO_ELEMENT, 
 yy.value_stack(yy.tos)); 
 
-when 85 => -- #line 350
+when 90 => -- #line 370
  Append_Property (Current_Page.Style, Document, 
 yy.value_stack(yy.tos-1)); 
 
-when 86 => -- #line 353
+when 91 => -- #line 373
  Append_Property (Current_Page.Style, Document, 
 yy.value_stack(yy.tos-1)); 
 
-when 89 => -- #line 364
+when 92 => -- #line 378
+ 
+yyval := 
+yy.value_stack(yy.tos-1); 
+
+when 93 => -- #line 381
+ 
+yyval := 
+yy.value_stack(yy.tos-1); 
+
+when 94 => -- #line 386
  Set_Selector_Type (
 yyval, SEL_NEXT_SIBLING, yylineno, yylinecol); 
 
-when 90 => -- #line 367
+when 95 => -- #line 389
  Set_Selector_Type (
 yyval, SEL_CHILD, yylineno, yylinecol); 
 
-when 91 => -- #line 370
+when 96 => -- #line 392
  Set_Selector_Type (
 yyval, SEL_FOLLOWING_SIBLING, yylineno, yylinecol); 
 
-when 94 => -- #line 381
+when 99 => -- #line 403
  Current_Rule := null; 
 
-when 95 => -- #line 384
- Current_Rule := null; 
-
-when 96 => -- #line 387
+when 100 => -- #line 406
  Current_Rule := null; Error (
 yy.value_stack(yy.tos-1).line, 
 yy.value_stack(yy.tos-1).column, "Invalid CSS rule"); 
 
-when 97 => -- #line 390
+when 101 => -- #line 409
+ Current_Rule := null; 
+
+when 102 => -- #line 412
  Error (
 yy.value_stack(yy.tos-2).Line, 
 yy.value_stack(yy.tos-2).Column, "Syntax error in CSS rule"); 
 
-when 99 => -- #line 397
+when 103 => -- #line 417
+ 
+yyval := 
+yy.value_stack(yy.tos-1); 
+
+when 104 => -- #line 420
+ 
+yyval := 
+yy.value_stack(yy.tos); 
+
+when 106 => -- #line 427
  Error (
 yy.value_stack(yy.tos-1).Line, 
 yy.value_stack(yy.tos-1).Column, "Invalid CSS selector component"); 
 
-when 100 => -- #line 402
+when 107 => -- #line 432
  Add_Selector_List (Current_Rule, Current_Media, Document, 
 yy.value_stack(yy.tos)); 
 
-when 101 => -- #line 405
+when 108 => -- #line 435
  Add_Selector_List (Current_Rule, Current_Media, Document, 
 yy.value_stack(yy.tos)); 
 
-when 102 => -- #line 410
+when 109 => -- #line 440
  Add_Selector (
 yy.value_stack(yy.tos-3), 
 yy.value_stack(yy.tos-1)); 
 yyval := 
 yy.value_stack(yy.tos-3); 
 
-when 103 => -- #line 413
+when 110 => -- #line 443
  Add_Selector (
 yy.value_stack(yy.tos-2), 
 yy.value_stack(yy.tos-1)); 
 yyval := 
 yy.value_stack(yy.tos-2); 
 
-when 104 => -- #line 416
+when 111 => -- #line 446
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 105 => -- #line 421
+when 112 => -- #line 451
  Add_Selector_Filter (
 yy.value_stack(yy.tos-1), 
 yy.value_stack(yy.tos)); 
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 107 => -- #line 428
+when 114 => -- #line 458
  Set_Selector (
 yyval, SEL_ELEMENT, 
 yy.value_stack(yy.tos)); 
 
-when 108 => -- #line 431
+when 115 => -- #line 461
  Set_Selector (
 yyval, SEL_IDENT, 
 yy.value_stack(yy.tos)); 
 
-when 109 => -- #line 434
+when 116 => -- #line 464
  Set_Selector (
 yyval, SEL_CLASS, 
 yy.value_stack(yy.tos)); 
 
-when 112 => -- #line 441
+when 119 => -- #line 471
  Set_Selector (
 yyval, SEL_NOT, 
 yy.value_stack(yy.tos-2)); 
 
-when 117 => -- #line 456
+when 124 => -- #line 486
  
 yyval := 
 yy.value_stack(yy.tos); 
 
-when 118 => -- #line 461
+when 125 => -- #line 491
  
 yyval := 
 yy.value_stack(yy.tos); 
 
-when 125 => -- #line 480
+when 132 => -- #line 510
  Set_Selector (
 yyval, SEL_HAS_ATTRIBUTE, 
 yy.value_stack(yy.tos-2)); 
 
-when 126 => -- #line 483
+when 133 => -- #line 513
  Set_Selector (
 yyval, 
 yy.value_stack(yy.tos-4).Sel, 
 yy.value_stack(yy.tos-6), 
 yy.value_stack(yy.tos-2)); 
 
-when 127 => -- #line 486
+when 134 => -- #line 516
  Set_Selector (
 yyval, 
 yy.value_stack(yy.tos-4).Sel, 
 yy.value_stack(yy.tos-6), 
 yy.value_stack(yy.tos-2)); 
 
-when 128 => -- #line 489
+when 135 => -- #line 519
  Error (
 yy.value_stack(yy.tos).Line, 
 yy.value_stack(yy.tos).column, "Invalid attribute definition."); 
 
-when 129 => -- #line 494
+when 136 => -- #line 524
  Set_Selector_Type (
 yyval, SEL_EQ_ATTRIBUTE, yylineno, yylinecol); 
 
-when 130 => -- #line 497
+when 137 => -- #line 527
  Set_Selector_Type (
 yyval, SEL_CONTAIN_ATTRIBUTE, yylineno, yylinecol); 
 
-when 131 => -- #line 500
+when 138 => -- #line 530
  Set_Selector_Type (
 yyval, SEL_ORMATCH_ATTRIBUTE, yylineno, yylinecol); 
 
-when 132 => -- #line 503
+when 139 => -- #line 533
  Set_Selector_Type (
 yyval, SEL_STARTS_ATTRIBUTE, yylineno, yylinecol); 
 
-when 133 => -- #line 506
+when 140 => -- #line 536
  Set_Selector_Type (
 yyval, SEL_ENDS_ATTRIBUTE, yylineno, yylinecol); 
 
-when 134 => -- #line 509
+when 141 => -- #line 539
  Set_Selector_Type (
 yyval, SEL_MATCH_ATTRIBUTE, yylineno, yylinecol); 
 
-when 135 => -- #line 515
+when 142 => -- #line 544
  Set_Selector (
 yyval, SEL_PSEUDO_ELEMENT, 
 yy.value_stack(yy.tos)); 
 
-when 136 => -- #line 518
+when 143 => -- #line 547
  Set_Selector (
 yyval, SEL_PSEUDO_CLASS, 
 yy.value_stack(yy.tos)); 
 
-when 137 => -- #line 521
+when 144 => -- #line 550
  Set_Selector (
 yyval, SEL_FUNCTION, 
 yy.value_stack(yy.tos-3)); 
 
-when 140 => -- #line 532
+when 147 => -- #line 561
  
 yyval := 
 yy.value_stack(yy.tos); 
 
-when 141 => -- #line 537
+when 148 => -- #line 566
  
 yyval := 
 yy.value_stack(yy.tos); 
 
-when 142 => -- #line 540
+when 149 => -- #line 569
  
 yyval := 
 yy.value_stack(yy.tos-4); 
 
-when 143 => -- #line 543
+when 150 => -- #line 572
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 144 => -- #line 548
+when 151 => -- #line 577
  Append_Property (Current_Rule, Current_Media, Document, 
 yy.value_stack(yy.tos-1)); 
 
-when 145 => -- #line 551
+when 152 => -- #line 580
  Append_Property (Current_Rule, Current_Media, Document, 
-yy.value_stack(yy.tos-1));
+yy.value_stack(yy.tos));
          Error (
-yy.value_stack(yy.tos-4).Line, 
-yy.value_stack(yy.tos-4).Column, "Invalid property"); yyerrok; 
+yy.value_stack(yy.tos-3).Line, 
+yy.value_stack(yy.tos-3).Column, "Invalid property"); yyerrok; 
 
-when 146 => -- #line 555
+when 153 => -- #line 584
  
 yyval := 
-yy.value_stack(yy.tos-3); Error (
-yy.value_stack(yy.tos-2).Line, 
-yy.value_stack(yy.tos-2).Column, "Invalid property (2)"); yyerrok; 
+yy.value_stack(yy.tos-2); Error (
+yy.value_stack(yy.tos-1).Line, 
+yy.value_stack(yy.tos-1).Column, "Invalid property (2)"); yyerrok; 
 
-when 147 => -- #line 558
+when 154 => -- #line 587
  Append_Property (Current_Rule, Current_Media, Document, 
 yy.value_stack(yy.tos-1)); 
 
-when 148 => -- #line 563
+when 157 => -- #line 598
  Set_Property (
 yyval, 
 yy.value_stack(yy.tos-4), 
 yy.value_stack(yy.tos-1), True); 
 
-when 149 => -- #line 566
+when 158 => -- #line 601
  Set_Property (
 yyval, 
 yy.value_stack(yy.tos-3), 
 yy.value_stack(yy.tos), False); 
 
-when 150 => -- #line 569
+when 159 => -- #line 604
  Error (
 yy.value_stack(yy.tos).Line, 
 yy.value_stack(yy.tos).Column, "Missing ''' or '""' at end of string"); Set_Property (
 yyval, 
 yy.value_stack(yy.tos-3), EMPTY, False); 
 
-when 151 => -- #line 572
+when 160 => -- #line 607
  Error (
 yy.value_stack(yy.tos).Line, 
 yy.value_stack(yy.tos).Column, "Invalid property value: " & YYText); Set_Property (
@@ -803,135 +837,179 @@ yyval,
 yy.value_stack(yy.tos-2), 
 yy.value_stack(yy.tos-2), False); 
 
-when 152 => -- #line 575
+when 161 => -- #line 610
  Error (
 yy.value_stack(yy.tos-1).Line, 
 yy.value_stack(yy.tos-1).Column, "Missing ':' after property name"); Set_Property (
 yyval, 
 yy.value_stack(yy.tos-1), EMPTY, False); 
 
-when 153 => -- #line 578
+when 162 => -- #line 613
  Error (yylval.Line, yylval.Column, "Invalid property name"); 
 yyval := EMPTY; 
 
-when 154 => -- #line 583
+when 163 => -- #line 618
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 155 => -- #line 586
+when 164 => -- #line 621
  Warning (
 yy.value_stack(yy.tos-1).Line, 
 yy.value_stack(yy.tos-1).Column, "IE7 '*' symbol hack is used"); 
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 157 => -- #line 595
+when 166 => -- #line 630
+ CSS.Parser.Set_Function (
+yyval, Document, 
+yy.value_stack(yy.tos-4), 
+yy.value_stack(yy.tos-2)); 
+
+when 167 => -- #line 633
+ Error (
+yy.value_stack(yy.tos-3).Line, 
+yy.value_stack(yy.tos-3).Column, "Invalid function parameter"); 
+
+when 168 => -- #line 638
  CSS.Parser.Set_Expr (
 yyval, 
-yy.value_stack(yy.tos-2), 
+yy.value_stack(yy.tos-3), 
+yy.value_stack(yy.tos)); 
+
+when 169 => -- #line 641
+ CSS.Parser.Set_Expr (
+yyval, 
 yy.value_stack(yy.tos-1), 
 yy.value_stack(yy.tos)); 
 
-when 158 => -- #line 598
- CSS.Parser.Set_Expr (
-yyval, 
-yy.value_stack(yy.tos-1), 
-yy.value_stack(yy.tos)); 
-
-when 160 => -- #line 605
- CSS.Parser.Set_Value (
-yyval, Document, 
-yy.value_stack(yy.tos)); 
-
-when 161 => -- #line 608
- CSS.Parser.Set_Value (
-yyval, Document, 
-yy.value_stack(yy.tos)); 
-
-when 162 => -- #line 611
- CSS.Parser.Set_Value (
-yyval, Document, 
-yy.value_stack(yy.tos-1)); 
-
-when 163 => -- #line 614
- CSS.Parser.Set_Value (
-yyval, Document, 
-yy.value_stack(yy.tos-1)); 
-
-when 164 => -- #line 617
- CSS.Parser.Set_Value (
-yyval, Document, 
-yy.value_stack(yy.tos-1)); 
-
-when 165 => -- #line 620
- CSS.Parser.Set_Value (
-yyval, Document, 
-yy.value_stack(yy.tos)); 
-
-when 166 => -- #line 623
+when 170 => -- #line 644
  
 yyval := 
 yy.value_stack(yy.tos); 
 
-when 167 => -- #line 626
+when 171 => -- #line 649
+ CSS.Parser.Set_Expr (
+yyval, 
+yy.value_stack(yy.tos-3), 
+yy.value_stack(yy.tos)); 
+
+when 172 => -- #line 652
+ CSS.Parser.Set_Expr (
+yyval, 
+yy.value_stack(yy.tos-1), 
+yy.value_stack(yy.tos)); 
+
+when 173 => -- #line 655
+ 
+yyval := 
+yy.value_stack(yy.tos); 
+
+when 174 => -- #line 658
+ 
+yyval := 
+yy.value_stack(yy.tos-1); --  CSS.Parser.Set_Parameter ($$, Document, $1, $5);
+        
+
+when 175 => -- #line 664
+ CSS.Parser.Set_Expr (
+yyval, 
+yy.value_stack(yy.tos-2), 
+yy.value_stack(yy.tos)); 
+
+when 176 => -- #line 667
+ CSS.Parser.Set_Expr (
+yyval, 
+yy.value_stack(yy.tos-1), 
+yy.value_stack(yy.tos)); 
+
+when 178 => -- #line 674
+ CSS.Parser.Set_Value (
+yyval, Document, 
+yy.value_stack(yy.tos)); 
+
+when 179 => -- #line 677
+ CSS.Parser.Set_Value (
+yyval, Document, 
+yy.value_stack(yy.tos)); 
+
+when 180 => -- #line 680
+ CSS.Parser.Set_Value (
+yyval, Document, 
+yy.value_stack(yy.tos)); 
+
+when 181 => -- #line 683
+ CSS.Parser.Set_Value (
+yyval, Document, 
+yy.value_stack(yy.tos-1)); 
+
+when 182 => -- #line 686
+ CSS.Parser.Set_Value (
+yyval, Document, 
+yy.value_stack(yy.tos-1)); 
+
+when 183 => -- #line 689
+ CSS.Parser.Set_Value (
+yyval, Document, 
+yy.value_stack(yy.tos-1)); 
+
+when 184 => -- #line 692
+ CSS.Parser.Set_Value (
+yyval, Document, 
+yy.value_stack(yy.tos)); 
+
+when 185 => -- #line 695
+ 
+yyval := 
+yy.value_stack(yy.tos); 
+
+when 186 => -- #line 698
  Error (
 yy.value_stack(yy.tos).Line, 
 yy.value_stack(yy.tos).Column, "Invalid url()"); 
 yyval := EMPTY; 
 
-when 168 => -- #line 633
+when 187 => -- #line 703
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 169 => -- #line 636
+when 188 => -- #line 706
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 170 => -- #line 639
+when 189 => -- #line 709
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 171 => -- #line 642
+when 190 => -- #line 712
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 172 => -- #line 645
+when 191 => -- #line 715
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 173 => -- #line 648
+when 192 => -- #line 718
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 174 => -- #line 651
+when 193 => -- #line 721
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 175 => -- #line 654
+when 194 => -- #line 724
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 176 => -- #line 659
- CSS.Parser.Set_Function (
-yyval, 
-yy.value_stack(yy.tos-4), 
-yy.value_stack(yy.tos-2)); 
-
-when 177 => -- #line 662
- Error (
-yy.value_stack(yy.tos-3).Line, 
-yy.value_stack(yy.tos-3).Column, "Invalid function parameter"); 
-
-when 182 => -- #line 679
+when 195 => -- #line 729
  Set_Color (
 yyval, 
 yy.value_stack(yy.tos-1)); 
