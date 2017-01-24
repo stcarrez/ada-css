@@ -178,9 +178,10 @@ private
                        Oper  : in YYstype;
                        Right : in YYstype);
 
-   procedure Set_Function (Into   : in out YYstype;
-                           Name   : in YYstype;
-                           Params : in YYstype);
+   procedure Set_Function (Into     : in out YYstype;
+                           Document : in CSS.Core.Sheets.CSSStylesheet_Access;
+                           Name     : in YYstype;
+                           Params   : in YYstype);
 
    type Parser_Node_Type;
    type Parser_Node_Access is access all Parser_Node_Type;
