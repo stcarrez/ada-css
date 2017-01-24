@@ -15,7 +15,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-pragma Ada_2012;
+
 with Ada.Strings.Unbounded;
 package body CSS.Core.Values is
 
@@ -26,6 +26,8 @@ package body CSS.Core.Values is
    begin
       if Value = null then
          return "null";
+      elsif Value.Kind = VALUE_FUNCTION then
+         return Value.Value & "(" & To_String (Value.Params.all, Sep => ',') & ")";
       else
          return Value.Value;
       end if;
@@ -77,8 +79,29 @@ package body CSS.Core.Values is
          return Left.Kind < Right.Kind;
       elsif Left.Unit /= Right.Unit then
          return Left.Unit < Right.Unit;
-      else
+      elsif Left.Kind /= VALUE_FUNCTION then
          return Left.Value < Right.Value;
+      else
+         return Left.Params.all < Right.Params.all;
+      end if;
+   end "<";
+
+   function "<" (Left, Right : in Value_List) return Boolean is
+      V1, V2 : Value_Type;
+   begin
+      if Left.Count < Right.Count then
+         return True;
+      elsif Left.Count > Right.Count then
+         return False;
+      else
+         for I in 1 .. Left.Count loop
+            V1 := Left.Get_Value (I);
+            V2 := Right.Get_Value (I);
+            if not Compare (V1, V2) then
+               return V1 < V2;
+            end if;
+         end loop;
+         return False;
       end if;
    end "<";
 
@@ -119,14 +142,15 @@ package body CSS.Core.Values is
    --  ------------------------------
    function To_String (List : in Value_List;
                        From : in Positive := 1;
-                       To   : in Positive := Positive'Last) return String is
+                       To   : in Positive := Positive'Last;
+                       Sep  : in Character := ' ') return String is
       Result : Ada.Strings.Unbounded.Unbounded_String;
    begin
       for I in From .. To loop
          exit when I > List.Count;
          if List.Values (I) /= null then
             if Ada.Strings.Unbounded.Length (Result) > 0 then
-               Ada.Strings.Unbounded.Append (Result, " ");
+               Ada.Strings.Unbounded.Append (Result, Sep);
             end if;
             Ada.Strings.Unbounded.Append (Result, To_String (List.Values (I)));
          end if;
@@ -139,7 +163,8 @@ package body CSS.Core.Values is
    --  ------------------------------
    function Compare (Left, Right : in Value_Type) return Boolean is
    begin
-      return True;
+      return Left.Kind = Right.Kind and Left.Unit = Right.Unit
+         and Left.Len = Right.Len and Left.Value = Right.Value;
    end Compare;
 
    function Create_Value (Repository : in out Repository_Type;
@@ -150,10 +175,11 @@ package body CSS.Core.Values is
          return Value_Sets.Element (Pos);
       end if;
       declare
-         V : constant Value_Type := new Value_Node '(Len => Value.Len,
-                                            Kind => Value.Kind,
-                                            Unit => Value.Unit,
-                                            Value => Value.Value);
+         V : constant Value_Type := new Value_Node '(Len    => Value.Len,
+                                                     Kind   => Value.Kind,
+                                                     Unit   => Value.Unit,
+                                                     Params => null,
+                                                     Value  => Value.Value);
       begin
          Repository.Root.Insert (V);
          return V;
@@ -165,10 +191,11 @@ package body CSS.Core.Values is
    --  ------------------------------
    function Create_Color (Repository : in out Repository_Type;
                           Value      : in String) return Value_Type is
-      V : aliased Value_Node := Value_Node '(Len   => Value'Length,
-                                             Kind  => VALUE_COLOR,
-                                             Unit  => UNIT_NONE,
-                                             Value => Value);
+      V : aliased Value_Node := Value_Node '(Len    => Value'Length,
+                                             Kind   => VALUE_COLOR,
+                                             Unit   => UNIT_NONE,
+                                             Params => null,
+                                             Value  => Value);
    begin
       return Repository.Create_Value (V'Unchecked_Access);
    end Create_Color;
@@ -178,10 +205,11 @@ package body CSS.Core.Values is
    --  ------------------------------
    function Create_URL (Repository : in out Repository_Type;
                         Value      : in String) return Value_Type is
-      V : aliased Value_Node := Value_Node '(Len   => Value'Length,
-                                             Kind  => VALUE_URL,
-                                             Unit  => UNIT_NONE,
-                                             Value => Value);
+      V : aliased Value_Node := Value_Node '(Len    => Value'Length,
+                                             Kind   => VALUE_URL,
+                                             Unit   => UNIT_NONE,
+                                             Params => null,
+                                             Value  => Value);
    begin
       return Repository.Create_Value (V'Unchecked_Access);
    end Create_URL;
@@ -191,10 +219,11 @@ package body CSS.Core.Values is
    --  ------------------------------
    function Create_String (Repository : in out Repository_Type;
                            Value      : in String) return Value_Type is
-      V : aliased Value_Node := Value_Node '(Len   => Value'Length,
-                                             Kind  => VALUE_STRING,
-                                             Unit  => UNIT_NONE,
-                                             Value => Value);
+      V : aliased Value_Node := Value_Node '(Len    => Value'Length,
+                                             Kind   => VALUE_STRING,
+                                             Unit   => UNIT_NONE,
+                                             Params => null,
+                                             Value  => Value);
    begin
       return Repository.Create_Value (V'Unchecked_Access);
    end Create_String;
@@ -204,10 +233,11 @@ package body CSS.Core.Values is
    --  ------------------------------
    function Create_Ident (Repository : in out Repository_Type;
                           Value      : in String) return Value_Type is
-      V : aliased Value_Node := Value_Node '(Len   => Value'Length,
-                                             Kind  => VALUE_IDENT,
-                                             Unit  => UNIT_NONE,
-                                             Value => Value);
+      V : aliased Value_Node := Value_Node '(Len    => Value'Length,
+                                             Kind   => VALUE_IDENT,
+                                             Unit   => UNIT_NONE,
+                                             Params => null,
+                                             Value  => Value);
    begin
       return Repository.Create_Value (V'Unchecked_Access);
    end Create_Ident;
@@ -218,13 +248,45 @@ package body CSS.Core.Values is
    function Create_Number (Repository : in out Repository_Type;
                            Value      : in String;
                            Unit       : in Unit_Type := UNIT_NONE) return Value_Type is
-      V : aliased Value_Node := Value_Node '(Len   => Value'Length,
-                                             Kind  => VALUE_NUMBER,
-                                             Unit  => Unit,
-                                             Value => Value);
+      V : aliased Value_Node := Value_Node '(Len    => Value'Length,
+                                             Kind   => VALUE_NUMBER,
+                                             Unit   => Unit,
+                                             Params => null,
+                                             Value  => Value);
    begin
       return Repository.Create_Value (V'Unchecked_Access);
    end Create_Number;
+
+   --  ------------------------------
+   --  Create a number value with an optional unit.
+   --  ------------------------------
+   --  Create a function value with parameters.
+   function Create_Function (Repository : in out Repository_Type;
+                             Name       : in String;
+                             Parameters : in Value_List'Class) return Value_Type is
+      Param : aliased Value_List := Value_List (Parameters);
+      Check : aliased Value_Node := Value_Node '(Len   => Name'Length,
+                                                 Kind  => VALUE_FUNCTION,
+                                                 Unit  => UNIT_NONE,
+                                                 Value => Name,
+                                                 Params => Param'Unchecked_Access);
+      Pos : constant Value_Sets.Cursor := Repository.Root.Find (Check'Unchecked_Access);
+   begin
+      if Value_Sets.Has_Element (Pos) then
+         return Value_Sets.Element (Pos);
+      end if;
+      declare
+         V : constant Value_Type
+            := new Value_Node '(Len    => Name'Length,
+                                Kind   => VALUE_FUNCTION,
+                                Unit   => UNIT_NONE,
+                                Value  => Name,
+                                Params => new Value_List '(Value_List (Parameters)));
+      begin
+         Repository.Root.Insert (V);
+         return V;
+      end;
+   end Create_Function;
 
    --  ------------------------------
    --  Return the number of entries in the repository.
