@@ -175,7 +175,7 @@ media_start :
   ;
 
 at_rule :
-     at_rule_start spaces ruleset_list '}' spaces
+     at_rule_start spaces at_ruleset_list '}' spaces
         { Current_Rule := null; }
   ;
 
@@ -185,6 +185,19 @@ at_rule_start :
   |
      T_ATKEYWORD error '{'
        { Error ($1.Line, $1.Column, "Invalid media selection after " & To_String ($1));  yyerrok; }
+  ;
+
+at_ruleset_list :
+     at_ruleset_list at_ruleset
+  |
+     at_ruleset
+  ;
+
+at_ruleset :
+     ruleset
+  |
+     num_value '{' spaces rule_declaration_list '}' spaces
+        { Current_Rule := null; }
   ;
 
 font_face_rule :
@@ -649,6 +662,9 @@ function_params :
 
 function_param :
      function_param '+' spaces term
+       { CSS.Parser.Set_Expr ($$, $1, $4); }
+  |
+     function_param '-' spaces term
        { CSS.Parser.Set_Expr ($$, $1, $4); }
   |
      function_param term
