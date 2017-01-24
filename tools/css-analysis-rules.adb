@@ -15,7 +15,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-
+with Ada.Unchecked_Deallocation;
 with Util.Log.Loggers;
 with Util.Strings;
 
@@ -575,6 +575,39 @@ package body CSS.Analysis.Rules is
       Repo.Resolve;
       Sheet.Iterate_Properties (Process'Access);
    end Analyze;
+
+   --  ------------------------------
+   --  Erase all the rules that have been loaded in the repository.
+   --  ------------------------------
+   procedure Clear (Repository : in out Repository_Type) is
+   begin
+      Repository.Rules.Clear;
+      Repository.Properties.Clear;
+   end Clear;
+
+   procedure Clear (Rules : in out Rule_Maps.Map) is
+      procedure Free is
+         new Ada.Unchecked_Deallocation (Rule_Type'Class, Rule_Type_Access);
+   begin
+      while not Rules.Is_Empty loop
+         declare
+            Pos : Rule_Maps.Cursor := Rules.First;
+            Rule : Rule_Type_Access := Rule_Maps.Element (Pos);
+         begin
+            Free (Rule);
+            Rules.Delete (Pos);
+         end;
+      end loop;
+   end Clear;
+
+   --  ------------------------------
+   --  Release the rules allocated dynamically.
+   --  ------------------------------
+   overriding
+   procedure Finalize (Repository : in out Repository_Type) is
+   begin
+      Repository.Clear;
+   end Finalize;
 
    Int_Rule     : aliased Types.Integer_Rule_Type;
    Percent_Rule : aliased Types.Percentage_Rule_Type;
