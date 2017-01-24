@@ -35,6 +35,7 @@ B               b|\\0{0,4}(42|62)(\r\n|[ \t\r\n\f])?
 C               c|\\0{0,4}(43|63)(\r\n|[ \t\r\n\f])?
 D               d|\\0{0,4}(44|64)(\r\n|[ \t\r\n\f])?
 E               e|\\0{0,4}(45|65)(\r\n|[ \t\r\n\f])?
+F               f|\\0{0,4}(46|66)(\r\n|[ \t\r\n\f])?
 G               g|\\0{0,4}(47|67)(\r\n|[ \t\r\n\f])?|\\g
 H               h|\\0{0,4}(48|68)(\r\n|[ \t\r\n\f])?|\\h
 I               i|\\0{0,4}(49|69)(\r\n|[ \t\r\n\f])?|\\i
@@ -101,6 +102,7 @@ Z               z|\\0{0,4}(5a|7a)(\r\n|[ \t\r\n\f])?|\\z
 @{I}{M}{P}{O}{R}{T}	{ return T_IMPORT_SYM; }
 @{P}{A}{G}{E}		{ return T_PAGE_SYM; }
 @{M}{E}{D}{I}{A}	{ return T_MEDIA_SYM; }
+@{F}{O}{N}{T}\-{F}{A}{C}{E}	{ return T_FONT_FACE_SYM; }
 "@charset "		{ return T_CHARSET_SYM; }
 "@"{name}		{ Set_Ident (yyval, YYText, yylineno, yylinecol); return T_ATKEYWORD; }
 
