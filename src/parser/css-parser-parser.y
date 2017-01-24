@@ -43,6 +43,7 @@
 %token T_ANGLE
 %token T_INCLUDES
 %token T_PAGE_SYM
+%token T_FONT_FACE_SYM
 %token T_PERCENTAGE
 %token T_DASHMATCH
 %token T_DIMENSION
@@ -52,6 +53,8 @@
 %token T_PREFIXMATCH
 %token T_SUFFIXMATCH
 %token T_SUBSTRINGMATCH
+
+--  %left '+' '-' '/' S
 
 {
    subtype yystype is CSS.Parser.YYstype;
@@ -83,6 +86,8 @@ stylesheet_rule :
     page
   |
     at_rule
+  |
+    font_face_rule
   |
     spaces_or_comments
   ;
@@ -158,6 +163,8 @@ ruleset_list :
     ruleset_list ruleset
   |
     ruleset
+  |
+    --  Empty
   ;
 
 media_start :
@@ -168,16 +175,29 @@ media_start :
   ;
 
 at_rule :
-     at_rule_start '{' spaces ruleset '}' spaces
-        { Current_Rule := null; }
-  |
-     error '{' spaces ruleset '}' spaces
+     at_rule_start spaces ruleset '}' spaces
         { Current_Rule := null; }
   ;
 
 at_rule_start :
-     T_ATKEYWORD spaces media_list
+     T_ATKEYWORD spaces function_params '{'
         { Current_Rule := null; Error ($1.line, $2.line, "Found @<keyword> rule"); }
+  |
+     T_ATKEYWORD error '{'
+       { Error ($1.Line, $1.Column, "Invalid media selection after " & To_String ($1));  yyerrok; }
+  ;
+
+font_face_rule :
+     font_face_start '{' spaces rule_declaration_list '}' spaces
+        { Current_Rule := null; }
+  |
+     error '{' spaces rule_declaration_list '}' spaces
+        { Current_Rule := null; }
+  ;
+
+font_face_start :
+     T_FONT_FACE_SYM spaces
+        { Current_Rule := null; Error ($1.line, $2.line, "Found @<font-face> rule"); }
   ;
 
 media_list :
@@ -355,8 +375,10 @@ page_declaration_list :
 
 operator :
     '/' spaces
+       { $$ := $1; }
   |
     ',' spaces
+       { $$ := $1; }
   ;
 
 combinator :
@@ -377,17 +399,25 @@ unary_operator :
   ;
 
 ruleset :
-    rule_selectors spaces declaration_list ';' spaces '}' spaces
-       { Current_Rule := null; }
-  |
-    rule_selectors spaces declaration_list '}' spaces
+    rule_selectors spaces rule_declaration_list '}' spaces
        { Current_Rule := null; }
   |
     rule_selectors spaces error '}' spaces
        { Current_Rule := null; Error ($4.line, $4.column, "Invalid CSS rule"); }
   |
+    rule_selectors spaces '}' spaces
+       { Current_Rule := null; }
+  |
     error '}' spaces
        { Error ($1.Line, $1.Column, "Syntax error in CSS rule"); } 
+  ;
+
+rule_declaration_list :
+     declaration_list declaration_separator
+        { $$ := $1; }
+  |
+     declaration_list
+        { $$ := $1; }
   ;
 
 rule_selectors :
@@ -509,7 +539,6 @@ attrib_op :
          { Set_Selector_Type ($$, SEL_MATCH_ATTRIBUTE, yylineno, yylinecol); }
   ;
 
---    ':' [ T_IDENT | T_FUNCTION spaces [T_IDENT spaces ]? ')' ]
 pseudo :
     ':' ':' T_IDENT
        { Set_Selector ($$, SEL_PSEUDO_ELEMENT, $3); }
@@ -542,20 +571,26 @@ pseudo_value :
     T_IDENT spaces
        { $$ := $1; }
   ;
- 
+
 declaration_list :
-    declaration_list ';' spaces declaration spaces
-       { Append_Property (Current_Rule, Current_Media, Document, $4); }
+    declaration_list declaration_separator declaration spaces
+       { Append_Property (Current_Rule, Current_Media, Document, $3); }
   |
-    declaration_list error ';' spaces declaration spaces
+    declaration_list error declaration_separator declaration spaces
        { Append_Property (Current_Rule, Current_Media, Document, $5);
          Error ($2.Line, $2.Column, "Invalid property"); yyerrok; }
   |
-    declaration_list error ';' spaces
+    declaration_list error declaration_separator
        { $$ := $1; Error ($2.Line, $2.Column, "Invalid property (2)"); yyerrok; }
   |
     declaration spaces
        { Append_Property (Current_Rule, Current_Media, Document, $1); }
+  ;
+
+declaration_separator :
+    declaration_separator ';' spaces
+  |
+    ';' spaces
   ;
 
 declaration :
@@ -590,9 +625,43 @@ prio :
      T_IMPORTANT_SYM spaces
   ;
 
+function :
+     T_FUNCTION spaces function_params ')' spaces
+        { CSS.Parser.Set_Function ($$, Document, $1, $3); }
+  |
+     T_FUNCTION error ')' spaces
+        { Error ($1.Line, $1.Column, "Invalid function parameter"); }
+  ;
+
+function_params :
+     function_params ',' spaces function_param
+        { CSS.Parser.Set_Expr ($$, $1, $4); }
+  |
+     function_params function_param
+        { CSS.Parser.Set_Expr ($$, $1, $2); }
+  |
+     function_param
+        { $$ := $1; }
+  ;
+
+function_param :
+     function_param '+' spaces term
+       { CSS.Parser.Set_Expr ($$, $1, $4); }
+  |
+     function_param term
+       { CSS.Parser.Set_Expr ($$, $1, $2); }
+  |
+     term
+       { $$ := $1; }
+  |
+     T_IDENT spaces '=' spaces num_value spaces
+        { $$ := $5; --  CSS.Parser.Set_Parameter ($$, Document, $1, $5);
+        }
+  ;
+
 expr :
     expr operator term
-       { CSS.Parser.Set_Expr ($$, $1, $2, $3); }
+       { CSS.Parser.Set_Expr ($$, $1, $3); }
   |
     expr term
        { CSS.Parser.Set_Expr ($$, $1, $2); }
@@ -601,7 +670,10 @@ expr :
   ;
 
 term :
-     unary_operator num_value
+     '+' num_value
+        { CSS.Parser.Set_Value ($$, Document, $2); }
+  |
+     '-' num_value
         { CSS.Parser.Set_Value ($$, Document, $2); }
   |
      num_value
@@ -626,8 +698,6 @@ term :
         { Error ($1.Line, $1.Column, "Invalid url()"); $$ := EMPTY; }
   ;
 
---    [ NUMBER S* | PERCENTAGE S* | LENGTH S* | EMS S* | EXS S* | ANGLE S* |
---      TIME S* | FREQ S* ]
 num_value :
       T_NUMBER spaces
         { $$ := $1; }
@@ -652,26 +722,6 @@ num_value :
   |
       T_FREQ spaces
         { $$ := $1; }
-  ;
-
-function :
-     T_FUNCTION spaces function_params ')' spaces
-        { CSS.Parser.Set_Function ($$, $1, $3); }
-  |
-     T_FUNCTION error ')' spaces
-        { Error ($1.Line, $1.Column, "Invalid function parameter"); }
-  ;
-
-function_params :
-     function_params function_param
-  |
-     function_param
-  ;
-
-function_param :
-     expr
-  |
-     T_IDENT spaces '=' spaces num_value spaces
   ;
 
 hexcolor :
