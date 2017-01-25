@@ -300,7 +300,7 @@ package body CSS.Analysis.Rules is
                Rule := Group.List;
                while Rule /= null loop
                   N := Rule.Match (Value, Cur_Pos);
-                  if N > 0 then
+                  if N > 0 or else N = Rule.Min_Repeat then
                      Cur_Pos := Cur_Pos + N;
                      M (I) := Rule;
                      I := I + 1;
@@ -308,8 +308,8 @@ package body CSS.Analysis.Rules is
                   end if;
                   Rule := Rule.Next;
                end loop;
-               exit when N = 0 or I = M'Last + 1;
                Match_Count := Match_Count + N;
+               exit when N = 0 or I = M'Last + 1;
             end loop;
             for I in M'Range loop
                for J in I + 1 .. M'Last loop
