@@ -19,6 +19,7 @@ with Ada.Directories;
 with Util.Strings;
 with Util.Log.Locations;
 with CSS.Analysis.Parser.Parser;
+with CSS.Analysis.Parser.Parser_Tokens;
 package body CSS.Analysis.Parser is
 
    use Ada.Strings.Unbounded;
@@ -69,6 +70,11 @@ package body CSS.Analysis.Parser is
       if Res /= 0 then
          Log.Error ("Found {0} errors while parsing {1}", Util.Strings.Image (Res), Path);
       end if;
+
+   exception
+      when Parser_Tokens.Syntax_Error =>
+         Log.Error ("Syntax error while parsing {0}", Path);
+
    end Load;
 
    --  ------------------------------
