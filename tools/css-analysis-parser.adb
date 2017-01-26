@@ -24,12 +24,14 @@ package body CSS.Analysis.Parser is
 
    use Ada.Strings.Unbounded;
 
-   Current_File : Util.Log.Locations.File_Info_Access;
+   Current_File       : Util.Log.Locations.File_Info_Access;
+   Current_Repository : access CSS.Analysis.Rules.Repository_Type;
 
    --  ------------------------------
    --  Load all the rule definition files stored in the given directory.
    --  ------------------------------
-   procedure Load_All (Path : in String) is
+   procedure Load_All (Path       : in String;
+                       Repository : access Rules.Repository_Type) is
       use Ada.Directories;
 
       Search      : Search_Type;
@@ -53,7 +55,7 @@ package body CSS.Analysis.Parser is
          declare
             Full_Path : constant String := Full_Name (Ent);
          begin
-            Load (Full_Path);
+            Load (Full_Path, Repository);
          end;
       end loop;
    end Load_All;
@@ -61,11 +63,13 @@ package body CSS.Analysis.Parser is
    --  ------------------------------
    --  Load the rule definition file and populate the rule repository.
    --  ------------------------------
-   procedure Load (Path : in String) is
+   procedure Load (Path       : in String;
+                   Repository : access Rules.Repository_Type) is
       Res : Integer;
    begin
       Log.Info ("Loading rule definition file {0}", Path);
       Current_File := Util.Log.Locations.Create_File_Info (Path, Path'First);
+      Current_Repository := Repository;
       Res := CSS.Analysis.Parser.Parser.Parse (Path);
       if Res /= 0 then
          Log.Error ("Found {0} errors while parsing {1}", Util.Strings.Image (Res), Path);
@@ -108,7 +112,11 @@ package body CSS.Analysis.Parser is
                               Rule : in YYstype) is
    begin
       for Prop_Name of Name.Names loop
-         Rules.Rule_Repository.Create_Property (Prop_Name, Rule.Rule);
+         if Prop_Name (Prop_Name'First) = '<' then
+            Current_Repository.Create_Definition (Prop_Name, Rule.Rule);
+         else
+            Current_Repository.Create_Property (Prop_Name, Rule.Rule);
+         end if;
       end loop;
    end Create_Property;
 
@@ -118,7 +126,7 @@ package body CSS.Analysis.Parser is
    procedure Create_Definition (Name : in YYstype;
                                 Rule : in YYstype) is
    begin
-      Rules.Rule_Repository.Create_Definition (To_String (Name.Token), Rule.Rule);
+      Current_Repository.Create_Definition (To_String (Name.Token), Rule.Rule);
    end Create_Definition;
 
    --  ------------------------------
@@ -130,7 +138,7 @@ package body CSS.Analysis.Parser is
          := Util.Log.Locations.Create_Line_Info (Current_File, Name.Line, Name.Column);
    begin
       Into := Name;
-      Into.Rule := Rules.Rule_Repository.Create_Definition (To_String (Name.Token), Loc);
+      Into.Rule := Current_Repository.Create_Definition (To_String (Name.Token), Loc);
    end Create_Type_Or_Reference;
 
    --  ------------------------------
