@@ -36,6 +36,8 @@ with CSS.Analysis.Rules;
 with CSS.Analysis.Duplicates;
 with CSS.Printer.Text_IO;
 with CSS.Analysis.Parser;
+with CSS.Analysis.Rules.Main;
+
 procedure CssTools is
 
    use Ada.Strings.Unbounded;
@@ -183,14 +185,17 @@ begin
    CSS.Parser.Lexer_dfa.aflex_debug := Debug;
    CSS.Analysis.Parser.Lexer_dfa.aflex_debug := Debug;
    if Length (Config_Path) > 0 then
-      CSS.Analysis.Parser.Load (To_String (Config_Path));
+      CSS.Analysis.Parser.Load (To_String (Config_Path), CSS.Analysis.Rules.Main.Rule_Repository);
    end if;
    if Length (Config_Dir) > 0 then
-      CSS.Analysis.Parser.Load_All (To_String (Config_Dir) & "/rules");
+      CSS.Analysis.Parser.Load_All (To_String (Config_Dir) & "/rules", CSS.Analysis.Rules.Main.Rule_Repository);
    end if;
 
    if Length (Output_Path) > 0 then
       Ada.Text_IO.Create (Output.File, Ada.Text_IO.Out_File, To_String (Output_Path));
+   end if;
+   if Verbose then
+      CSS.Analysis.Rules.Print (Output, CSS.Analysis.Rules.Main.Rule_Repository.all);
    end if;
    loop
       declare
@@ -200,7 +205,7 @@ begin
          Doc.Set_Href (Path);
          CSS.Parser.Load (Path, Doc'Unchecked_Access, Err_Handler'Unchecked_Access);
          CSS.Analysis.Duplicates.Analyze (Doc.Rules, Err_Handler, Dup_Rules);
-         CSS.Analysis.Rules.Analyze (Doc, Err_Handler);
+         CSS.Analysis.Rules.Main.Analyze (Doc, Err_Handler);
          Err_Handler.Iterate (Print_Message'Access);
          if Length (Output_Path) > 0 then
             Output.Print (Doc);
@@ -211,9 +216,10 @@ begin
       end;
    end loop;
    if not Quiet then
-      Ada.Text_IO.Put_Line ("Comments: ");
-      Ada.Text_IO.Put_Line (Ada.Strings.Unbounded.To_String (CSS.Parser.Lexer.Current_Comment));
-
+      if Verbose then
+         Ada.Text_IO.Put_Line ("Comments: ");
+         Ada.Text_IO.Put_Line (Ada.Strings.Unbounded.To_String (CSS.Parser.Lexer.Current_Comment));
+      end if;
       Ada.Text_IO.Put_Line ("Errors          : " & Natural'Image (Err_Handler.Get_Error_Count));
       Ada.Text_IO.Put_Line ("Warnings        : " & Natural'Image (Err_Handler.Get_Warning_Count));
       Ada.Text_IO.Put_Line ("CSS rules       : " & Count_Type'Image (Doc.Rules.Length));
