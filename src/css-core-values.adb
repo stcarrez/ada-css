@@ -163,6 +163,9 @@ package body CSS.Core.Values is
    --  ------------------------------
    function Compare (Left, Right : in Value_Type) return Boolean is
    begin
+      if Left = Right then
+         return True;
+      end if;
       return Left.Kind = Right.Kind and Left.Unit = Right.Unit
          and Left.Len = Right.Len and Left.Value = Right.Value;
    end Compare;
