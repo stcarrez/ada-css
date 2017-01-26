@@ -15,6 +15,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
+with System.Address_Image;
 with Ada.Unchecked_Deallocation;
 with Util.Log.Loggers;
 with Util.Strings;
@@ -23,6 +24,9 @@ with CSS.Core.Styles;
 with CSS.Core.Properties;
 with CSS.Analysis.Rules.Types;
 package body CSS.Analysis.Rules is
+
+   procedure Free is
+       new Ada.Unchecked_Deallocation (Rule_Type'Class, Rule_Type_Access);
 
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("CSS.Analysis.Rules");
 
@@ -136,6 +140,7 @@ package body CSS.Analysis.Rules is
       else
          Log.Info ("Adding property '{0}'", Name);
          Repository.Properties.Insert (Name, Rule);
+         Rule.Used := Rule.Used + 1;
       end if;
    end Create_Property;
 
@@ -154,6 +159,7 @@ package body CSS.Analysis.Rules is
       else
          Log.Info ("Adding rule '{0}'", Name);
          Repository.Rules.Insert (Name, Rule);
+         Rule.Used := Rule.Used + 1;
       end if;
    end Create_Definition;
 
@@ -235,7 +241,7 @@ package body CSS.Analysis.Rules is
          return 0;
       else
          return Rule.Rule.Match (Value, Pos);
-      end if; 
+      end if;
    end Match;
 
    --  Check if the value matches the rule.
@@ -357,7 +363,6 @@ package body CSS.Analysis.Rules is
 
       elsif Group.Kind = GROUP_SEQ then
          declare
-            I : Positive := 1;
             N : Natural;
          begin
             Rule := Group.List;
@@ -474,6 +479,9 @@ package body CSS.Analysis.Rules is
       if Rule in Ident_Rule_Type'Class then
          Stream.Print (Ident_Rule_Type (Rule).Ident);
       end if;
+      if Rule in Definition_Rule_Type'Class then
+         Stream.Print (Definition_Rule_Type (Rule).Ident);
+      end if;
       if Rule in Group_Rule_Type'Class then
          if Kind = GROUP_PARAMS then
             Stream.Print (")");
@@ -509,6 +517,22 @@ package body CSS.Analysis.Rules is
          end if;
          Stream.Print ("}");
       end if;
+   end Print;
+
+   --  ------------------------------
+   --  Print the repository rule definitions to the print stream.
+   --  ------------------------------
+   procedure Print (Stream     : in out CSS.Printer.File_Type'Class;
+                    Repository : in Repository_Type) is
+      Iter : Rule_Maps.Cursor := Repository.Rules.First;
+   begin
+      while Rule_Maps.Has_Element (Iter) loop
+         Stream.Print (Rule_Maps.Key (Iter));
+         Stream.Print (" := ");
+         Print (Stream, Rule_Maps.Element (Iter).all);
+         Stream.New_Line;
+         Rule_Maps.Next (Iter);
+      end loop;
    end Print;
 
    procedure Resolve (Repository : in out Repository_Type) is
@@ -581,24 +605,48 @@ package body CSS.Analysis.Rules is
    --  ------------------------------
    procedure Clear (Repository : in out Repository_Type) is
    begin
-      Repository.Rules.Clear;
-      Repository.Properties.Clear;
+      Clear (Repository.Rules);
+      null;
+      Clear (Repository.Properties);
    end Clear;
 
    procedure Clear (Rules : in out Rule_Maps.Map) is
-      procedure Free is
-         new Ada.Unchecked_Deallocation (Rule_Type'Class, Rule_Type_Access);
    begin
       while not Rules.Is_Empty loop
          declare
-            Pos : Rule_Maps.Cursor := Rules.First;
+            Pos  : Rule_Maps.Cursor := Rules.First;
             Rule : Rule_Type_Access := Rule_Maps.Element (Pos);
          begin
-            Free (Rule);
+            Rule.Used := Rule.Used - 1;
+            if Rule.Used = 0 then
+--               Log.Error (" Free {0} - {1}", Rule_Maps.Key (Pos), System.Address_Image (Rule.all'Address));
+               Free (Rule);
+            end if;
             Rules.Delete (Pos);
          end;
       end loop;
    end Clear;
+
+   overriding
+   procedure Finalize (Rule : in out Group_Rule_Type) is
+   begin
+      --  Free (Rule.List);
+      Finalize (Rule_Type (Rule));
+   end Finalize;
+
+   overriding
+   procedure Finalize (Rule : in out Rule_Type) is
+      List : Rule_Type_Access := Rule.Next;
+      Next : Rule_Type_Access;
+   begin
+--      Log.Error (" Finalize {0}", System.Address_Image (Rule'Address));
+      while List /= null loop
+         Next := List.Next;
+         List.Next := null;
+         --  Free (List);
+         List := Next;
+      end loop;
+   end Finalize;
 
    --  ------------------------------
    --  Release the rules allocated dynamically.
@@ -609,15 +657,17 @@ package body CSS.Analysis.Rules is
       Repository.Clear;
    end Finalize;
 
-   Int_Rule     : aliased Types.Integer_Rule_Type;
-   Percent_Rule : aliased Types.Percentage_Rule_Type;
-   Length_Rule  : aliased Types.Length_Rule_Type;
-   Number_Rule  : aliased Types.Number_Rule_Type;
-   Angle_Rule   : aliased Types.Angle_Rule_Type;
-   String_Rule  : aliased Types.String_Rule_Type;
-   URL_Rule     : aliased Types.URL_Rule_Type;
-   Color_Rule   : aliased Types.Color_Rule_Type;
-   Ident_Rule   : aliased Types.Identifier_Rule_Type;
+   Int_Rule        : aliased Types.Integer_Rule_Type;
+   Percent_Rule    : aliased Types.Percentage_Rule_Type;
+   Length_Rule     : aliased Types.Length_Rule_Type;
+   Number_Rule     : aliased Types.Number_Rule_Type;
+   Angle_Rule      : aliased Types.Angle_Rule_Type;
+   String_Rule     : aliased Types.String_Rule_Type;
+   URL_Rule        : aliased Types.URL_Rule_Type;
+   Color_Rule      : aliased Types.Color_Rule_Type;
+   Ident_Rule      : aliased Types.Identifier_Rule_Type;
+   Resolution_Rule : aliased Types.Resolution_Rule_Type;
+   Time_Rule       : aliased Types.Time_Rule_Type;
 
 begin
    Repo.Types.Insert ("<angle>", Angle_Rule'Access);
@@ -629,4 +679,6 @@ begin
    Repo.Types.Insert ("<url>", URL_Rule'Access);
    Repo.Types.Insert ("<hex-color>", Color_Rule'Access);
    Repo.Types.Insert ("<custom-ident>", Ident_Rule'Access);
+   Repo.Types.Insert ("<resolution>", Resolution_Rule'Access);
+   Repo.Types.Insert ("<time>", Time_Rule'Access);
 end CSS.Analysis.Rules;
