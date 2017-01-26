@@ -48,16 +48,16 @@ package body CSS.Analysis.Rules.Tests is
       Path   : constant String := Ada.Strings.Unbounded.To_String (T.File);
       Doc    : aliased CSS.Core.Sheets.CSSStylesheet;
       Errors : aliased CSS.Core.Errors.Default.Error_Handler;
+      Repo   : aliased Repository_Type;
    begin
-      Rule_Repository.Clear;
-      CSS.Analysis.Parser.Load_All (Rules_Path);
+      CSS.Analysis.Parser.Load_All (Rules_Path, Repo'Unchecked_Access);
       declare
          Time   : Util.Measures.Stamp;
       begin
          Doc.Set_Href (Name);
          Ada.Text_IO.Create (Errors.File, Ada.Text_IO.Out_File, To_String (T.Result));
          CSS.Parser.Load (Path, Doc'Unchecked_Access, Errors'Unchecked_Access);
-         CSS.Analysis.Rules.Analyze (Doc, Errors);
+         CSS.Analysis.Rules.Analyze (Repo, Doc, Errors);
          Util.Measures.Report (Time, "Parse and analyse " & Name);
       end;
       Ada.Text_IO.Close (Errors.File);
