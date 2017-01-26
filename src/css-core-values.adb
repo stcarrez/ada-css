@@ -166,6 +166,9 @@ package body CSS.Core.Values is
       if Left = Right then
          return True;
       end if;
+      if Left = null or Right = null then
+         return False;
+      end if;
       return Left.Kind = Right.Kind and Left.Unit = Right.Unit
          and Left.Len = Right.Len and Left.Value = Right.Value;
    end Compare;
