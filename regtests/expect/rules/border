@@ -1,1 +1,1 @@
-border:2:9: error: Invalid values '1px solid' for property border
+border:2:9: error: Unexpected value 'solid' after '1px solid' for property border
