@@ -68,6 +68,40 @@ package body CSS.Analysis.Rules is
       end if;
    end Append;
 
+   --  Print the rule definition to the print stream.
+   procedure Print (Rule   : in Rule_Type;
+                    Stream : in out CSS.Printer.File_Type'Class) is
+   begin
+      if Rule.Comma_Sep then
+         Stream.Print ("#");
+         if Rule.Min_Repeat /= 1 and Rule.Max_Repeat /= 1 then
+            Stream.Print ("{");
+            Stream.Print (Util.Strings.Image (Rule.Min_Repeat));
+            if Rule.Min_Repeat /= Rule.Max_Repeat then
+               Stream.Print (",");
+               Stream.Print (Util.Strings.Image (Rule.Max_Repeat));
+            end if;
+            Stream.Print ("}");
+         end if;
+      elsif Rule.Min_Repeat = 0 and Rule.Max_Repeat = 1 then
+         Stream.Print ("?");
+      elsif Rule.Min_Repeat = 1 and Rule.Max_Repeat = Natural'Last then
+         Stream.Print ("+");
+      elsif Rule.Min_Repeat = 0 and Rule.Max_Repeat = Natural'Last then
+         Stream.Print ("*");
+      elsif Rule.Min_Repeat /= 1 and Rule.Max_Repeat /= 1 then
+         Stream.Print ("{");
+         Stream.Print (Util.Strings.Image (Rule.Min_Repeat));
+         if Rule.Min_Repeat /= Rule.Max_Repeat then
+            Stream.Print (",");
+            if Rule.Max_Repeat /= Natural'Last then
+               Stream.Print (Util.Strings.Image (Rule.Max_Repeat));
+            end if;
+         end if;
+         Stream.Print ("}");
+      end if;
+   end Print;
+
    --  ------------------------------
    --  Check if the value matches the rule.
    --  ------------------------------
@@ -101,6 +135,17 @@ package body CSS.Analysis.Rules is
       end if;
       return Match_Count;
    end Match;
+
+   --  ------------------------------
+   --  Print the rule definition to the print stream.
+   --  ------------------------------
+   overriding
+   procedure Print (Rule   : in Ident_Rule_Type;
+                    Stream : in out CSS.Printer.File_Type'Class) is
+   begin
+      Stream.Print (Rule.Ident);
+      Rule_Type (Rule).Print (Stream);
+   end Print;
 
    --  Check if the value matches the identifier defined by the rule.
    overriding
@@ -220,6 +265,17 @@ package body CSS.Analysis.Rules is
       return Rule.Rule.Match (Value);
    end Match;
 
+   --  ------------------------------
+   --  Print the rule definition to the print stream.
+   --  ------------------------------
+   overriding
+   procedure Print (Rule   : in Definition_Rule_Type;
+                    Stream : in out CSS.Printer.File_Type'Class) is
+   begin
+      Stream.Print (Rule.Ident);
+      Rule_Type (Rule).Print (Stream);
+   end Print;
+
    --  Check if the value matches the type.
    overriding
    function Match (Rule  : in Definition_Rule_Type;
@@ -243,6 +299,50 @@ package body CSS.Analysis.Rules is
          return Rule.Rule.Match (Value, Pos);
       end if;
    end Match;
+
+   --  ------------------------------
+   --  Print the rule definition to the print stream.
+   --  ------------------------------
+   overriding
+   procedure Print (Rule   : in Group_Rule_Type;
+                    Stream : in out CSS.Printer.File_Type'Class) is
+      List : Rule_Type_Access := Rule.List;
+   begin
+      if Rule.Kind = GROUP_PARAMS then
+         Stream.Print ("(");
+      else
+         Stream.Print ("[");
+      end if;
+      while List /= null loop
+         List.Print (Stream);
+         if List.Next /= null then
+            case Rule.Kind is
+               when GROUP_ONLY_ONE =>
+                  Stream.Print (" | ");
+
+               when GROUP_DBAR =>
+                  Stream.Print (" || ");
+
+               when GROUP_AND =>
+                  Stream.Print (" && ");
+
+               when GROUP_PARAMS =>
+                  Stream.Print (", ");
+
+               when GROUP_SEQ =>
+                  Stream.Print (" ");
+
+            end case;
+         end if;
+         List := List.Next;
+      end loop;
+      if Rule.Kind = GROUP_PARAMS then
+         Stream.Print (")");
+      else
+         Stream.Print ("]");
+      end if;
+      Rule_Type (Rule).Print (Stream);
+   end Print;
 
    --  Check if the value matches the rule.
    overriding
@@ -305,12 +405,14 @@ package body CSS.Analysis.Rules is
             while Cur_Pos <= Count loop
                Rule := Group.List;
                while Rule /= null loop
-                  N := Rule.Match (Value, Cur_Pos);
-                  if N > 0 or else N = Rule.Min_Repeat then
-                     Cur_Pos := Cur_Pos + N;
-                     M (I) := Rule;
-                     I := I + 1;
-                     exit;
+                  if not (for some J in M'Range => M (J) = Rule) then
+                     N := Rule.Match (Value, Cur_Pos);
+                     if N > 0 or else N = Rule.Min_Repeat then
+                        Cur_Pos := Cur_Pos + N;
+                        M (I) := Rule;
+                        I := I + 1;
+                        exit;
+                     end if;
                   end if;
                   Rule := Rule.Next;
                end loop;
@@ -412,6 +514,17 @@ package body CSS.Analysis.Rules is
    end Append_Group;
 
    --  ------------------------------
+   --  Print the rule definition to the print stream.
+   --  ------------------------------
+   overriding
+   procedure Print (Rule   : in Function_Rule_Type;
+                    Stream : in out CSS.Printer.File_Type'Class) is
+   begin
+      Stream.Print (Rule.Ident);
+      Group_Rule_Type (Rule).Print (Stream);
+   end Print;
+
+   --  ------------------------------
    --  Create a rule that describes a function call with parameters.
    --  ------------------------------
    function Create_Function (Name   : in String;
@@ -428,97 +541,6 @@ package body CSS.Analysis.Rules is
                                       others => <>);
    end Create_Function;
 
-   Repo : aliased Repository_Type;
-
-   function Rule_Repository return access Repository_Type is
-   begin
-      return Repo'Access;
-   end Rule_Repository;
-
-   --  Print the rule definition to the print stream.
-   procedure Print (Stream : in out CSS.Printer.File_Type'Class;
-                    Rule   : in Rule_Type'Class) is
-      List : Rule_Type_Access;
-      Kind : Group_Type;
-   begin
-      if Rule in Group_Rule_Type'Class then
-         List := Group_Rule_Type'Class (Rule).List;
-         Kind := Group_Rule_Type'Class (Rule).Kind;
-         if Rule in Function_Rule_Type'Class then
-            Stream.Print (Function_Rule_Type (Rule).Ident);
-         end if;
-         if Kind = GROUP_PARAMS then
-            Stream.Print ("(");
-         else
-            Stream.Print ("[");
-         end if;
-         while List /= null loop
-            Print (Stream, List.all);
-            if List.Next /= null then
-               case Kind is
-                  when GROUP_ONLY_ONE =>
-                     Stream.Print (" | ");
-
-                  when GROUP_DBAR =>
-                     Stream.Print (" || ");
-
-                  when GROUP_AND =>
-                     Stream.Print (" && ");
-
-                  when GROUP_PARAMS =>
-                     Stream.Print (", ");
-
-                  when GROUP_SEQ =>
-                     Stream.Print (" ");
-
-               end case;
-            end if;
-            List := List.Next;
-         end loop;
-      end if;
-      if Rule in Ident_Rule_Type'Class then
-         Stream.Print (Ident_Rule_Type (Rule).Ident);
-      end if;
-      if Rule in Definition_Rule_Type'Class then
-         Stream.Print (Definition_Rule_Type (Rule).Ident);
-      end if;
-      if Rule in Group_Rule_Type'Class then
-         if Kind = GROUP_PARAMS then
-            Stream.Print (")");
-         else
-            Stream.Print ("]");
-         end if;
-      end if;
-      if Rule.Comma_Sep then
-         Stream.Print ("#");
-         if Rule.Min_Repeat /= 1 and Rule.Max_Repeat /= 1 then
-            Stream.Print ("{");
-            Stream.Print (Util.Strings.Image (Rule.Min_Repeat));
-            if Rule.Min_Repeat /= Rule.Max_Repeat then
-               Stream.Print (",");
-               Stream.Print (Util.Strings.Image (Rule.Max_Repeat));
-            end if;
-            Stream.Print ("}");
-         end if;
-      elsif Rule.Min_Repeat = 0 and Rule.Max_Repeat = 1 then
-         Stream.Print ("?");
-      elsif Rule.Min_Repeat = 1 and Rule.Max_Repeat = Natural'Last then
-         Stream.Print ("+");
-      elsif Rule.Min_Repeat = 0 and Rule.Max_Repeat = Natural'Last then
-         Stream.Print ("*");
-      elsif Rule.Min_Repeat /= 1 and Rule.Max_Repeat /= 1 then
-         Stream.Print ("{");
-         Stream.Print (Util.Strings.Image (Rule.Min_Repeat));
-         if Rule.Min_Repeat /= Rule.Max_Repeat then
-            Stream.Print (",");
-            if Rule.Max_Repeat /= Natural'Last then
-               Stream.Print (Util.Strings.Image (Rule.Max_Repeat));
-            end if;
-         end if;
-         Stream.Print ("}");
-      end if;
-   end Print;
-
    --  ------------------------------
    --  Print the repository rule definitions to the print stream.
    --  ------------------------------
@@ -529,7 +551,7 @@ package body CSS.Analysis.Rules is
       while Rule_Maps.Has_Element (Iter) loop
          Stream.Print (Rule_Maps.Key (Iter));
          Stream.Print (" := ");
-         Print (Stream, Rule_Maps.Element (Iter).all);
+         Rule_Maps.Element (Iter).Print (Stream);
          Stream.New_Line;
          Rule_Maps.Next (Iter);
       end loop;
@@ -554,8 +576,9 @@ package body CSS.Analysis.Rules is
       end loop;
    end Resolve;
 
-   procedure Analyze (Sheet  : in CSS.Core.Sheets.CSSStylesheet;
-                      Report : in out CSS.Core.Errors.Error_Handler'Class) is
+   procedure Analyze (Repository : in out Repository_Type;
+                      Sheet      : in CSS.Core.Sheets.CSSStylesheet;
+                      Report     : in out CSS.Core.Errors.Error_Handler'Class) is
       procedure Process (Rule : in CSS.Core.Styles.CSSStyleRule'Class;
                          Prop : in CSS.Core.Properties.CSSProperty);
 
@@ -563,7 +586,7 @@ package body CSS.Analysis.Rules is
                          Prop : in CSS.Core.Properties.CSSProperty) is
          pragma Unreferenced (Rule);
 
-         R           : constant Rule_Type_Access := Repo.Find_Property (Prop.Name.all);
+         R           : constant Rule_Type_Access := Repository.Find_Property (Prop.Name.all);
          Match_Count : Natural;
          Count       : Natural;
       begin
@@ -596,7 +619,7 @@ package body CSS.Analysis.Rules is
          end if;
       end Process;
    begin
-      Repo.Resolve;
+      Repository.Resolve;
       Sheet.Iterate_Properties (Process'Access);
    end Analyze;
 
@@ -606,7 +629,6 @@ package body CSS.Analysis.Rules is
    procedure Clear (Repository : in out Repository_Type) is
    begin
       Clear (Repository.Rules);
-      null;
       Clear (Repository.Properties);
    end Clear;
 
@@ -619,7 +641,8 @@ package body CSS.Analysis.Rules is
          begin
             Rule.Used := Rule.Used - 1;
             if Rule.Used = 0 then
---               Log.Error (" Free {0} - {1}", Rule_Maps.Key (Pos), System.Address_Image (Rule.all'Address));
+--               Log.Error (" Free {0} - {1}", Rule_Maps.Key (Pos),
+--                          System.Address_Image (Rule.all'Address));
                Free (Rule);
             end if;
             Rules.Delete (Pos);
@@ -630,7 +653,7 @@ package body CSS.Analysis.Rules is
    overriding
    procedure Finalize (Rule : in out Group_Rule_Type) is
    begin
-      --  Free (Rule.List);
+      Free (Rule.List);
       Finalize (Rule_Type (Rule));
    end Finalize;
 
@@ -643,10 +666,16 @@ package body CSS.Analysis.Rules is
       while List /= null loop
          Next := List.Next;
          List.Next := null;
-         --  Free (List);
+         Free (List);
          List := Next;
       end loop;
    end Finalize;
+
+   overriding
+   procedure Initialize (Repository : in out Repository_Type) is
+   begin
+      Types.Register (Repository);
+   end Initialize;
 
    --  ------------------------------
    --  Release the rules allocated dynamically.
@@ -657,28 +686,4 @@ package body CSS.Analysis.Rules is
       Repository.Clear;
    end Finalize;
 
-   Int_Rule        : aliased Types.Integer_Rule_Type;
-   Percent_Rule    : aliased Types.Percentage_Rule_Type;
-   Length_Rule     : aliased Types.Length_Rule_Type;
-   Number_Rule     : aliased Types.Number_Rule_Type;
-   Angle_Rule      : aliased Types.Angle_Rule_Type;
-   String_Rule     : aliased Types.String_Rule_Type;
-   URL_Rule        : aliased Types.URL_Rule_Type;
-   Color_Rule      : aliased Types.Color_Rule_Type;
-   Ident_Rule      : aliased Types.Identifier_Rule_Type;
-   Resolution_Rule : aliased Types.Resolution_Rule_Type;
-   Time_Rule       : aliased Types.Time_Rule_Type;
-
-begin
-   Repo.Types.Insert ("<angle>", Angle_Rule'Access);
-   Repo.Types.Insert ("<integer>", Int_Rule'Access);
-   Repo.Types.Insert ("<number>", Number_Rule'Access);
-   Repo.Types.Insert ("<length>", Length_Rule'Access);
-   Repo.Types.Insert ("<percentage>", Percent_Rule'Access);
-   Repo.Types.Insert ("<string>", String_Rule'Access);
-   Repo.Types.Insert ("<url>", URL_Rule'Access);
-   Repo.Types.Insert ("<hex-color>", Color_Rule'Access);
-   Repo.Types.Insert ("<custom-ident>", Ident_Rule'Access);
-   Repo.Types.Insert ("<resolution>", Resolution_Rule'Access);
-   Repo.Types.Insert ("<time>", Time_Rule'Access);
 end CSS.Analysis.Rules;
