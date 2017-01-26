@@ -117,17 +117,25 @@ package CSS.Analysis.Rules is
    procedure Analyze (Sheet  : in CSS.Core.Sheets.CSSStylesheet;
                       Report : in out CSS.Core.Errors.Error_Handler'Class);
 
+   --  Print the repository rule definitions to the print stream.
+   procedure Print (Stream     : in out CSS.Printer.File_Type'Class;
+                    Repository : in Repository_Type);
+
 private
 
    type Rule_Type_Access_Array is array (Positive range <>) of Rule_Type_Access;
 
    type Rule_Type is limited new Ada.Finalization.Limited_Controlled with record
+      Used       : Natural := 0;
       Loc        : Location;
       Next       : Rule_Type_Access;
       Min_Repeat : Natural := 0;
       Max_Repeat : Natural := 0;
       Comma_Sep  : Boolean := False;
    end record;
+
+   overriding
+   procedure Finalize (Rule : in out Rule_Type);
 
    type Type_Rule_Type (Len : Natural) is new Rule_Type with record
       Rule : Rule_Type_Access;
@@ -175,6 +183,9 @@ private
    function Match (Group : in Group_Rule_Type;
                    Value : in CSS.Core.Values.Value_List;
                    Pos   : in Positive := 1) return Natural;
+
+   overriding
+   procedure Finalize (Rule : in out Group_Rule_Type);
 
    type Function_Rule_Type (Len : Natural) is new Group_Rule_Type with record
       Ident : String (1 .. Len);
