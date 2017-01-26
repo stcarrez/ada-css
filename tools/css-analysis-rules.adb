@@ -292,11 +292,20 @@ package body CSS.Analysis.Rules is
    function Match (Rule  : in Definition_Rule_Type;
                    Value : in CSS.Core.Values.Value_List;
                    Pos   : in Positive := 1) return Natural is
+      N           : Natural;
+      Repeat      : Natural := 0;
+      Match_Count : Natural := 0;
    begin
       if Rule.Rule = null then
          return 0;
       else
-         return Rule.Rule.Match (Value, Pos);
+         while Repeat < Rule.Max_Repeat loop
+            N := Rule.Rule.Match (Value, Pos + Match_Count);
+            exit when N = 0;
+            Match_Count := Match_Count + N;
+            Repeat := Repeat + 1;
+         end loop;
+         return Match_Count;
       end if;
    end Match;
 
