@@ -70,8 +70,16 @@ package body CSS.Analysis.Rules.Types is
                    Value : in CSS.Core.Values.Value_Type) return Boolean is
       pragma Unreferenced (Rule);
    begin
-      return Get_Type (Value) = VALUE_NUMBER
-         and (Get_Unit (Value) in Length_Unit_Type or Get_Unit (Value) = UNIT_NONE);
+      if Get_Type (Value) /= VALUE_NUMBER then
+         return False;
+      end if;
+      if Get_Unit (Value) in Length_Unit_Type then
+         return True;
+      end if;
+      if Get_Unit (Value) /= UNIT_NONE then
+         return False;
+      end if;
+      return Get_Value (Value) = "0";
    end Match;
 
    --  ------------------------------
