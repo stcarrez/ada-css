@@ -21,7 +21,7 @@ baduri3         url\({w}{badstring}
 comment         \/\*[^*]*\*+([^/*][^*]*\*+)*\/
 ident           -?{nmstart}{nmchar}*
 name            {nmchar}+
-num             [0-9]+|[0-9]*"."[0-9]+
+num             -?[0-9]+|[0-9]*"."[0-9]+
 string          {string1}|{string2}
 badstring       {badstring1}|{badstring2}
 baduri          {baduri1}|{baduri2}|{baduri3}
