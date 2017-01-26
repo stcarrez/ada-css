@@ -177,7 +177,7 @@ private
 
    type Value_List is new Ada.Finalization.Controlled with record
       Next   : Value_List_Access;
-      Values : Value_Array (1 .. 4);
+      Values : Value_Array (1 .. 10);
       Count  : Natural := 0;
    end record;
 
