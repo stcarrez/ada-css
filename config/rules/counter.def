@@ -1,0 +1,20 @@
+# https://drafts.csswg.org/css-content/
+
+<target-counters()> = target-counter( [ <string> | <url> ] , <custom-ident> , <string> [ , <counter-style> ]? )
+<target-counter()> = target-counter( [ <string> | <url> ] , <custom-ident> [ , <counter-style> ]? )
+
+counter-increment := [ <custom-ident> <integer>? ]+ | none
+list-style := <list-style-type> || <list-style-position> || <list-style-image>
+
+<list-style-type> = <counter-style> | <string> | none
+
+list-style-type := <counter-style> | <string> | none
+<counter-style> = <counter-style-name> | symbols()
+<counter-style-name> = <custom-ident>
+
+<list-style-position> = inside | outside
+list-style-position := inside | outside
+
+<list-style-image> = <url> | none
+list-style-image := <url> | none
+

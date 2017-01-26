@@ -1,0 +1,11 @@
+#
+-webkit-animation := <single-animation>#
+-webkit-backface-visibility
+-webkit-background-size := <bg-size>#
+-webkit-font-smoothing
+-webkit-tap-highlight-color
+-webkit-text-size-adjust := none | auto | <percentage>
+-webkit-transform := none | <transform-list>
+-webkit-transition := <single-transition>#
+-webkit-transition-timing-function := <single-transition-timing-function>#
+-webkit-user-select := auto | text | none | contain | all

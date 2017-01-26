@@ -1,0 +1,18 @@
+# https://developer.mozilla.org/en-US/docs/Web/CSS/transition
+
+<single-transition-timing-function> = ease | linear | ease-in | ease-out
+  | ease-in-out | step-start | step-end
+  | steps( <integer> [, [ start | end ] ]? )
+  | cubic-bezier( <number>, <number>, <number>, <number> )
+
+<single-transition-property> = all | <custom-ident>
+<single-transition> = [ none | <single-transition-property> ]
+  || <time>
+  || <single-transition-timing-function>
+  || <time>
+
+transition := <single-transition>#
+transition-delay := <time>#
+transition-duration := <time>#
+transition-property := none | <single-transition-property>#
+transition-timing-function := <single-transition-timing-function>#

@@ -1,0 +1,16 @@
+# Mozilla extensions
+
+-moz-animation := <single-animation>#
+
+-moz-appearance
+-moz-backface-visibility
+-moz-background-size := <bg-size>#
+-moz-font-smoothing
+-moz-tap-highlight-color
+-moz-text-size-adjust := none | auto | <percentage>
+-moz-transform := none | <transform-list>
+
+-moz-transition := <single-transition>#
+-moz-transition-timing-function := <single-transition-timing-function>#
+-moz-user-select := auto | text | none | contain | all
+-moz-user-input := none | enabled | disabled

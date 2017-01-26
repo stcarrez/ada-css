@@ -1,0 +1,27 @@
+#
+
+<keyframe-selector> = from | to | <percentage>
+<keyframes-name> = <custom-ident> | <string>
+
+<single-timing-function> = <single-transition-timing-function>
+<single-animation-play-state> = running | paused
+<single-animation-iteration-count> = infinite | <number>
+<single-animation-direction> = normal | reverse | alternate | alternate-reverse
+<single-animation-fill-mode> = none | forwards | backwards | both
+<single-animation> = <time>
+  || <single-timing-function>
+  || <time>
+  || <single-animation-iteration-count>
+  || <single-animation-direction>
+  || <single-animation-fill-mode>
+  || <single-animation-play-state>
+  || [ none | <keyframes-name> ]
+animation := <single-animation>#
+animation-delay := <time>#
+animation-direction := <single-animation-direction>#
+animation-duration := <time>#
+animation-fill-mode := <single-animation-fill-mode>#
+animation-iteration-count := <single-animation-iteration-count>#
+animation-name := [ none | <keyframes-name> ]#
+animation-play-state := <single-animation-play-state>#
+animation-timing-function := <single-timing-function>#
