@@ -9,3 +9,8 @@
 -webkit-transition := <single-transition>#
 -webkit-transition-timing-function := <single-transition-timing-function>#
 -webkit-user-select := auto | text | none | contain | all
+
+-webkit-border-radius := <length-percentage>{1,4} [ / <length-percentage>{1,4} ]?
+
+-webkit-border-top-left-radius
+-webkit-border-top-right-radius := <length-percentage>{1,2}

@@ -14,3 +14,8 @@
 -moz-transition-timing-function := <single-transition-timing-function>#
 -moz-user-select := auto | text | none | contain | all
 -moz-user-input := none | enabled | disabled
+
+-moz-border-radius := <length-percentage>{1,4} [ / <length-percentage>{1,4} ]?
+
+-moz-border-radius-topright
+-moz-border-radius-topleft := <length-percentage>{1,2}
