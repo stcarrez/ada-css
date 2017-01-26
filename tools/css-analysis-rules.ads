@@ -50,8 +50,8 @@ package CSS.Analysis.Rules is
                      New_Rule : in Rule_Type_Access);
 
    --  Print the rule definition to the print stream.
-   procedure Print (Stream : in out CSS.Printer.File_Type'Class;
-                    Rule   : in Rule_Type'Class);
+   procedure Print (Rule   : in Rule_Type;
+                    Stream : in out CSS.Printer.File_Type'Class);
 
    --  Check if the value matches the rule.
    function Match (Rule  : in Rule_Type;
@@ -64,6 +64,11 @@ package CSS.Analysis.Rules is
 
    --  Rule that describes an identifier such as 'left' or 'right'.
    type Ident_Rule_Type (Len : Natural) is new Rule_Type with private;
+
+   --  Print the rule definition to the print stream.
+   overriding
+   procedure Print (Rule   : in Ident_Rule_Type;
+                    Stream : in out CSS.Printer.File_Type'Class);
 
    --  Check if the value matches the identifier defined by the rule.
    overriding
@@ -112,10 +117,9 @@ package CSS.Analysis.Rules is
                              Params : in Rule_Type_Access;
                              Loc    : in Location) return Rule_Type_Access;
 
-   function Rule_Repository return access Repository_Type;
-
-   procedure Analyze (Sheet  : in CSS.Core.Sheets.CSSStylesheet;
-                      Report : in out CSS.Core.Errors.Error_Handler'Class);
+   procedure Analyze (Repository : in out Repository_Type;
+                      Sheet      : in CSS.Core.Sheets.CSSStylesheet;
+                      Report     : in out CSS.Core.Errors.Error_Handler'Class);
 
    --  Print the repository rule definitions to the print stream.
    procedure Print (Stream     : in out CSS.Printer.File_Type'Class;
@@ -156,6 +160,11 @@ private
    end record;
    type Definition_Rule_Type_Access is access all Definition_Rule_Type'Class;
 
+   --  Print the rule definition to the print stream.
+   overriding
+   procedure Print (Rule   : in Definition_Rule_Type;
+                    Stream : in out CSS.Printer.File_Type'Class);
+
    --  Check if the value matches the rule.
    overriding
    function Match (Rule  : in Definition_Rule_Type;
@@ -172,6 +181,11 @@ private
       Count      : Natural := 0;
       Kind       : Group_Type;
    end record;
+
+   --  Print the rule definition to the print stream.
+   overriding
+   procedure Print (Rule   : in Group_Rule_Type;
+                    Stream : in out CSS.Printer.File_Type'Class);
 
    --  Check if the value matches the rule.
    overriding
@@ -190,6 +204,11 @@ private
    type Function_Rule_Type (Len : Natural) is new Group_Rule_Type with record
       Ident : String (1 .. Len);
    end record;
+
+   --  Print the rule definition to the print stream.
+   overriding
+   procedure Print (Rule   : in Function_Rule_Type;
+                    Stream : in out CSS.Printer.File_Type'Class);
 
    package Rule_Maps is
       new Ada.Containers.Indefinite_Ordered_Maps (Key_Type     => String,
@@ -217,6 +236,9 @@ private
    end record;
 
    procedure Resolve (Repository : in out Repository_Type);
+
+   overriding
+   procedure Initialize (Repository : in out Repository_Type);
 
    --  Release the rules allocated dynamically.
    overriding
