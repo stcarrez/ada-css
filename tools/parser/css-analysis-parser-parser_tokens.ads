@@ -13,7 +13,8 @@ package CSS.Analysis.Parser.Parser_Tokens is
          '}', '[', ']',
          '=', '|', '!',
          '?', '#', '+',
-         '*', ',', S );
+         '*', ',', '/',
+         S );
 
     Syntax_Error : exception;
 
