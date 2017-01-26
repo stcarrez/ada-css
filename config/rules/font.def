@@ -18,11 +18,15 @@
 
 <feature-tag-value> = <string> [ <integer> | on | off ]?
 
+<font-style> = normal | italic | oblique
 font-style := normal | italic | oblique
+<font-family> = [ <family-name> | <generic-family> ]#
 font-family := [ <family-name> | <generic-family> ]#
 
+<font-weight> = normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900
 font-weight := normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900
 
+<font-size> = <absolute-size> | <relative-size> | <length-percentage>
 font-size := <absolute-size> | <relative-size> | <length-percentage>
 
 font-feature-settings := normal | <feature-tag-value>#
@@ -57,4 +61,14 @@ font-variant-ligatures := normal | none | [ <common-lig-values> || <discretionar
 font-variant-numeric := normal | [ <numeric-figure-values> || <numeric-spacing-values> || <numeric-fraction-values> || ordinal || slashed-zero ]
 font-variant-position := normal | sub | super
 
+<font-stretch> = normal | ultra-condensed | extra-condensed | condensed
+   | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded
+font-stretch := normal | ultra-condensed | extra-condensed | condensed
+   | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded
+
+<line-height> = normal | <number> | <length> | <percentage>
 line-height := normal | <number> | <length> | <percentage>
+
+<font-variant-css21> = [ normal | small-caps ]
+font := [ [ <font-style> || <font-variant-css21> || <font-weight> || <font-stretch> ]? <font-size>
+   [ / <line-height> ]? <font-family> ] | caption | icon | menu | message-box | small-caption | status-bar

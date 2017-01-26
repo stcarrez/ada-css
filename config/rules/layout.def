@@ -40,6 +40,9 @@ margin-left
 margin-right
 margin-top := <length> | <percentage> | auto
 
+<width> = [ [ <length> | <percentage> ] && [ border-box | content-box ]? ]
+  | available | min-content | max-content | fit-content | auto
+
 height
 width := [ [ <length> | <percentage> ] && [ border-box | content-box ]? ]
   | available | min-content | max-content | fit-content | auto
@@ -60,3 +63,17 @@ vertical-align  := baseline | sub | super | text-top | text-bottom | middle | <l
   | top | bottom
 
 
+align-content := flex-start | flex-end | center | space-between | space-around | stretch
+align-items := flex-start | flex-end | center | baseline | stretch
+align-self := auto | flex-start | flex-end | center | baseline | stretch
+
+<flex-shrink>
+<flex-grow>
+flex-shrink
+flex-grow := <number>
+
+<flex-basis> = content | <width>
+flex-basis := content | <width>
+flex-direction := row | row-reverse | column | column-reverse
+flex := none | [ <flex-grow> <flex-shrink>? || <flex-basis> ]
+flex-wrap := nowrap | wrap | wrap-reverse

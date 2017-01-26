@@ -1,5 +1,22 @@
 # https://developer.mozilla.org/en-US/docs/Web/CSS/color
 
+<repeating-linear-gradient()> = repeating-linear-gradient( [ <angle> | to <side-or-corner> ,]? <color-stop> [, <color-stop>]+ )
+<linear-gradient()> = linear-gradient( [ <angle> | to <side-or-corner> ,]? <color-stop> [, <color-stop>]+ )
+#<radial-gradient> = radial-gradient( [ [ circle || <length> ] [ at <position> ]? ,
+#     | [ ellipse || [ <length> | <percentage> ]{2} ]  [ at <position> ]? ,
+#     | [ [ circle | ellipse ] || <extent-keyword> ]   [ at <position> ]? ,
+#     | at <position> , ]? <color-stop> [ , <color-stop> ]+ )
+# <repeating-radial-gradient> = repeating-radial-gradient( [[ circle  || <length> ] [at <position>]? ,
+#     | [ ellipse || [<length> | <percentage> ]{2}] [at <position>]? ,
+#     | [[ circle | ellipse ] || <extent-keyword> ] [at <position>]? ,
+#     | at <position> , <color-stop> [ , <color-stop> ]+ )
+
+<radial-gradient()> = radial-gradient( [ circle || <length> ] [ at <position> ]? ,
+     ellipse || [ <length> | <percentage> ]{2} )
+
+<repeating-radial-gradient()> = repeating-radial-gradient( [ circle  || <length> ] [at <position>]? ,
+     ellipse || [<length> | <percentage> ]{2})
+
 <rgb-component> = <integer> | <percentage>
 <alpha-value> = <number>
 <hue> = <number>

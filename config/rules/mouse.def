@@ -8,3 +8,5 @@ cursor := [
     | se-resize | sw-resize | w-resize | ew-resize | ns-resize | nesw-resize
     | nwse-resize | col-resize | row-resize | all-scroll | zoom-in | zoom-out | grab | grabbing ] ]
 
+pointer-events := auto | none | visiblePainted | visibleFill | visibleStroke
+    | visible | painted | fill | stroke | all | inherit

@@ -1,4 +1,6 @@
 
+<shadow-t> = [ <length>{2,3} && <color>? ]
+
 hyphens := none | manual | auto
 letter-spacing := normal | <length>
 line-break := auto | loose | normal | strict
@@ -7,22 +9,54 @@ tab-size := <integer> | <length>
 text-align := start | end | left | right | center | justify | match-parent
 text-align-last := auto | start | end | left | right | center | justify
 
+<text-decoration-line> = none | [ underline || overline || line-through || blink ]
+<text-decoration-style> = solid | double | dotted | dashed | wavy
+<text-decoration-color> = <color>
+
+text-decoration := <text-decoration-line> || <text-decoration-style> || <text-decoration-color>
+text-decoration-line := <text-decoration-line>
+text-decoration-style := <text-decoration-style>
+text-decoration-color := <color>
+text-decoration-skip := none | [ objects || spaces || ink || edges || box-decoration ]
+
+<text-emphasis-color> = <color>
+<text-emphasis-style> = none | [ [ filled | open ] || [ dot | circle | double-circle | triangle | sesame ] ] | <string>
+text-emphasis := <text-emphasis-style> || <text-emphasis-color>
+text-emphasis-color := <color>
+text-emphasis-style := <text-emphasis-style>
+text-emphasis-position := [ over | under ] && [ right | left ]
+
 text-indent := <length-percentage> && hanging? && each-line?
 text-overflow := [ clip | ellipsis | <string> ]{1,2}
 text-size-adjust := none | auto | <percentage>
 text-transform := none | capitalize | uppercase | lowercase | full-width
+text-rendering := auto | optimizeSpeed | optimizeLegibility | geometricPrecision
+text-shadow := none | <shadow-t>#
+text-underline-position := auto | [ under || [ left | right ] ]
+
 white-space := normal | pre | nowrap | pre-wrap | pre-line
 word-break := normal | break-all | keep-all
 
+
 word-spacing := normal | <length-percentage>
 
-content := [ <image> , ]* [ normal | none | <content-list> ] [/ <string> ]?
+#content := [ <image> , ]* [ normal | none | <content-list> ] [/ <string> ]?
+content := [ <image> ]* [ normal | none | <content-list> ] [/ <string> ]?
 
 <content-list> = [ <string> | contents | <url> | <quote> | document-url | <target> | <leader()> ]+
 <quote> = open-quote | close-quote | no-open-quote | no-close-quote
 <target> = <target-counter()> | <target-counters()> | <target-text()>
 <leader()> = leader( dotted | solid | space | <string> )
-<target-counter()> = target-counter( [ <string> | <url> ] , <custom-ident> [, <counter-style> ]? )
-<target-counters()> = target-counters( [ <string> | <url> ] , <custom-ident> , <string> [, <counter-style> ]? )
 <target-text()> = target-text( [ <string> | <url> ] [, [ content | before | after | first-letter ] ]? )
 
+
+
+<outline-color> = <color> | invert
+<outline-style> = auto | <br-style>
+outline := [ <outline-color> || <outline-style> || <br-width> ]
+outline-style := <outline-style>
+outline-color := <outline-color>
+outline-width := <br-width>
+outline-offset := <length>
+
+resize := none | both | horizontal | vertical
