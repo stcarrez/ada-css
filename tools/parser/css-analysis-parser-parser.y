@@ -19,6 +19,7 @@
 %token '+'
 %token '*'
 %token ','
+%token '/'
 %token S
 
 {
@@ -33,12 +34,13 @@ definitions :
     definition
   |
     spaces
+  |
+    error
+      { Error (yylval.Line, yylval.Column, "Syntax error"); }
   ;
 
 definition :
-    property_definition
-  |
-    named_definition
+    property_definition spaces
   ;
 
 spaces :
@@ -53,6 +55,9 @@ property_definition :
     property_names spaces R_DEFINE spaces rule_definition
        { Create_Property ($1, $5); }
   |
+    property_names spaces '=' spaces rule_definition
+       { Create_Property ($1, $5); }
+  |
     property_names error
        { Error ($1.Line, $1.Column, "Error in property definition"); }
   ;
@@ -61,73 +66,61 @@ property_names :
      property_names spaces R_PROPERTY
         { Create_Names ($1, $3); $$ := $1; }
   |
+     property_names spaces R_DEF_NAME
+        { Create_Names ($1, $3); $$ := $1; }
+  |
      R_PROPERTY
+        { $$ := $1; $$.Names.Append (Ada.Strings.Unbounded.To_String ($1.Token)); }
+  |
+     R_DEF_NAME
         { $$ := $1; $$.Names.Append (Ada.Strings.Unbounded.To_String ($1.Token)); }
   ;
 
-named_definition :
-    R_DEF_NAME spaces '=' spaces rule_definition
-       { Create_Definition ($1, $5); }
-  |
-    R_DEF_NAME error
-       { Error ($1.Line, $1.Column, "Error in named definition"); }
-  ;
-
 rule_definition :
-    rule_dbar_definition
+    rule_comma_definition
   ;
 
-param_rule_definition :
-    param_rule_definition ',' spaces rule_dbar_definition
-       { Append_Group ($$, $1, $4, Rules.GROUP_PARAMS); }
-  |
-    param_rule_definition ',' spaces param_optional_definition
-       { Append_Group ($$, $1, $4, Rules.GROUP_PARAMS); }
-  |
-    param_rule_definition spaces param_optional_definition
-       { Append_Group ($$, $1, $3, Rules.GROUP_PARAMS); }
+rule_comma_definition :
+    rule_comma_definition spaces ',' spaces rule_dbar_definition
+       { Append_Group ($$, $1, $5, Rules.GROUP_DBAR); }
   |
     rule_dbar_definition
-  |
-    group_definition
   ;
 
 rule_dbar_definition :
-    rule_dbar_definition R_FOLLOW spaces rule_and_definition
-       { Append_Group ($$, $1, $4, Rules.GROUP_DBAR); }
+    rule_dbar_definition spaces R_FOLLOW spaces rule_and_definition
+       { Append_Group ($$, $1, $5, Rules.GROUP_DBAR); }
   |
     rule_and_definition
   ;
 
 rule_and_definition :
-    rule_and_definition R_ANY spaces rule_or_definition
-       { Append_Group ($$, $1, $4, Rules.GROUP_AND); }
+    rule_and_definition spaces R_ANY spaces rule_or_definition
+       { Append_Group ($$, $1, $5, Rules.GROUP_AND); }
   |
     rule_or_definition
   ;
 
 rule_or_definition :
-    rule_or_definition '|' spaces rule_cont_definition
-       { Append_Group ($$, $1, $4, Rules.GROUP_ONLY_ONE); }
+    rule_or_definition spaces '|' spaces rule_cont_definition
+       { Append_Group ($$, $1, $5, Rules.GROUP_ONLY_ONE); }
   |
     rule_cont_definition
   ;
 
 rule_cont_definition :
-    rule_cont_definition spaces one_component
+    rule_cont_definition spaces one_component spaces
        { Append_Group ($$, $1, $3, Rules.GROUP_SEQ); }
   |
-    rule_cont_definition spaces ',' spaces one_component
+    rule_cont_definition spaces ',' spaces one_component spaces
        { Append_Group ($$, $1, $5, Rules.GROUP_SEQ); }
   |
-    one_component ',' spaces
+    one_component spaces
        { $$ := $1; }
-  |
-    one_component
   ;
 
 one_component :
-    single_component '+' spaces
+    single_component '+'
        { $1.Rule.Set_Repeat (1, Natural'Last); $$ := $1; }
   |
     single_component '?' spec_multi
@@ -146,8 +139,12 @@ one_component :
 single_component :
     group_definition
   |
-    R_IDENT '(' spaces param_rule_definition spaces ')'
-       { Create_Function ($$, $1, $3); }
+    term
+  ;
+
+term :
+    R_IDENT '(' spaces rule_definition spaces ')'
+       { Create_Function ($$, $1, $4); }
   |
     R_IDENT
        { Create_Identifier ($$, $1); }
@@ -157,14 +154,29 @@ single_component :
   |
     R_NUM
        { Create_Identifier ($$, $1); }
+  |
+    ','
+       { Create_Identifier ($$, $1); }
+  |
+    '/'
+       { Create_Identifier ($$, $1); }
+  ;
+
+param_rule_definition :
+    param_rule_definition spaces param_rule_definition
+       { Append_Group ($$, $1, $3, Rules.GROUP_PARAMS); }
+  |
+    param_optional_definition
   ;
 
 param_optional_definition :
-    '[' spaces ',' spaces rule_definition ']' '?'
-       { $$ := $5; }
+    '[' spaces param_rule_definition ']' '?'
+       { $$ := $3; }
   |
-    '[' spaces ',' spaces rule_definition ']'
-       { $$ := $5; }
+    '[' spaces param_rule_definition ']'
+       { $$ := $3; }
+  |
+    term
   ;
 
 group_definition :
@@ -176,13 +188,13 @@ group_definition :
   ;
 
 spec_multi :
-    '{' R_NUM ',' R_NUM '}' spaces
+    '{' R_NUM ',' R_NUM '}'
        { $$.Min_Repeat := Get_Value ($2); $$.Max_Repeat := Get_Value ($4); }
   |
-    '{' R_NUM ',' '}' spaces
+    '{' R_NUM ',' '}'
        { $$.Min_Repeat := Get_Value ($2); $$.Max_Repeat := Natural'Last; }
   |
-    '{' R_NUM '}' spaces
+    '{' R_NUM '}'
        { $$.Min_Repeat := Get_Value ($2); $$.Max_Repeat := $$.Min_Repeat; }
   |
     spaces
