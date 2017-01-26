@@ -21,6 +21,15 @@ package body CSS.Analysis.Rules.Types is
    use CSS.Core.Values;
 
    --  ------------------------------
+   --  Print the rule definition to the print stream.
+   --  ------------------------------
+   procedure Print (Rule   : in Builtin_Rule_Type;
+                    Stream : in out CSS.Printer.File_Type'Class) is
+   begin
+      Stream.Print (Ada.Strings.Unbounded.To_String (Rule.Name));
+   end Print;
+
+   --  ------------------------------
    --  Check if the value represents an integer without unit.
    --  ------------------------------
    overriding
@@ -62,6 +71,28 @@ package body CSS.Analysis.Rules.Types is
       pragma Unreferenced (Rule);
    begin
       return Get_Type (Value) = VALUE_NUMBER and Get_Unit (Value) in Length_Unit_Type;
+   end Match;
+
+   --  ------------------------------
+   --  Check if the value represents a time.
+   --  ------------------------------
+   overriding
+   function Match (Rule  : in Time_Rule_Type;
+                   Value : in CSS.Core.Values.Value_Type) return Boolean is
+      pragma Unreferenced (Rule);
+   begin
+      return Get_Type (Value) = VALUE_NUMBER and Get_Unit (Value) in Time_Unit_Type;
+   end Match;
+
+   --  ------------------------------
+   --  Check if the value represents a resolution.
+   --  ------------------------------
+   overriding
+   function Match (Rule  : in Resolution_Rule_Type;
+                   Value : in CSS.Core.Values.Value_Type) return Boolean is
+      pragma Unreferenced (Rule);
+   begin
+      return Get_Type (Value) = VALUE_NUMBER and Get_Unit (Value) = UNIT_PI;
    end Match;
 
    --  ------------------------------
@@ -118,5 +149,44 @@ package body CSS.Analysis.Rules.Types is
    begin
       return Get_Type (Value) = VALUE_IDENT;
    end Match;
+
+   --  ------------------------------
+   --  Register the builtin type in the repository.
+   --  ------------------------------
+   procedure Register_Builtin (Repository : in out Repository_Type;
+                               Name       : in String;
+                               Rule       : in Builtin_Rule_Type_Access;
+                               Kind       : in CSS.Core.Values.Value_Kind) is
+   begin
+      Rule.Name := Ada.Strings.Unbounded.To_Unbounded_String (Name);
+      Repository.Types.Insert (Name, Rule.all'Access);
+   end Register_Builtin;
+
+   Int_Rule        : aliased Types.Integer_Rule_Type;
+   Percent_Rule    : aliased Types.Percentage_Rule_Type;
+   Length_Rule     : aliased Types.Length_Rule_Type;
+   Number_Rule     : aliased Types.Number_Rule_Type;
+   Angle_Rule      : aliased Types.Angle_Rule_Type;
+   String_Rule     : aliased Types.String_Rule_Type;
+   URL_Rule        : aliased Types.URL_Rule_Type;
+   Color_Rule      : aliased Types.Color_Rule_Type;
+   Ident_Rule      : aliased Types.Identifier_Rule_Type;
+   Resolution_Rule : aliased Types.Resolution_Rule_Type;
+   Time_Rule       : aliased Types.Time_Rule_Type;
+
+   procedure Register (Repository : in out Repository_Type) is
+   begin
+      Register_Builtin (Repository, "<angle>", Angle_Rule'Access, VALUE_NUMBER);
+      Register_Builtin (Repository, "<integer>", Int_Rule'Access, VALUE_NUMBER);
+      Register_Builtin (Repository, "<number>", Number_Rule'Access, VALUE_NUMBER);
+      Register_Builtin (Repository, "<length>", Length_Rule'Access, VALUE_NUMBER);
+      Register_Builtin (Repository, "<percentage>", Percent_Rule'Access, VALUE_NUMBER);
+      Register_Builtin (Repository, "<string>", String_Rule'Access, VALUE_STRING);
+      Register_Builtin (Repository, "<url>", URL_Rule'Access, VALUE_URL);
+      Register_Builtin (Repository, "<hex-color>", Color_Rule'Access, VALUE_COLOR);
+      Register_Builtin (Repository, "<custom-ident>", Ident_Rule'Access, VALUE_IDENT);
+      Register_Builtin (Repository, "<resolution>", Resolution_Rule'Access, VALUE_NUMBER);
+      Register_Builtin (Repository, "<time>", Time_Rule'Access, VALUE_NUMBER);
+   end Register;
 
 end CSS.Analysis.Rules.Types;
