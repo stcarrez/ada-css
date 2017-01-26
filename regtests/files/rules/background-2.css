@@ -1,0 +1,9 @@
+a .ui-icon-circlesmall-close {
+  background-position: left
+}
+b .ui-icon-circlesmall-close {
+  background-position: left right
+}
+p .ui-icon-circlesmall-close {
+  background-position: bad-label
+}

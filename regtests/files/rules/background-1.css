@@ -1,0 +1,9 @@
+.ui-icon-circlesmall-close {
+  background-position: -32px 23px;
+}
+.ui-icon-circlesmall {
+  background-position: -2px 23px;
+}
+div .ui-icon-circlesmall {
+  background-position: -2px 23px 3px;
+}
