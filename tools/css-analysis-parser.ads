@@ -36,10 +36,12 @@ package CSS.Analysis.Parser is
    type YYstype is private;
 
    --  Load the rule definition file and populate the rule repository.
-   procedure Load (Path : in String);
+   procedure Load (Path       : in String;
+                   Repository : access Rules.Repository_Type);
 
    --  Load all the rule definition files stored in the given directory.
-   procedure Load_All (Path : in String);
+   procedure Load_All (Path       : in String;
+                       Repository : access Rules.Repository_Type);
 
 private
 
