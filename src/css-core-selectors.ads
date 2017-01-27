@@ -46,6 +46,12 @@ package CSS.Core.Selectors is
 
    type CSSSelector is private;
 
+   --  Compare the two CSS selectors.
+   function "<" (Left, Right : in CSSSelector) return Boolean;
+
+   --  Compare the two CSS selectors.
+   function "=" (Left, Right : in CSSSelector) return Boolean;
+
    --  Get a printable representation of the CSS selector.
    function To_String (Selector : in CSSSelector) return String;
 
@@ -61,6 +67,9 @@ package CSS.Core.Selectors is
    --  Get the selector type for the first selector component.
    function Get_Selector_Type (Selector : in CSSSelector) return Selector_Type;
 
+   --  Get the selector value for the first selector component.
+   function Get_Value (Selector : in CSSSelector) return String;
+
    --  Append the selector at end of the selector list.
    procedure Append (Into     : in out CSSSelector;
                      Selector : in out CSSSelector);
@@ -68,6 +77,10 @@ package CSS.Core.Selectors is
    --  Append the selector at end of the selector list.
    procedure Append_Child (Into     : in out CSSSelector;
                            Selector : in out CSSSelector);
+
+   --  Iterate over the list of CSS selector components.
+   procedure Iterate (Selector : in CSSSelector;
+                      Process  : not null access procedure (Sel : in CSSSelector));
 
    type CSSSelector_List is limited private;
 
@@ -77,6 +90,10 @@ package CSS.Core.Selectors is
 
    --  Return a printable representation of the CSS selector list.
    function To_String (List : in CSSSelector_List) return String;
+
+   --  Iterate over the list of CSS selector.
+   procedure Iterate (List    : in CSSSelector_List;
+                      Process : not null access procedure (Sel : in CSSSelector));
 
 private
 
@@ -123,7 +140,7 @@ private
    --  That is:
    --
    --  div.item a:visited is the array ( [SEL_ELEMENT "div"], [SEL_ELEMENT "a"] )
-   --  div.item input[type=checkbox] is the array ( [SEL_ELEMENT "div"], [SEL_ELEMENT "a=input"])
+   --  div.item input[type=checkbox] is the array ( [SEL_ELEMENT "div"], [SEL_ELEMENT "input"])
    --
    type Selector_Node;
    type Selector_Node_Access is access all Selector_Node;
@@ -137,6 +154,12 @@ private
       Params  : Selector_Node_Access;
       Value   : String (1 .. Len);
    end record;
+
+   --  Compare the two selectors to order them.
+   function "<" (Left, Right : Selector_Node) return Boolean;
+
+   --  Compare the two selectors for identity.
+   function "=" (Left, Right : Selector_Node) return Boolean;
 
    --  Release the storage held by the selector sub-tree.
    procedure Finalize (Selector : in out Selector_Node);
