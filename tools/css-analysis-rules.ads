@@ -210,6 +210,12 @@ private
    procedure Print (Rule   : in Function_Rule_Type;
                     Stream : in out CSS.Printer.File_Type'Class);
 
+   --  Check if the value matches the function with its parameters.
+   overriding
+   function Match (Rule  : in Function_Rule_Type;
+                   Value : in CSS.Core.Values.Value_List;
+                   Pos   : in Positive := 1) return Natural;
+
    package Rule_Maps is
       new Ada.Containers.Indefinite_Ordered_Maps (Key_Type     => String,
                                                   Element_Type => Rule_Type_Access,
