@@ -1,0 +1,4 @@
+Version 0.1.0   - Jan 2017
+  - CSS parser implementation with some CSSOM API implementation
+  - CSS rule analysis to verify the property values
+  - csstools command
