@@ -36,7 +36,7 @@ package body CSS.Core.Tests is
       --  Util.Tests.Assert_Equals (T, "<p><b>bold</b></p>",
       --                          Wiki.Utils.To_Html ("*bold*", SYNTAX_GOOGLE),
       --                          "Bold rendering invalid");
-     null;
+      null;
    end Test_Create_Stylesheet;
 
 end CSS.Core.Tests;
