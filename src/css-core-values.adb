@@ -138,6 +138,14 @@ package body CSS.Core.Values is
    end Get_Value;
 
    --  ------------------------------
+   --  Get the function parameters.
+   --  ------------------------------
+   function Get_Parameters (Value : in Value_Type) return Value_List_Access is
+   begin
+      return Value.Params;
+   end Get_Parameters;
+
+   --  ------------------------------
    --  Get a printable representation of the list or a subset of the list.
    --  ------------------------------
    function To_String (List : in Value_List;
