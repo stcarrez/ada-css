@@ -36,7 +36,7 @@ definitions :
     spaces
   |
     error
-      { Error (yylval.Line, yylval.Column, "Syntax error"); }
+      { Error (yylval.Line, yylval.Column, "Syntax error"); yyclearin; }
   ;
 
 definition :
