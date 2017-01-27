@@ -17,10 +17,8 @@
 -----------------------------------------------------------------------
 
 with Util.Log.Locations;
-with CSS.Core.Refs;
-with CSS.Core.Compare;
 with Ada.Containers.Ordered_Sets;
 package CSS.Tools.Location_Sets is
-   new Ada.Containers.Ordered_Sets (Element_Type => CSS.Core.Location,
-                                    "<"          => Util.Log.Locations."<",
-                                    "="          => Util.Log.Locations."=");
+  new Ada.Containers.Ordered_Sets (Element_Type => Util.Log.Locations.Line_Info,
+                                   "<"          => Util.Log.Locations."<",
+                                   "="          => Util.Log.Locations."=");
