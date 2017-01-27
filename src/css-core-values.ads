@@ -62,6 +62,9 @@ package CSS.Core.Values is
                        VALUE_COLOR,    --  Color: #fed or rgb(10, 20, 30)
                        VALUE_FUNCTION);
 
+   type Value_List;
+   type Value_List_Access is access all Value_List;
+
    type Value_Type is private;
 
    --  Get a printable representation of the value.
@@ -75,6 +78,9 @@ package CSS.Core.Values is
 
    --  Get the value.
    function Get_Value (Value : in Value_Type) return String;
+
+   --  Get the function parameters.
+   function Get_Parameters (Value : in Value_Type) return Value_List_Access;
 
    function "<" (Left, Right : in Value_Type) return Boolean;
 
@@ -139,8 +145,6 @@ package CSS.Core.Values is
    function Length (Repository : in Repository_Type) return Natural;
 
 private
-
-   type Value_List_Access is access all Value_List;
 
    type Value_Node;
    type Value_Type is access all Value_Node;
