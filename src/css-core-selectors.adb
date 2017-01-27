@@ -22,11 +22,48 @@ package body CSS.Core.Selectors is
    use Ada.Strings.Unbounded;
 
    --  ------------------------------
+   --  Compare the two CSS selectors.
+   --  ------------------------------
+   function "<" (Left, Right : in CSSSelector) return Boolean is
+   begin
+      for I in Left.Sel'Range loop
+         if Left.Sel (I) /= Right.Sel (I) then
+            if Left.Sel (I) = null then
+               return False;
+            end if;
+            if Right.Sel (I) = null then
+               return True;
+            end if;
+            return Left.Sel (I).all < Right.Sel (I).all;
+         end if;
+      end loop;
+      return False;
+   end "<";
+
+   --  ------------------------------
+   --  Compare the two CSS selectors.
+   --  ------------------------------
+   function "=" (Left, Right : in CSSSelector) return Boolean is
+   begin
+      for I in Left.Sel'Range loop
+         if Left.Sel (I) /= Right.Sel (I) then
+            if Left.Sel (I) = null or else Right.Sel (I) = null then
+               return False;
+            end if;
+            if Left.Sel (I).all /= Right.Sel (I).all then
+               return False;
+            end if;
+         end if;
+      end loop;
+      return True;
+   end "=";
+
+   --  ------------------------------
    --  Build a string representation of the selector sub-tree.
    --  ------------------------------
    procedure To_String (Into     : in out Ada.Strings.Unbounded.Unbounded_String;
                         Selector : in Selector_Node_Access) is
-      Node : Selector_Node_Access := Selector;
+      Node : constant Selector_Node_Access := Selector;
    begin
       if Node /= null then
          case Node.Kind is
@@ -147,7 +184,7 @@ package body CSS.Core.Selectors is
    function Create (Kind  : in Selector_Type;
                     Name  : in String;
                     Value : in String) return CSSSelector is
-      Result : CSSSelector := Create (Kind, Name);
+      Result : constant CSSSelector := Create (Kind, Name);
       Node   : constant Selector_Node_Access
          := new Selector_Node '(Len     => Value'Length,
                                 Kind    => SEL_PARAM,
@@ -173,6 +210,18 @@ package body CSS.Core.Selectors is
          return Selector.Sel (1).Kind;
       end if;
    end Get_Selector_Type;
+
+   --  ------------------------------
+   --  Get the selector value for the first selector component.
+   --  ------------------------------
+   function Get_Value (Selector : in CSSSelector) return String is
+   begin
+      if Selector.Sel (1) = null then
+         return "";
+      else
+         return Selector.Sel (1).Value;
+      end if;
+   end Get_Value;
 
    --  ------------------------------
    --  Append the selector at end of the selector list.
@@ -214,6 +263,62 @@ package body CSS.Core.Selectors is
 
    --  ------------------------------
    --  Compare the two selectors to order them.
+   --  ------------------------------
+   function "<" (Left, Right : Selector_Node) return Boolean is
+   begin
+      if Left.Kind < Right.Kind then
+         return True;
+      elsif Left.Kind > Right.Kind then
+         return False;
+      elsif Left.Value /= Right.Value then
+         return Left.Value < Right.Value;
+      elsif Left.Child = Right.Child then
+         return False;
+      elsif Left.Child = null then
+         return False;
+      elsif Right.Child = null then
+         return True;
+      else
+         return Left.Child.all < Right.Child.all;
+      end if;
+   end "<";
+
+   --  ------------------------------
+   --  Compare the two selectors to order them.
+   --  ------------------------------
+   function "=" (Left, Right : Selector_Node) return Boolean is
+   begin
+      if Left.Kind /= Right.Kind then
+         return False;
+      elsif Left.Value /= Right.Value then
+         return False;
+      elsif Left.Child = Right.Child then
+         return True;
+      elsif Left.Child = null or else Right.Child = null then
+         return False;
+      else
+         return Left.Child.all = Right.Child.all;
+      end if;
+   end "=";
+
+   --  Iterate over the list of CSS selector components.
+   procedure Iterate (Selector : in CSSSelector;
+                      Process  : not null access procedure (Sel : in CSSSelector)) is
+      Item : CSSSelector;
+   begin
+      for S of Selector.Sel loop
+         exit when S = null;
+         Item.Sel (1) := S;
+         Process (Item);
+         if S.Child /= null then
+            Item.Sel (1) := S.Child;
+            Iterate (Item, Process);
+         end if;
+      end loop;
+   end Iterate;
+
+   --  ------------------------------
+   --  Compare the two selectors for identity.
    --  ------------------------------
    function "<" (Left, Right : Selector_Tree_Node_Access) return Boolean is
    begin
@@ -296,16 +401,25 @@ package body CSS.Core.Selectors is
    --  ------------------------------
    function To_String (List : in CSSSelector_List) return String is
       Result : Unbounded_String;
-      Iter   : Selector_List.Cursor := List.List.First;
    begin
-      while Selector_List.Has_Element (Iter) loop
+      for S of List.List loop
          if Length (Result) > 0 then
             Append (Result, ", ");
          end if;
-         To_String (Result, Selector_List.Element (Iter));
-         Selector_List.Next (Iter);
+         To_String (Result, S);
       end loop;
       return To_String (Result);
    end To_String;
+
+   --  ------------------------------
+   --  Iterate over the list of CSS selector.
+   --  ------------------------------
+   procedure Iterate (List    : in CSSSelector_List;
+                      Process : not null access procedure (Sel : in CSSSelector)) is
+   begin
+      for S of List.List loop
+         Process (S);
+      end loop;
+   end Iterate;
 
 end CSS.Core.Selectors;
