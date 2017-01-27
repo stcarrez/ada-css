@@ -37,6 +37,8 @@ with CSS.Analysis.Duplicates;
 with CSS.Printer.Text_IO;
 with CSS.Analysis.Parser;
 with CSS.Analysis.Rules.Main;
+with CSS.Analysis.Classes;
+with CSS.Reports.Docs;
 
 procedure CssTools is
 
@@ -62,6 +64,7 @@ procedure CssTools is
    Config_Dir  : Unbounded_String;
    Output      : CSS.Printer.Text_IO.File_Type;
    Dup_Rules   : CSS.Core.Sets.Set;
+   Class_Map   : CSS.Analysis.Classes.Class_Maps.Map;
 
    procedure Usage is
    begin
@@ -213,8 +216,12 @@ begin
          if Err_Handler.Get_Error_Count > 0 then
             Status := Failure;
          end if;
+         CSS.Analysis.Classes.Analyze (Doc, Class_Map, Err_Handler);
       end;
    end loop;
+   if Length (Output_Path) > 0 then
+      CSS.Reports.Docs.Print (Output, Class_Map);
+   end if;
    if not Quiet then
       if Verbose then
          Ada.Text_IO.Put_Line ("Comments: ");
@@ -224,6 +231,7 @@ begin
       Ada.Text_IO.Put_Line ("Warnings        : " & Natural'Image (Err_Handler.Get_Warning_Count));
       Ada.Text_IO.Put_Line ("CSS rules       : " & Count_Type'Image (Doc.Rules.Length));
       Ada.Text_IO.Put_Line ("CSS values      : " & Natural'Image (Doc.Values.Length));
+      Ada.Text_IO.Put_Line ("CSS classes     : " & Count_Type'Image (Class_Map.Length));
       Ada.Text_IO.Put_Line ("Duplicate rules : " & Count_Type'Image (Dup_Rules.Length));
    end if;
    Ada.Command_Line.Set_Exit_Status (Status);
