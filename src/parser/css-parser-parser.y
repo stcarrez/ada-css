@@ -614,13 +614,22 @@ declaration :
         { Set_Property ($$, $1, $4, False); }
   |
      property ':' spaces T_BAD_STRING
-        { Error ($4.Line, $4.Column, "Missing ''' or '""' at end of string"); Set_Property ($$, $1, EMPTY, False); }
+        { Error ($4.Line, $4.Column, "Missing ''' or '""' at end of string");
+          Set_Property ($$, $1, EMPTY, False);
+          yyclearin;
+        }
   |
      property ':' error
-        { Error ($3.Line, $3.Column, "Invalid property value: " & YYText); Set_Property ($$, $1, $1, False); }
+        { Error ($3.Line, $3.Column, "Invalid property value: " & YYText);
+          Set_Property ($$, $1, $1, False);
+          yyclearin;
+        }
   |
      property error
-        { Error ($1.Line, $1.Column, "Missing ':' after property name"); Set_Property ($$, $1, EMPTY, False); }
+        { Error ($1.Line, $1.Column, "Missing ':' after property name");
+          Set_Property ($$, $1, EMPTY, False);
+          yyclearin;
+        }
   |
      error
         { Error (yylval.Line, yylval.Column, "Invalid property name"); $$ := EMPTY; }
