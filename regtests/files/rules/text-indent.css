@@ -1,0 +1,33 @@
+i {
+   text-indent: 4px each-line
+}
+div {
+   text-indent: -99999px;
+}
+p {
+   text-indent: 1%
+}
+a {
+   text-indent: 1% 23px /* Error */
+}
+b {
+   text-indent: 1% hanging
+}
+dt {
+   text-indent: hanging 1%
+}
+dd {
+   text-indent: each-line 1%
+}
+li {
+   text-indent: 1% hanging each-line
+}
+ul {
+   text-indent: 1% hanging each-lines /* Error */
+}
+dl {
+   text-indent: hanging 1% each-line
+}
+body {
+   text-indent: 1% hanging hanging /* Error */
+}
