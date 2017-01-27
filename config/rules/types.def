@@ -1,1 +1,2 @@
 <length-percentage> = <length> | <percentage>
+<number-percentage> = <number> | <percentage>

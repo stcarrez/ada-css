@@ -44,8 +44,8 @@ border-right-style := <br-style>
 <position> = [
     [ left | center | right | <length-percentage> ] [ top | center | bottom | <length-percentage> ]
   | [ left | center | right | top | bottom | <length-percentage> ]
-  | [ center | [ left | right ] <length-percentage>? ]
-  && [ center | [ top | bottom ] <length-percentage>? ]
+  | [ [ center | [ left | right ] <length-percentage>? ]
+      && [ center | [ top | bottom ] <length-percentage>? ] ]
   ]
 
 <bg-size> = [ <length-percentage> | auto ]{1,2} | cover | contain
@@ -75,3 +75,6 @@ background-position-y := [ center | [ top | bottom | y-start | y-end ]? <length-
 background-origin := <box>#
 background-color := <color>
 background-image := <bg-image>#
+
+<shadow> = inset? && <length>{2,4} && <color>?
+box-shadow := none | <shadow>#

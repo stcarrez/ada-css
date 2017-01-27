@@ -1,6 +1,9 @@
 
 <shadow-t> = [ <length>{2,3} && <color>? ]
 
+direction := ltr | rtl
+text-combine-upright := none | all | [ digits <integer>? ]
+
 hyphens := none | manual | auto
 letter-spacing := normal | <length>
 line-break := auto | loose | normal | strict
@@ -28,6 +31,7 @@ text-emphasis-position := [ over | under ] && [ right | left ]
 
 text-indent := <length-percentage> && hanging? && each-line?
 text-overflow := [ clip | ellipsis | <string> ]{1,2}
+text-orientation := mixed | upright | sideways
 text-size-adjust := none | auto | <percentage>
 text-transform := none | capitalize | uppercase | lowercase | full-width
 text-rendering := auto | optimizeSpeed | optimizeLegibility | geometricPrecision
@@ -60,3 +64,6 @@ outline-width := <br-width>
 outline-offset := <length>
 
 resize := none | both | horizontal | vertical
+
+unicode-bidi := normal | embed | isolate | bidi-override | isolate-override | plaintext
+writing-mode := horizontal-tb | vertical-rl | vertical-lr | sideways-rl | sideways-lr

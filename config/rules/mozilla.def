@@ -17,5 +17,7 @@
 
 -moz-border-radius := <length-percentage>{1,4} [ / <length-percentage>{1,4} ]?
 
+-moz-border-radius-bottomleft
+-moz-border-radius-bottomright
 -moz-border-radius-topright
 -moz-border-radius-topleft := <length-percentage>{1,2}
