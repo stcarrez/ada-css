@@ -416,7 +416,7 @@ package body CSS.Analysis.Rules is
                while Rule /= null loop
                   if not (for some J in M'Range => M (J) = Rule) then
                      N := Rule.Match (Value, Cur_Pos);
-                     if N > 0 or else N = Rule.Min_Repeat then
+                     if N > 0 then
                         Cur_Pos := Cur_Pos + N;
                         M (I) := Rule;
                         I := I + 1;
@@ -428,12 +428,14 @@ package body CSS.Analysis.Rules is
                Match_Count := Match_Count + N;
                exit when N = 0 or I = M'Last + 1;
             end loop;
-            for I in M'Range loop
-               for J in I + 1 .. M'Last loop
-                  if M (I) = M (J) then
-                     return 0;
-                  end if;
-               end loop;
+            Rule := Group.List;
+            while Rule /= null loop
+               if Rule.Min_Repeat > 0 and then
+                  not (for some J in M'Range => M (J) = Rule)
+               then
+                  return 0;
+               end if;
+               Rule := Rule.Next;
             end loop;
             return Match_Count;
          end;
@@ -532,6 +534,51 @@ package body CSS.Analysis.Rules is
       Stream.Print (Rule.Ident);
       Group_Rule_Type (Rule).Print (Stream);
    end Print;
+
+   --  Check if the value matches the function with its parameters.
+   overriding
+   function Match (Rule  : in Function_Rule_Type;
+                   Value : in CSS.Core.Values.Value_List;
+                   Pos   : in Positive := 1) return Natural is
+      use type CSS.Core.Values.Value_Kind, CSS.Core.Values.Value_List_Access;
+
+      Func   : constant CSS.Core.Values.Value_Type := Value.Get_Value (Pos);
+      Params : CSS.Core.Values.Value_List_Access;
+   begin
+      if CSS.Core.Values.Get_Type (Func) /= CSS.Core.Values.VALUE_FUNCTION then
+         return 0;
+      end if;
+      if CSS.Core.Values.Get_Value (Func) /= Rule.Ident then
+         return 0;
+      end if;
+      Params := CSS.Core.Values.Get_Parameters (Func);
+      if Params = null then
+         return 0;
+      end if;
+      declare
+         Match_Count : Natural := 0;
+         N           : Natural;
+         Count       : Natural := Params.Get_Count;
+         Cur_Pos     : Positive := 1;
+         R           : Rule_Type_Access := Rule.List;
+      begin
+         while Cur_Pos <= Count loop
+            exit when R = null;
+            N := R.Match (Params.all, Cur_Pos);
+            if N = 0 and Rule.Min_Repeat > 0 then
+               return 0;
+            end if;
+            Match_Count := Match_Count + N;
+            Cur_Pos := Cur_Pos + N;
+            R := R.Next;
+         end loop;
+         if Match_Count /= Count then
+            return 0;
+         else
+            return 1;
+         end if;
+      end;
+   end Match;
 
    --  ------------------------------
    --  Create a rule that describes a function call with parameters.
