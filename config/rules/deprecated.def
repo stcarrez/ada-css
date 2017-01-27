@@ -1,0 +1,7 @@
+<top>
+<right>
+<bottom>
+<left> := <length> | auto
+
+<shape> = rect(<top>, <right>, <bottom>, <left>)
+clip := <shape> | auto

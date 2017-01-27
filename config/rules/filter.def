@@ -1,0 +1,25 @@
+
+<blur()> = blur( <length> )
+<brightness()> = brightness( <number-percentage> )
+<contrast()> = contrast( [ <number-percentage> ] )
+<drop-shadow()> = drop-shadow( <length>{2,3} <color>? )
+<grayscale()> = grayscale( <number-percentage> )
+<hue-rotate()> = hue-rotate( <angle> )
+<invert()> = invert( <number-percentage> )
+<opacity()> = opacity( [ <number-percentage> ] )
+<sepia()> = sepia( <number-percentage> )
+<saturate()> = saturate( <number-percentage> )
+
+<filter-function> = <blur()>
+  | <brightness()>
+  | <contrast()>
+  | <drop-shadow()>
+  | <grayscale()>
+  | <hue-rotate()>
+  | <invert()>
+  | <opacity()>
+  | <sepia()>
+  | <saturate()>
+
+<filter-function-list> = [ <filter-function> | <url> ]+
+filter := none | <filter-function-list>
