@@ -167,10 +167,10 @@ doc:
 	$(DYNAMO) build-doc -markdown wiki
 
 # Files to package in source distribution
-DISTFILES=README.md LICENSE.txt NOTICE.txt NEWS CHANGES config.guess configure config.sub \
+DISTFILES=README.md LICENSE.txt NOTICE.txt NEWS config.guess configure config.sub \
 configure.in Makefile.in install-sh aclocal.m4 \
-cssada.gpr.in css_tests.gpr.in config.gpr samples.properties samples.gpr \
-src regtests samples \
+cssada.gpr.in css_tools.gpr.in css_tests.gpr.in config.gpr samples.properties samples.gpr \
+src config regtests tools samples \
 bin obj lib distrib
 
 dist:
@@ -250,12 +250,5 @@ else
 	rm -f ${libdir}/$(libname).$(LIBEXT)
 	rm -f ${projectdir}/cssada.gpr
 endif
-
-# prepare before releasing a new version of the package
-# (collect information about changes and SVN repository)
-prepare-release:
-	# ${SVN} update
-	# ${SVN} info > CHANGES
-	# ${SVN} log -v > ChangeLog
 
 .PHONY: tools
