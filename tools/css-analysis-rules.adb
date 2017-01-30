@@ -558,7 +558,7 @@ package body CSS.Analysis.Rules is
       declare
          Match_Count : Natural := 0;
          N           : Natural;
-         Count       : Natural := Params.Get_Count;
+         Count       : constant Natural := Params.Get_Count;
          Cur_Pos     : Positive := 1;
          R           : Rule_Type_Access := Rule.List;
       begin

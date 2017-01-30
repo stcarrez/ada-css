@@ -17,9 +17,11 @@
 -----------------------------------------------------------------------
 with CSS.Core.Selectors;
 with CSS.Core.Vectors;
-with CSS.Core.Styles;
 with CSS.Core.Medias;
 package body CSS.Printer is
+
+   procedure Print (Stream : in out File_Type'Class;
+                    Rule   : in CSS.Core.Medias.CSSMediaRule_Access);
 
    procedure Do_Indent (Stream : in out File_Type'Class) is
    begin
@@ -97,6 +99,7 @@ package body CSS.Printer is
 
    procedure Print (Stream : in out File_Type'Class;
                     Rule   : in CSS.Core.Styles.CSSStyleRule_Access) is
+      procedure Print (Prop : in CSS.Core.Properties.CSSProperty);
 
       procedure Print (Prop : in CSS.Core.Properties.CSSProperty) is
       begin
@@ -137,7 +140,7 @@ package body CSS.Printer is
       procedure Process (Pos : in CSS.Core.Vectors.Cursor);
 
       procedure Process (Pos : in CSS.Core.Vectors.Cursor) is
-         Rule : CSS.Core.CSSRule_Access := CSS.Core.Vectors.Element (Pos).Value;
+         Rule : constant CSS.Core.CSSRule_Access := CSS.Core.Vectors.Element (Pos).Value;
       begin
          case Rule.Get_Type is
             when CSS.Core.STYLE_RULE =>

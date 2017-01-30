@@ -72,10 +72,10 @@ MAKE_ARGS += -XLIBRARY_TYPE=relocatable
 endif
 
 ifeq (${BUILDS_SHARED},yes)
-all:     static shared
+all:     static shared tools
 install: install_static install_shared install-info
 else
-all:     static
+all:     static tools
 install: install_static install-info
 endif
 
@@ -144,6 +144,7 @@ clean:
 	-$(GNATCLEAN) -q -P "$(GPRPATH)" -XCSS_LIBRARY_TYPE=relocatable \
 	  -XLIBRARY_TYPE=relocatable -XXMLADA_BUILD=relocatable -XUTIL_BUILD=relocatable -XUTIL_LIBRARY_TYPE=relocatable
 	-$(GNATCLEAN) -q -Pcss_tests
+	-$(GNATCLEAN) -q -Pcss_tools
 	-rm -f lib/*.a lib/*.$(DLLEXT)
 
 # Clean root project and all imported projects too.

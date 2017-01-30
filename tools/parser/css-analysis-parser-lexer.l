@@ -49,7 +49,6 @@ nl              \n|\r\n|\r|\f
 .                       { Error (yylineno, yylinecol, "Illegal character '" & YYText & "'"); }
 
 %%
-with Ada.Strings.Unbounded;
 with CSS.Analysis.Parser.Parser_Tokens;
 package CSS.Analysis.Parser.Lexer is
 
