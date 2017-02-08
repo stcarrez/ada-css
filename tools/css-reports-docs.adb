@@ -38,6 +38,7 @@ package body CSS.Reports.Docs is
          Loc  : constant CSS.Core.Location := CSS.Tools.Location_Sets.Element (Pos);
          Path : constant String := Util.Log.Locations.File (Loc);
       begin
+         Stream.Do_Indent;
          if Path /= Ada.Strings.Unbounded.To_String (Prev_Path) then
             Stream.Print (" ");
             Stream.Print (Path);
@@ -66,6 +67,7 @@ package body CSS.Reports.Docs is
 --         Rule : CSS.Core.Styles.CSSStyleRule_Access := CSS.Core.Styles.Element (Pos);
       begin
          if Ref.Value /= null then
+           Stream.Print ("  ");
            CSS.Printer.Print (Stream, CSS.Core.Styles.CSSStyleRule'Class (Ref.Value.all)'Access);
          end if;
          Stream.New_Line;
@@ -80,7 +82,9 @@ package body CSS.Reports.Docs is
          Stream.Print ("  Lines: ");
          Print_Lines (Stream, Info.Loc);
          Stream.New_Line;
+         Stream.Indent := Stream.Indent + Stream.Indent_Level + 1;
          Info.List.Iterate (Print_Rule'Access);
+         Stream.Indent := Stream.Indent - Stream.Indent_Level - 1;
          Stream.New_Line;
       end Print_One;
 
