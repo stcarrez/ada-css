@@ -412,6 +412,7 @@ package body CSS.Analysis.Rules is
             I : Positive := 1;
          begin
             while Cur_Pos <= Count loop
+               N := 0;
                Rule := Group.List;
                while Rule /= null loop
                   if not (for some J in M'Range => M (J) = Rule) then
