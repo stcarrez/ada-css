@@ -126,6 +126,9 @@ Z               z|\\0{0,4}(5a|7a)(\r\n|[ \t\r\n\f])?|\\z
 {num}{I}{N}		{ Set_Number (yylval, YYText, UNIT_IN, yylineno, yylinecol); return T_LENGTH; }
 {num}{P}{T}		{ Set_Number (yylval, YYText, UNIT_PT, yylineno, yylinecol); return T_LENGTH; }
 {num}{P}{C}		{ Set_Number (yylval, YYText, UNIT_PC, yylineno, yylinecol); return T_LENGTH; }
+{num}{D}{P}{I}		{ Set_Number (yylval, YYText, UNIT_DPI, yylineno, yylinecol); return T_LENGTH; }
+{num}{D}{P}{C}{M}	{ Set_Number (yylval, YYText, UNIT_DPCM, yylineno, yylinecol); return T_LENGTH; }
+{num}{D}{P}{P}{X}	{ Set_Number (yylval, YYText, UNIT_DPPX, yylineno, yylinecol); return T_LENGTH; }
 {num}{D}{E}{G}		{ Set_Number (yylval, YYText, UNIT_DEG, yylineno, yylinecol); return T_ANGLE; }
 {num}{R}{A}{D}		{ Set_Number (yylval, YYText, UNIT_RAD, yylineno, yylinecol); return T_ANGLE; }
 {num}{G}{R}{A}{D}	{ Set_Number (yylval, YYText, UNIT_GRAD, yylineno, yylinecol); return T_ANGLE; }
