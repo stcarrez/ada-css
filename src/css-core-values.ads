@@ -45,7 +45,11 @@ package CSS.Core.Values is
                       UNIT_VB,   --  1% of viewport’s size in the root element’s block axis
                       UNIT_VMIN, --  1% of viewport’s smaller dimension
                       UNIT_VMAX, --  1% of viewport’s larger dimension
-                      UNIT_CM, UNIT_MM, UNIT_IN, UNIT_PI, UNIT_PC, UNIT_PT,
+                      UNIT_CM, UNIT_MM, UNIT_IN,
+                      UNIT_DPI,
+                      UNIT_DPCM,
+                      UNIT_DPPX,
+                      UNIT_PI, UNIT_PC, UNIT_PT,
                       UNIT_DEG, UNIT_RAD, UNIT_GRAD,
                       UNIT_MS, UNIT_SEC, UNIT_HZ, UNIT_KHZ);
 
