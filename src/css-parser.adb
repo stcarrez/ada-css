@@ -19,6 +19,7 @@
 with Ada.Unchecked_Deallocation;
 with Util.Log.Loggers;
 with CSS.Parser.Parser;
+with CSS.Parser.Parser_Tokens;
 package body CSS.Parser is
 
    use Ada.Strings.Unbounded;
@@ -40,6 +41,13 @@ package body CSS.Parser is
       Res := CSS.Parser.Parser.Parse (Path, Sheet);
       Report_Handler := null;
       Current_Sheet := null;
+
+   exception
+      when Parser_Tokens.Syntax_Error =>
+         Log.Error ("Syntax error while parsing {0}", Path);
+         Report_Handler := null;
+         Current_Sheet := null;
+
    end Load;
 
    function To_String (Val : in Parser_Node_Access) return String is
@@ -173,7 +181,13 @@ package body CSS.Parser is
       Into.Node := new Parser_Node_Type '(Kind        => TYPE_NUMBER,
                                           Ref_Counter => ONE,
                                           others      => <>);
-      Ada.Strings.Unbounded.Set_Unbounded_String (Into.Node.Str_Value, Value);
+      if Value = "0.0" then
+         Ada.Strings.Unbounded.Set_Unbounded_String (Into.Node.Str_Value, "0");
+      elsif Value'Length > 2 and then Value (Value'First .. Value'First + 1) = "0." then
+         Ada.Strings.Unbounded.Set_Unbounded_String (Into.Node.Str_Value, Value (Value'First + 1 .. Value'Last));
+      else
+         Ada.Strings.Unbounded.Set_Unbounded_String (Into.Node.Str_Value, Value);
+      end if;
    end Set_Number;
 
    --  ------------------------------
@@ -393,6 +407,18 @@ package body CSS.Parser is
    end Add_Selector;
 
    --  ------------------------------
+   --  Add to the current parser token CSS selector the next CSS selector.
+   --  ------------------------------
+   procedure Add_Selector (Into       : in out YYstype;
+                           Combinator : in YYstype;
+                           Selector   : in YYstype) is
+      S : CSS.Core.Selectors.CSSSelector := CSS.Core.Selectors.Create (Combinator.Sel, "");
+   begin
+      CSS.Core.Selectors.Append (Into.Node.Selector, S);
+      CSS.Core.Selectors.Append (Into.Node.Selector, Selector.Node.Selector);
+   end Add_Selector;
+
+   --  ------------------------------
    --  Add to the parser token CSS selector a filter represented either
    --  by an attribute selection, a pseudo element, a pseudo class or
    --  a function.
@@ -504,7 +530,10 @@ package body CSS.Parser is
       Into.Node := new Parser_Node_Type '(Kind        => TYPE_VALUE,
                                           Ref_Counter => ONE,
                                           V    => <>);
-      if Params.Kind /= TYPE_PROPERTY_LIST then
+      if Params.Kind = TYPE_VALUE then
+         Into.Node.V := Document.Values.Create_Function
+            (Func_Name (Func_Name'First .. Func_Name'Last - 1), Params.Node.V);
+      elsif Params.Kind /= TYPE_PROPERTY_LIST then
          Into.Node.V := Document.Values.Create_Function
             (Func_Name (Func_Name'First .. Func_Name'Last - 1), CSS.Core.Values.EMPTY_LIST);
       else
