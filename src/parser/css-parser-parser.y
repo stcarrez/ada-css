@@ -450,7 +450,7 @@ selector_list :
 
 selector :
      selector combinator simple_selector spaces
-       { Add_Selector ($1, $3); $$ := $1; }
+       { Add_Selector ($1, $2, $3); $$ := $1; }
   |
      selector simple_selector spaces
        { Add_Selector ($1, $2); $$ := $1; }
@@ -816,7 +816,13 @@ package body CSS.Parser.Parser is
       CSS.Parser.Lexer_Dfa.yylinecol := 1;
       CSS.Parser.Lexer_IO.Open_Input (Content);
       CSS.Parser.Parser.Document := Document;
+      Current_Rule := null;
+      Current_Media := null;
+      Current_Page := null;
       yyparse;
+      Current_Rule := null;
+      Current_Media := null;
+      Current_Page := null;
       CSS.Parser.Parser.Document := null;
       CSS.Parser.Lexer_IO.Close_Input;
       Parser_Tokens.yylval := EMPTY;
