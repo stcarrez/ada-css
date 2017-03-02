@@ -135,6 +135,11 @@ package CSS.Core.Values is
    function Create_Ident (Repository : in out Repository_Type;
                           Value      : in String) return Value_Type;
 
+   --  Create a function value with one parameter.
+   function Create_Function (Repository : in out Repository_Type;
+                             Name       : in String;
+                             Parameter  : in Value_Type) return Value_Type;
+
    --  Create a function value with parameters.
    function Create_Function (Repository : in out Repository_Type;
                              Name       : in String;
