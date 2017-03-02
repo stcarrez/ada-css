@@ -44,7 +44,13 @@ package body CSS.Parser.Parser is
       CSS.Parser.Lexer_Dfa.yylinecol := 1;
       CSS.Parser.Lexer_IO.Open_Input (Content);
       CSS.Parser.Parser.Document := Document;
+      Current_Rule := null;
+      Current_Media := null;
+      Current_Page := null;
       yyparse;
+      Current_Rule := null;
+      Current_Media := null;
+      Current_Page := null;
       CSS.Parser.Parser.Document := null;
       CSS.Parser.Lexer_IO.Close_Input;
       Parser_Tokens.yylval := EMPTY;
@@ -653,6 +659,7 @@ yy.value_stack(yy.tos));
 when 113 => -- #line 453
  Add_Selector (
 yy.value_stack(yy.tos-3), 
+yy.value_stack(yy.tos-2), 
 yy.value_stack(yy.tos-1)); 
 yyval := 
 yy.value_stack(yy.tos-3); 
@@ -826,11 +833,14 @@ yy.value_stack(yy.tos), False);
 when 163 => -- #line 617
  Error (
 yy.value_stack(yy.tos).Line, 
-yy.value_stack(yy.tos).Column, "Missing ''' or '""' at end of string"); Set_Property (
+yy.value_stack(yy.tos).Column, "Missing ''' or '""' at end of string");
+          Set_Property (
 yyval, 
-yy.value_stack(yy.tos-3), EMPTY, False); 
+yy.value_stack(yy.tos-3), EMPTY, False);
+          yyclearin;
+        
 
-when 164 => -- #line 620
+when 164 => -- #line 623
  Error (
 yy.value_stack(yy.tos).Line, 
 yy.value_stack(yy.tos).Column, "Invalid property value: " & YYText);
@@ -841,191 +851,194 @@ yy.value_stack(yy.tos-2), False);
           yyclearin;
         
 
-when 165 => -- #line 626
+when 165 => -- #line 629
  Error (
 yy.value_stack(yy.tos-1).Line, 
-yy.value_stack(yy.tos-1).Column, "Missing ':' after property name"); Set_Property (
+yy.value_stack(yy.tos-1).Column, "Missing ':' after property name");
+          Set_Property (
 yyval, 
-yy.value_stack(yy.tos-1), EMPTY, False); 
+yy.value_stack(yy.tos-1), EMPTY, False);
+          yyclearin;
+        
 
-when 166 => -- #line 629
+when 166 => -- #line 635
  Error (yylval.Line, yylval.Column, "Invalid property name"); 
 yyval := EMPTY; 
 
-when 167 => -- #line 634
+when 167 => -- #line 640
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 168 => -- #line 637
+when 168 => -- #line 643
  Warning (
 yy.value_stack(yy.tos-1).Line, 
 yy.value_stack(yy.tos-1).Column, "IE7 '*' symbol hack is used"); 
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 170 => -- #line 646
+when 170 => -- #line 652
  CSS.Parser.Set_Function (
 yyval, Document, 
 yy.value_stack(yy.tos-4), 
 yy.value_stack(yy.tos-2)); 
 
-when 171 => -- #line 649
+when 171 => -- #line 655
  CSS.Parser.Set_Function (
 yyval, Document, 
 yy.value_stack(yy.tos-3), 
 yy.value_stack(yy.tos-1)); 
 
-when 172 => -- #line 652
+when 172 => -- #line 658
  Error (
 yy.value_stack(yy.tos-3).Line, 
 yy.value_stack(yy.tos-3).Column, "Invalid function parameter"); 
 
-when 173 => -- #line 657
+when 173 => -- #line 663
  CSS.Parser.Set_Expr (
 yyval, 
 yy.value_stack(yy.tos-3), 
 yy.value_stack(yy.tos)); 
 
-when 174 => -- #line 660
+when 174 => -- #line 666
  CSS.Parser.Set_Expr (
 yyval, 
 yy.value_stack(yy.tos-1), 
 yy.value_stack(yy.tos)); 
 
-when 175 => -- #line 663
+when 175 => -- #line 669
  
 yyval := 
 yy.value_stack(yy.tos); 
 
-when 176 => -- #line 668
+when 176 => -- #line 674
  CSS.Parser.Set_Expr (
 yyval, 
 yy.value_stack(yy.tos-3), 
 yy.value_stack(yy.tos)); 
 
-when 177 => -- #line 671
+when 177 => -- #line 677
  CSS.Parser.Set_Expr (
 yyval, 
 yy.value_stack(yy.tos-3), 
 yy.value_stack(yy.tos)); 
 
-when 178 => -- #line 674
+when 178 => -- #line 680
  CSS.Parser.Set_Expr (
 yyval, 
 yy.value_stack(yy.tos-1), 
 yy.value_stack(yy.tos)); 
 
-when 179 => -- #line 677
+when 179 => -- #line 683
  
 yyval := 
 yy.value_stack(yy.tos); 
 
-when 180 => -- #line 680
+when 180 => -- #line 686
  
 yyval := 
 yy.value_stack(yy.tos-1); --  CSS.Parser.Set_Parameter ($$, Document, $1, $5);
         
 
-when 181 => -- #line 686
+when 181 => -- #line 692
  CSS.Parser.Set_Expr (
 yyval, 
 yy.value_stack(yy.tos-2), 
 yy.value_stack(yy.tos)); 
 
-when 182 => -- #line 689
+when 182 => -- #line 695
  CSS.Parser.Set_Expr (
 yyval, 
 yy.value_stack(yy.tos-1), 
 yy.value_stack(yy.tos)); 
 
-when 184 => -- #line 696
+when 184 => -- #line 702
  CSS.Parser.Set_Value (
 yyval, Document, 
 yy.value_stack(yy.tos)); 
 
-when 185 => -- #line 699
+when 185 => -- #line 705
  CSS.Parser.Set_Value (
 yyval, Document, 
 yy.value_stack(yy.tos)); 
 
-when 186 => -- #line 702
+when 186 => -- #line 708
  CSS.Parser.Set_Value (
 yyval, Document, 
 yy.value_stack(yy.tos)); 
 
-when 187 => -- #line 705
+when 187 => -- #line 711
  CSS.Parser.Set_Value (
 yyval, Document, 
 yy.value_stack(yy.tos-1)); 
 
-when 188 => -- #line 708
+when 188 => -- #line 714
  CSS.Parser.Set_Value (
 yyval, Document, 
 yy.value_stack(yy.tos-1)); 
 
-when 189 => -- #line 711
+when 189 => -- #line 717
  CSS.Parser.Set_Value (
 yyval, Document, 
 yy.value_stack(yy.tos-1)); 
 
-when 190 => -- #line 714
+when 190 => -- #line 720
  CSS.Parser.Set_Value (
 yyval, Document, 
 yy.value_stack(yy.tos)); 
 
-when 191 => -- #line 717
+when 191 => -- #line 723
  
 yyval := 
 yy.value_stack(yy.tos); 
 
-when 192 => -- #line 720
+when 192 => -- #line 726
  Error (
 yy.value_stack(yy.tos).Line, 
 yy.value_stack(yy.tos).Column, "Invalid url()"); 
 yyval := EMPTY; 
 
-when 193 => -- #line 725
+when 193 => -- #line 731
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 194 => -- #line 728
+when 194 => -- #line 734
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 195 => -- #line 731
+when 195 => -- #line 737
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 196 => -- #line 734
+when 196 => -- #line 740
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 197 => -- #line 737
+when 197 => -- #line 743
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 198 => -- #line 740
+when 198 => -- #line 746
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 199 => -- #line 743
+when 199 => -- #line 749
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 200 => -- #line 746
+when 200 => -- #line 752
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
-when 201 => -- #line 751
+when 201 => -- #line 757
  Set_Color (
 yyval, 
 yy.value_stack(yy.tos-1)); 
