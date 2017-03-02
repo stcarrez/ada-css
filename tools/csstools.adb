@@ -61,8 +61,10 @@ procedure CssTools is
    Doc         : aliased CSS.Core.Sheets.CSSStylesheet;
    Err_Handler : aliased CSS.Tools.Messages.Message_List;
    Output_Path : Unbounded_String;
+   Report_Path : Unbounded_String;
    Config_Dir  : Unbounded_String;
    Output      : CSS.Printer.Text_IO.File_Type;
+   Report      : CSS.Printer.Text_IO.File_Type;
    Dup_Rules   : CSS.Core.Sets.Set;
    Class_Map   : CSS.Analysis.Classes.Class_Maps.Map;
 
@@ -70,12 +72,13 @@ procedure CssTools is
    begin
       Ada.Text_IO.Put_Line ("CSS Analysis tools");
       Ada.Text_IO.New_Line;
-      Ada.Text_IO.Put_Line ("csstools [-dpqv] [-o file] [-c dir] file...");
+      Ada.Text_IO.Put_Line ("csstools [-dpqv] [-o file] [-r file] [-c dir] file...");
       Ada.Text_IO.Put_Line ("  -d       Turn on debugging");
       Ada.Text_IO.Put_Line ("  -v       Verbose mode");
       Ada.Text_IO.Put_Line ("  -q       Quiet mode");
       Ada.Text_IO.Put_Line ("  -p       Pretty print CSS output");
       Ada.Text_IO.Put_Line ("  -o file  Generate the CSS output file");
+      Ada.Text_IO.Put_Line ("  -r file  Generate a report about the CSS file");
       Ada.Text_IO.Put_Line ("  -c dir   Define the path for the configuration directory");
    end Usage;
 
@@ -126,19 +129,25 @@ procedure CssTools is
 begin
    Initialize_Option_Scan (Stop_At_First_Non_Switch => True, Section_Delimiters => "targs");
 
-   Output.Compress := True;
+   Output.Compress     := True;
+   Report.Compress     := False;
+   Report.Indent_Level := 4;
+   Report.Full_Semi    := True;
 
    --  Parse the command line
    begin
       loop
-         case Getopt ("v p d q r: c: o: ") is
+         case Getopt ("v p d q r: R: c: o: ") is
             when ASCII.NUL => exit;
 
             when 'c' =>
                Set_Config_Directory (Parameter);
 
-            when 'r' =>
+            when 'R' =>
                Config_Path := To_Unbounded_String (Parameter);
+
+            when 'r' =>
+               Report_Path := To_Unbounded_String (Parameter);
 
             when 'o' =>
                Output_Path := To_Unbounded_String (Parameter);
@@ -197,8 +206,11 @@ begin
    if Length (Output_Path) > 0 then
       Ada.Text_IO.Create (Output.File, Ada.Text_IO.Out_File, To_String (Output_Path));
    end if;
+   if Length (Report_Path) > 0 then
+      Ada.Text_IO.Create (Report.File, Ada.Text_IO.Out_File, To_String (Report_Path));
+   end if;
    if Verbose then
-      CSS.Analysis.Rules.Print (Output, CSS.Analysis.Rules.Main.Rule_Repository.all);
+      CSS.Analysis.Rules.Print (Report, CSS.Analysis.Rules.Main.Rule_Repository.all);
    end if;
    loop
       declare
@@ -219,8 +231,8 @@ begin
          CSS.Analysis.Classes.Analyze (Doc, Class_Map, Err_Handler);
       end;
    end loop;
-   if Length (Output_Path) > 0 then
-      CSS.Reports.Docs.Print (Output, Class_Map);
+   if Length (Report_Path) > 0 then
+      CSS.Reports.Docs.Print (Report, Class_Map);
    end if;
    if not Quiet then
       if Verbose then
