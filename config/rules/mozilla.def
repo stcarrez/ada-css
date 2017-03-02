@@ -2,8 +2,9 @@
 
 -moz-animation := <single-animation>#
 
+-moz-backface-visibility := visible | hidden
+
 -moz-appearance
--moz-backface-visibility
 -moz-background-size := <bg-size>#
 -moz-font-smoothing
 -moz-tap-highlight-color

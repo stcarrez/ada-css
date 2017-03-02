@@ -1,6 +1,7 @@
 #
+-webkit-backface-visibility := visible | hidden
+
 -webkit-animation := <single-animation>#
--webkit-backface-visibility
 -webkit-background-size := <bg-size>#
 -webkit-font-smoothing
 -webkit-tap-highlight-color
