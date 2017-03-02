@@ -272,6 +272,18 @@ package body CSS.Core.Values is
    end Create_Number;
 
    --  ------------------------------
+   --  Create a function value with one parameter.
+   --  ------------------------------
+   function Create_Function (Repository : in out Repository_Type;
+                             Name       : in String;
+                             Parameter  : in Value_Type) return Value_Type is
+      Params : Value_List;
+   begin
+      Append (Params, Parameter);
+      return Repository.Create_Function (Name, Params);
+   end Create_Function;
+
+   --  ------------------------------
    --  Create a number value with an optional unit.
    --  ------------------------------
    --  Create a function value with parameters.
