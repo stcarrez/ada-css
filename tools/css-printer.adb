@@ -100,16 +100,31 @@ package body CSS.Printer is
    procedure Print (Stream : in out File_Type'Class;
                     Rule   : in CSS.Core.Styles.CSSStyleRule_Access) is
       procedure Print (Prop : in CSS.Core.Properties.CSSProperty);
+      procedure Print_Selector (Sel : in CSS.Core.Selectors.CSSSelector);
+
+      Need_Comma : Boolean := False;
 
       procedure Print (Prop : in CSS.Core.Properties.CSSProperty) is
       begin
          Stream.Print (Prop);
       end Print;
 
+      procedure Print_Selector (Sel : in CSS.Core.Selectors.CSSSelector) is
+      begin
+         if Need_Comma then
+            Stream.Print (',');
+            if not Stream.Compress then
+               Stream.Print (' ');
+            end if;
+         end if;
+         Need_Comma := True;
+         Stream.Print (CSS.Core.Selectors.To_String (Sel));
+      end Print_Selector;
+
       Sel : constant String := CSS.Core.Selectors.To_String (Rule.Selectors);
    begin
       Do_Indent (Stream);
-      Stream.Print (Sel);
+      CSS.Core.Selectors.Iterate (Rule.Selectors, Print_Selector'Access);
       if not Stream.Compress then
          Stream.Print (' ');
       end if;
