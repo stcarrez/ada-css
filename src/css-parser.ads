@@ -152,6 +152,10 @@ private
    procedure Add_Selector (Into     : in out YYstype;
                            Selector : in YYstype);
 
+   procedure Add_Selector (Into       : in out YYstype;
+                           Combinator : in YYstype;
+                           Selector   : in YYstype);
+
    --  Add to the parser token CSS selector a filter represented either
    --  by an attribute selection, a pseudo element, a pseudo class or
    --  a function.
