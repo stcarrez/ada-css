@@ -58,6 +58,7 @@ procedure CssTools is
    Verbose     : Boolean := False;
    Quiet       : Boolean := False;
    Status      : Exit_Status := Success;
+   Analyze_Flag: Boolean := False;
    Doc         : aliased CSS.Core.Sheets.CSSStylesheet;
    Err_Handler : aliased CSS.Tools.Messages.Message_List;
    Output_Path : Unbounded_String;
@@ -72,7 +73,8 @@ procedure CssTools is
    begin
       Ada.Text_IO.Put_Line ("CSS Analysis tools");
       Ada.Text_IO.New_Line;
-      Ada.Text_IO.Put_Line ("csstools [-dpqv] [-o file] [-r file] [-c dir] file...");
+      Ada.Text_IO.Put_Line ("csstools [-adpqv] [-o file] [-r file] [-c dir] file...");
+      Ada.Text_IO.Put_Line ("  -a       Analyze the CSS file");
       Ada.Text_IO.Put_Line ("  -d       Turn on debugging");
       Ada.Text_IO.Put_Line ("  -v       Verbose mode");
       Ada.Text_IO.Put_Line ("  -q       Quiet mode");
@@ -137,8 +139,11 @@ begin
    --  Parse the command line
    begin
       loop
-         case Getopt ("v p d q r: R: c: o: ") is
+         case Getopt ("a v p d q r: R: c: o: ") is
             when ASCII.NUL => exit;
+
+            when 'a' =>
+               Analyze_Flag := True;
 
             when 'c' =>
                Set_Config_Directory (Parameter);
@@ -219,8 +224,10 @@ begin
          exit when Path'Length = 0;
          Doc.Set_Href (Path);
          CSS.Parser.Load (Path, Doc'Unchecked_Access, Err_Handler'Unchecked_Access);
-         CSS.Analysis.Duplicates.Analyze (Doc.Rules, Err_Handler, Dup_Rules);
-         CSS.Analysis.Rules.Main.Analyze (Doc, Err_Handler);
+         if Analyze_Flag then
+            CSS.Analysis.Duplicates.Analyze (Doc.Rules, Err_Handler, Dup_Rules);
+            CSS.Analysis.Rules.Main.Analyze (Doc, Err_Handler);
+         end if;
          Err_Handler.Iterate (Print_Message'Access);
          if Length (Output_Path) > 0 then
             Output.Print (Doc);
@@ -228,7 +235,9 @@ begin
          if Err_Handler.Get_Error_Count > 0 then
             Status := Failure;
          end if;
-         CSS.Analysis.Classes.Analyze (Doc, Class_Map, Err_Handler);
+         if Analyze_Flag then
+            CSS.Analysis.Classes.Analyze (Doc, Class_Map, Err_Handler);
+         end if;
       end;
    end loop;
    if Length (Report_Path) > 0 then
