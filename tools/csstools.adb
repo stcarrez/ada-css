@@ -40,6 +40,7 @@ with CSS.Analysis.Rules.Main;
 with CSS.Analysis.Classes;
 with CSS.Reports.Docs;
 with CSS.Tools.Configs;
+with CSS.Commands;
 procedure CssTools is
 
    use Ada.Strings.Unbounded;
@@ -68,6 +69,7 @@ procedure CssTools is
    Report      : CSS.Printer.Text_IO.File_Type;
    Dup_Rules   : CSS.Core.Sets.Set;
    Class_Map   : CSS.Analysis.Classes.Class_Maps.Map;
+   Context     : CSS.Commands.Context_Type;
 
    procedure Usage is
    begin
@@ -129,6 +131,7 @@ procedure CssTools is
 
    Config_Path : Ada.Strings.Unbounded.Unbounded_String;
 begin
+   CSS.Commands.Initialize (Context);
    Initialize_Option_Scan (Stop_At_First_Non_Switch => True, Section_Delimiters => "targs");
 
    Output.Compress     := True;
