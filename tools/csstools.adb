@@ -72,6 +72,7 @@ procedure CssTools is
 --     Class_Map   : CSS.Analysis.Classes.Class_Maps.Map;
    Context     : CSS.Commands.Context_Type;
    First       : Natural := 0;
+   Console     : aliased CSS.Commands.Text_Consoles.Console_Type;
    All_Args    : Util.Commands.Default_Argument_List (0);
 
    procedure Usage is
@@ -135,6 +136,7 @@ procedure CssTools is
    Config_Path : Ada.Strings.Unbounded.Unbounded_String;
 begin
    CSS.Commands.Initialize (Context);
+   Context.Console := Console'Unchecked_Access;
    Initialize_Option_Scan (Stop_At_First_Non_Switch => True, Section_Delimiters => "targs");
 
    Output.Compress     := True;
