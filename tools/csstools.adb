@@ -39,7 +39,7 @@ with CSS.Analysis.Parser;
 with CSS.Analysis.Rules.Main;
 with CSS.Analysis.Classes;
 with CSS.Reports.Docs;
-
+with CSS.Tools.Configs;
 procedure CssTools is
 
    use Ada.Strings.Unbounded;
@@ -71,7 +71,7 @@ procedure CssTools is
 
    procedure Usage is
    begin
-      Ada.Text_IO.Put_Line ("CSS Analysis tools");
+      Ada.Text_IO.Put_Line (CSS.Tools.Configs.RELEASE);
       Ada.Text_IO.New_Line;
       Ada.Text_IO.Put_Line ("csstools [-adpqv] [-o file] [-r file] [-c dir] file...");
       Ada.Text_IO.Put_Line ("  -a       Analyze the CSS file");
@@ -195,7 +195,7 @@ begin
       begin
          Set_Config_Directory (Compose (Dir, "config"), True);
          Set_Config_Directory (Util.Files.Compose (Dir, "share/csstools"), True);
-         --  Set_Config_Directory (Gen.Configs.CONFIG_DIR, True);
+         Set_Config_Directory (CSS.Tools.Configs.CONFIG_DIR, True);
       end;
    end if;
 
