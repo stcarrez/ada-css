@@ -16,12 +16,31 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Util.Commands.Drivers;
+with Util.Commands.Consoles;
+with Util.Commands.Consoles.Text;
 with CSS.Printer.Text_IO;
 with CSS.Core.Sets;
 with CSS.Core.Sheets;
 with CSS.Tools.Messages;
 with CSS.Analysis.Classes;
 package CSS.Commands is
+
+   --  The type of notice that are reported.
+   type Notice_Type is (N_HELP, N_USAGE, N_INFO);
+
+   --  The possible fields.
+   type Field_Type is (F_CLASS_NAME);
+
+   --  Make the generic abstract console interface.
+   package Consoles is
+     new Util.Commands.Consoles (Field_Type  => Field_Type,
+                                 Notice_Type => Notice_Type);
+
+   subtype Console_Access is Consoles.Console_Access;
+
+   --  And the text console to write on stdout (a Gtk console could be done someday).
+   package Text_Consoles is
+      new Consoles.Text;
 
    type Context_Type is limited record
       Doc         : aliased CSS.Core.Sheets.CSSStylesheet;
@@ -30,6 +49,7 @@ package CSS.Commands is
       Report      : CSS.Printer.Text_IO.File_Type;
       Dup_Rules   : CSS.Core.Sets.Set;
       Class_Map   : CSS.Analysis.Classes.Class_Maps.Map;
+      Console     : Console_Access;
    end record;
 
    package Drivers is
