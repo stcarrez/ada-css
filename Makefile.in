@@ -9,7 +9,6 @@ MODE=debug
 GNATMAKE=@GNATMAKE@
 GNATCLEAN=gnatclean
 GPRINSTALL=@GPRINSTALL@
-SVN=svn
 INSTALL=@INSTALL@
 DYNAMO=dynamo
 
@@ -61,7 +60,7 @@ bindir=${prefix}/bin
 sharedir=${prefix}/share
 libdir=${prefix}/${infix_lib}
 alidir=${prefix}/${infix_ali}
-
+configdir=${sharedir}/csstools
 libname=libada_css
 
 PROCESSORS=@NR_CPUS@
@@ -95,7 +94,7 @@ setup: obj/css/static lib/css/static
 obj/css/static lib/css/static:
 	$(MKDIR) -p $@
 
-tools:
+tools:  tools/css-tools-configs.ads
 	$(GNATMAKE) -p -Pcss_tools $(MAKE_ARGS)
 
 # Not intended for manual invocation.
@@ -138,6 +137,10 @@ lexer-tools:
 	cd tools/parser && \
 	  gnatchop -w css-analysis-parser-lexer.ada && \
 	  rm -f css-analysis-parser-lexer.ada
+
+tools/css-tools-configs.ads:   Makefile tools/css-tools-configs.gpb
+	gnatprep -DCONFIG_DIR='"${configdir}"' -DVERSION='"@CSS_VERSION@"' \
+		  tools/css-tools-configs.gpb tools/css-tools-configs.ads
 
 # Clean the root project of all build products.
 clean:
