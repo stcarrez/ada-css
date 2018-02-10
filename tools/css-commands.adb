@@ -50,8 +50,7 @@ package body CSS.Commands is
    procedure Initialize (Context : in out Context_Type) is
    begin
       Driver.Set_Description (CSS.Tools.Configs.RELEASE);
-      Driver.Set_Usage ("[-adpqv] [-o file] [-r file] [-c dir] file..." & ASCII.LF &
-                          "  -a       Analyze the CSS file" & ASCII.LF &
+      Driver.Set_Usage ("[-dpqv] [-o file] [-r file] [-c dir] command file..." & ASCII.LF &
                           "  -d       Turn on debugging" & ASCII.LF &
                           "  -v       Verbose mode" & ASCII.LF &
                           "  -q       Quiet mode" & ASCII.LF &
@@ -62,6 +61,7 @@ package body CSS.Commands is
       Driver.Add_Command ("help", Help_Command'Access);
       Driver.Add_Command ("analyze", Analyze_Command'Access);
       Driver.Add_Command ("list", List_Command'Access);
+      Driver.Add_Command ("list-colors", List_Command'Access);
    end Initialize;
 
    --  ------------------------------
