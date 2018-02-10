@@ -25,6 +25,7 @@ with Ada.Directories;
 with Ada.Exceptions;
 with Util.Log.Loggers;
 with Util.Files;
+with Util.Commands;
 with CSS.Parser.Lexer;
 with CSS.Parser.Lexer_dfa;
 with CSS.Analysis.Parser.Lexer_dfa;
@@ -60,16 +61,18 @@ procedure CssTools is
    Quiet       : Boolean := False;
    Status      : Exit_Status := Success;
    Analyze_Flag: Boolean := False;
-   Doc         : aliased CSS.Core.Sheets.CSSStylesheet;
-   Err_Handler : aliased CSS.Tools.Messages.Message_List;
+--     Doc         : aliased CSS.Core.Sheets.CSSStylesheet;
+--     Err_Handler : aliased CSS.Tools.Messages.Message_List;
    Output_Path : Unbounded_String;
    Report_Path : Unbounded_String;
    Config_Dir  : Unbounded_String;
    Output      : CSS.Printer.Text_IO.File_Type;
    Report      : CSS.Printer.Text_IO.File_Type;
-   Dup_Rules   : CSS.Core.Sets.Set;
-   Class_Map   : CSS.Analysis.Classes.Class_Maps.Map;
+--     Dup_Rules   : CSS.Core.Sets.Set;
+--     Class_Map   : CSS.Analysis.Classes.Class_Maps.Map;
    Context     : CSS.Commands.Context_Type;
+   First       : Natural := 0;
+   All_Args    : Util.Commands.Default_Argument_List (0);
 
    procedure Usage is
    begin
@@ -142,7 +145,7 @@ begin
    --  Parse the command line
    begin
       loop
-         case Getopt ("a v p d q r: R: c: o: ") is
+         case Getopt ("* a v p d q r: R: c: o: ") is
             when ASCII.NUL => exit;
 
             when 'a' =>
@@ -180,6 +183,7 @@ begin
             when others =>
                null;
          end case;
+         First := First + 1;
       end loop;
 
    exception
@@ -220,43 +224,58 @@ begin
    if Verbose then
       CSS.Analysis.Rules.Print (Report, CSS.Analysis.Rules.Main.Rule_Repository.all);
    end if;
-   loop
-      declare
-         Path : constant String := Get_Argument;
-      begin
-         exit when Path'Length = 0;
-         Doc.Set_Href (Path);
-         CSS.Parser.Load (Path, Doc'Unchecked_Access, Err_Handler'Unchecked_Access);
-         if Analyze_Flag then
-            CSS.Analysis.Duplicates.Analyze (Doc.Rules, Err_Handler, Dup_Rules);
-            CSS.Analysis.Rules.Main.Analyze (Doc, Err_Handler);
-         end if;
-         Err_Handler.Iterate (Print_Message'Access);
-         if Length (Output_Path) > 0 then
-            Output.Print (Doc);
-         end if;
-         if Err_Handler.Get_Error_Count > 0 then
-            Status := Failure;
-         end if;
-         if Analyze_Flag then
-            CSS.Analysis.Classes.Analyze (Doc, Class_Map, Err_Handler);
-         end if;
-      end;
-   end loop;
-   if Length (Report_Path) > 0 then
-      CSS.Reports.Docs.Print (Report, Class_Map);
+   if First >= Ada.Command_Line.Argument_Count then
+      Ada.Text_IO.Put_Line ("Missing command name to execute.");
+      CSS.Commands.Driver.Usage (All_Args);
+      Ada.Command_Line.Set_Exit_Status (Ada.Command_Line.Failure);
+      return;
    end if;
+   declare
+      Cmd_Name : constant String := Full_Switch;
+      Args     : Util.Commands.Default_Argument_List (First + 1);
+   begin
+      CSS.Commands.Driver.Execute (Cmd_Name, Args, Context);
+   end;
+   if Context.Err_Handler.Get_Error_Count > 0 then
+      Status := Failure;
+   end if;
+--     loop
+--        declare
+--           Path : constant String := Get_Argument;
+--        begin
+--           exit when Path'Length = 0;
+--           Doc.Set_Href (Path);
+--           CSS.Parser.Load (Path, Doc'Unchecked_Access, Err_Handler'Unchecked_Access);
+--           if Analyze_Flag then
+--              CSS.Analysis.Duplicates.Analyze (Doc.Rules, Err_Handler, Dup_Rules);
+--              CSS.Analysis.Rules.Main.Analyze (Doc, Err_Handler);
+--           end if;
+--           Err_Handler.Iterate (Print_Message'Access);
+--           if Length (Output_Path) > 0 then
+--              Output.Print (Doc);
+--           end if;
+--           if Err_Handler.Get_Error_Count > 0 then
+--              Status := Failure;
+--           end if;
+--           if Analyze_Flag then
+--              CSS.Analysis.Classes.Analyze (Doc, Class_Map, Err_Handler);
+--           end if;
+--        end;
+--     end loop;
+--     if Length (Report_Path) > 0 then
+--        CSS.Reports.Docs.Print (Report, Class_Map);
+--     end if;
    if not Quiet then
       if Verbose then
          Ada.Text_IO.Put_Line ("Comments: ");
          Ada.Text_IO.Put_Line (Ada.Strings.Unbounded.To_String (CSS.Parser.Lexer.Current_Comment));
       end if;
-      Ada.Text_IO.Put_Line ("Errors          : " & Natural'Image (Err_Handler.Get_Error_Count));
-      Ada.Text_IO.Put_Line ("Warnings        : " & Natural'Image (Err_Handler.Get_Warning_Count));
-      Ada.Text_IO.Put_Line ("CSS rules       : " & Count_Type'Image (Doc.Rules.Length));
-      Ada.Text_IO.Put_Line ("CSS values      : " & Natural'Image (Doc.Values.Length));
-      Ada.Text_IO.Put_Line ("CSS classes     : " & Count_Type'Image (Class_Map.Length));
-      Ada.Text_IO.Put_Line ("Duplicate rules : " & Count_Type'Image (Dup_Rules.Length));
+      Ada.Text_IO.Put_Line ("Errors          : " & Natural'Image (Context.Err_Handler.Get_Error_Count));
+      Ada.Text_IO.Put_Line ("Warnings        : " & Natural'Image (Context.Err_Handler.Get_Warning_Count));
+      Ada.Text_IO.Put_Line ("CSS rules       : " & Count_Type'Image (Context.Doc.Rules.Length));
+      Ada.Text_IO.Put_Line ("CSS values      : " & Natural'Image (Context.Doc.Values.Length));
+      Ada.Text_IO.Put_Line ("CSS classes     : " & Count_Type'Image (Context.Class_Map.Length));
+      Ada.Text_IO.Put_Line ("Duplicate rules : " & Count_Type'Image (Context.Dup_Rules.Length));
    end if;
    Ada.Command_Line.Set_Exit_Status (Status);
 
@@ -267,7 +286,7 @@ exception
       Ada.Command_Line.Set_Exit_Status (2);
 
    when E : others =>
-      Err_Handler.Iterate (Print_Message'Access);
+      Context.Err_Handler.Iterate (Print_Message'Access);
       Ada.Text_IO.Put_Line (Ada.Exceptions.Exception_Message (E));
       Ada.Text_IO.Put_Line (GNAT.Traceback.Symbolic.Symbolic_Traceback (E));
       Ada.Command_Line.Set_Exit_Status (1);
