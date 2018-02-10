@@ -20,9 +20,11 @@ with Ada.Command_Line;
 with CSS.Parser;
 with CSS.Tools.Configs;
 with CSS.Commands.Analyze;
+with CSS.Commands.List;
 package body CSS.Commands is
 
    Analyze_Command : aliased CSS.Commands.Analyze.Command;
+   List_Command    : aliased CSS.Commands.List.Command;
 
    --  ------------------------------
    --  Load the CSS files.
@@ -57,6 +59,7 @@ package body CSS.Commands is
                           "  -r file  Generate a report about the CSS file" & ASCII.LF &
                           "  -c dir   Define the path for the configuration directory");
       Driver.Add_Command ("analyze", Analyze_Command'Access);
+      Driver.Add_Command ("list", List_Command'Access);
    end Initialize;
 
    --  ------------------------------
