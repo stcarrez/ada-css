@@ -18,12 +18,16 @@
 with Ada.Text_IO;
 with Ada.Command_Line;
 with CSS.Parser;
+with CSS.Tools.Configs;
+with CSS.Commands.Analyze;
 package body CSS.Commands is
+
+   Analyze_Command : aliased CSS.Commands.Analyze.Command;
 
    --  ------------------------------
    --  Load the CSS files.
    --  ------------------------------
-   procedure Load (Args    : in out Argument_List'Class;
+   procedure Load (Args    : in Argument_List'Class;
                    Context : in out Context_Type) is
    begin
       for I in 1 .. Args.Get_Count loop
@@ -42,7 +46,7 @@ package body CSS.Commands is
    --  ------------------------------
    procedure Initialize (Context : in out Context_Type) is
    begin
-      Driver.Set_Description ("csstools - CSS Analysis tools");
+      Driver.Set_Description (CSS.Tools.Configs.RELEASE);
       Driver.Set_Usage ("[-adpqv] [-o file] [-r file] [-c dir] file..." & ASCII.LF &
                           "  -a       Analyze the CSS file" & ASCII.LF &
                           "  -d       Turn on debugging" & ASCII.LF &
@@ -52,6 +56,7 @@ package body CSS.Commands is
                           "  -o file  Generate the CSS output file" & ASCII.LF &
                           "  -r file  Generate a report about the CSS file" & ASCII.LF &
                           "  -c dir   Define the path for the configuration directory");
+      Driver.Add_Command ("analyze", Analyze_Command'Access);
    end Initialize;
 
    --  ------------------------------
