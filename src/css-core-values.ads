@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-core-values -- Representation of CSS property value(s).
---  Copyright (C) 2017 Stephane Carrez
+--  Copyright (C) 2017, 2018 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -152,6 +152,10 @@ package CSS.Core.Values is
 
    --  Return the number of entries in the repository.
    function Length (Repository : in Repository_Type) return Natural;
+
+   --  Iterate over the list of properties and call the <tt>Process</tt> procedure.
+   procedure Iterate (Repository : in Repository_Type;
+                      Process    : not null access procedure (Value : in Value_Type));
 
 private
 
