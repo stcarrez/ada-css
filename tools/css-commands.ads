@@ -19,16 +19,13 @@ with Util.Commands.Drivers;
 with CSS.Printer.Text_IO;
 with CSS.Core.Sets;
 with CSS.Core.Sheets;
-with CSS.Tools;
+with CSS.Tools.Messages;
 with CSS.Analysis.Classes;
 package CSS.Commands is
 
    type Context_Type is limited record
       Doc         : aliased CSS.Core.Sheets.CSSStylesheet;
       Err_Handler : aliased CSS.Tools.Messages.Message_List;
-      Output_Path : Unbounded_String;
-      Report_Path : Unbounded_String;
-      Config_Dir  : Unbounded_String;
       Output      : CSS.Printer.Text_IO.File_Type;
       Report      : CSS.Printer.Text_IO.File_Type;
       Dup_Rules   : CSS.Core.Sets.Set;
@@ -44,6 +41,10 @@ package CSS.Commands is
    subtype Argument_List is Util.Commands.Argument_List;
 
    Driver : Drivers.Driver_Type;
+
+   --  Load the CSS files.
+   procedure Load (Args    : in out Argument_List'Class;
+                   Context : in out Context_Type);
 
    --  Print csstools short usage.
    procedure Short_Help_Usage;
