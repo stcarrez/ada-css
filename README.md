@@ -1,8 +1,9 @@
-# Ada CSS Library
+# Ada CSS Library and tools
 
 [![Build Status](https://img.shields.io/jenkins/s/http/jenkins.vacs.fr/Ada-CSS.svg)](http://jenkins.vacs.fr/job/Ada-CSS/)
 [![Test Status](https://img.shields.io/jenkins/t/http/jenkins.vacs.fr/Ada-CSS.svg)](http://jenkins.vacs.fr/job/Ada-CSS/)
 [![License](http://img.shields.io/badge/license-APACHE2-blue.svg)](LICENSE)
+![Commits](https://img.shields.io/github/commits-since/stcarrez/ada-css/0.1.0.svg)
 
 The Ada CSS library is an Ada 05 implementation of the
 [CSS Object Model (CSSOM)](https://www.w3.org/TR/2016/WD-cssom-1-20160317/).
