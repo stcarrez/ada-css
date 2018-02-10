@@ -43,7 +43,7 @@ package CSS.Commands is
    Driver : Drivers.Driver_Type;
 
    --  Load the CSS files.
-   procedure Load (Args    : in out Argument_List'Class;
+   procedure Load (Args    : in Argument_List'Class;
                    Context : in out Context_Type);
 
    --  Initialize the context.
