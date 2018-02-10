@@ -15,7 +15,27 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
+with Ada.Text_IO;
+with Ada.Command_Line;
+with CSS.Parser;
 package body CSS.Commands is
+
+   --  ------------------------------
+   --  Load the CSS files.
+   --  ------------------------------
+   procedure Load (Args    : in out Argument_List'Class;
+                   Context : in out Context_Type) is
+   begin
+      for I in 1 .. Args.Get_Count loop
+         declare
+            Path : constant String := Args.Get_Argument (I);
+         begin
+            exit when Path'Length = 0;
+            Context.Doc.Set_Href (Path);
+            CSS.Parser.Load (Path, Context.Doc'Unchecked_Access, Context.Err_Handler'Unchecked_Access);
+         end;
+      end loop;
+   end Load;
 
    --  ------------------------------
    --  Print csstools short usage.
