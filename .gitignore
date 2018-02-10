@@ -20,3 +20,4 @@ bin/
 obj/
 lib/
 cssada-aunit.xml
+tools/css-tools-configs.ads
