@@ -20,26 +20,18 @@ with GNAT.Traceback.Symbolic;
 with Ada.Strings.Unbounded;
 with Ada.Text_IO;
 with Ada.Command_Line;
-with Ada.Containers;
 with Ada.Directories;
 with Ada.Exceptions;
 with Util.Log.Loggers;
 with Util.Files;
 with Util.Commands;
-with CSS.Parser.Lexer;
 with CSS.Parser.Lexer_dfa;
 with CSS.Analysis.Parser.Lexer_dfa;
 with CSS.Core;
-with CSS.Core.Sheets;
 with CSS.Tools.Messages;
-with CSS.Core.Sets;
-with CSS.Analysis.Rules;
-with CSS.Analysis.Duplicates;
 with CSS.Printer.Text_IO;
 with CSS.Analysis.Parser;
 with CSS.Analysis.Rules.Main;
-with CSS.Analysis.Classes;
-with CSS.Reports.Docs;
 with CSS.Tools.Configs;
 with CSS.Commands;
 procedure CssTools is
@@ -49,7 +41,6 @@ procedure CssTools is
    use Ada.Directories;
    use Ada.Command_Line;
 
-   procedure Usage;
    procedure Print_Message (Severity : in CSS.Tools.Messages.Severity_Type;
                             Loc      : in CSS.Core.Location;
                             Message  : in String);
@@ -60,35 +51,15 @@ procedure CssTools is
    Verbose     : Boolean := False;
    Quiet       : Boolean := False;
    Status      : Exit_Status := Success;
-   Analyze_Flag: Boolean := False;
---     Doc         : aliased CSS.Core.Sheets.CSSStylesheet;
---     Err_Handler : aliased CSS.Tools.Messages.Message_List;
    Output_Path : Unbounded_String;
    Report_Path : Unbounded_String;
    Config_Dir  : Unbounded_String;
    Output      : CSS.Printer.Text_IO.File_Type;
    Report      : CSS.Printer.Text_IO.File_Type;
---     Dup_Rules   : CSS.Core.Sets.Set;
---     Class_Map   : CSS.Analysis.Classes.Class_Maps.Map;
    Context     : CSS.Commands.Context_Type;
    First       : Natural := 0;
    Console     : aliased CSS.Commands.Text_Consoles.Console_Type;
    All_Args    : Util.Commands.Default_Argument_List (0);
-
-   procedure Usage is
-   begin
-      Ada.Text_IO.Put_Line (CSS.Tools.Configs.RELEASE);
-      Ada.Text_IO.New_Line;
-      Ada.Text_IO.Put_Line ("csstools [-adpqv] [-o file] [-r file] [-c dir] file...");
-      Ada.Text_IO.Put_Line ("  -a       Analyze the CSS file");
-      Ada.Text_IO.Put_Line ("  -d       Turn on debugging");
-      Ada.Text_IO.Put_Line ("  -v       Verbose mode");
-      Ada.Text_IO.Put_Line ("  -q       Quiet mode");
-      Ada.Text_IO.Put_Line ("  -p       Pretty print CSS output");
-      Ada.Text_IO.Put_Line ("  -o file  Generate the CSS output file");
-      Ada.Text_IO.Put_Line ("  -r file  Generate a report about the CSS file");
-      Ada.Text_IO.Put_Line ("  -c dir   Define the path for the configuration directory");
-   end Usage;
 
    --  ------------------------------
    --  Verify and set the configuration path
@@ -147,11 +118,8 @@ begin
    --  Parse the command line
    begin
       loop
-         case Getopt ("* a v p d q r: R: c: o: ") is
+         case Getopt ("* v p d q r: R: c: o: ") is
             when ASCII.NUL => exit;
-
-            when 'a' =>
-               Analyze_Flag := True;
 
             when 'c' =>
                Set_Config_Directory (Parameter);
@@ -190,7 +158,7 @@ begin
 
    exception
       when others =>
-         Usage;
+         CSS.Commands.Driver.Usage (All_Args);
          Ada.Command_Line.Set_Exit_Status (2);
          return;
 
@@ -214,7 +182,8 @@ begin
       CSS.Analysis.Parser.Load (To_String (Config_Path), CSS.Analysis.Rules.Main.Rule_Repository);
    end if;
    if Length (Config_Dir) > 0 then
-      CSS.Analysis.Parser.Load_All (To_String (Config_Dir) & "/rules", CSS.Analysis.Rules.Main.Rule_Repository);
+      CSS.Analysis.Parser.Load_All (To_String (Config_Dir) & "/rules",
+                                    CSS.Analysis.Rules.Main.Rule_Repository);
    end if;
 
    if Length (Output_Path) > 0 then
@@ -267,24 +236,24 @@ begin
 --     if Length (Report_Path) > 0 then
 --        CSS.Reports.Docs.Print (Report, Class_Map);
 --     end if;
-   if not Quiet then
-      if Verbose then
-         Ada.Text_IO.Put_Line ("Comments: ");
-         Ada.Text_IO.Put_Line (Ada.Strings.Unbounded.To_String (CSS.Parser.Lexer.Current_Comment));
-      end if;
-      Ada.Text_IO.Put_Line ("Errors          : " & Natural'Image (Context.Err_Handler.Get_Error_Count));
-      Ada.Text_IO.Put_Line ("Warnings        : " & Natural'Image (Context.Err_Handler.Get_Warning_Count));
-      Ada.Text_IO.Put_Line ("CSS rules       : " & Count_Type'Image (Context.Doc.Rules.Length));
-      Ada.Text_IO.Put_Line ("CSS values      : " & Natural'Image (Context.Doc.Values.Length));
-      Ada.Text_IO.Put_Line ("CSS classes     : " & Count_Type'Image (Context.Class_Map.Length));
-      Ada.Text_IO.Put_Line ("Duplicate rules : " & Count_Type'Image (Context.Dup_Rules.Length));
-   end if;
+--     if not Quiet then
+--        if Verbose then
+--           Ada.Text_IO.Put_Line ("Comments: ");
+--           Ada.Text_IO.Put_Line (Ada.Strings.Unbounded.To_String (CSS.Parser.Lexer.Current_Comment));
+--        end if;
+--        Ada.Text_IO.Put_Line ("Errors          : " & Natural'Image (Context.Err_Handler.Get_Error_Count));
+--        Ada.Text_IO.Put_Line ("Warnings        : " & Natural'Image (Context.Err_Handler.Get_Warning_Count));
+--        Ada.Text_IO.Put_Line ("CSS rules       : " & Count_Type'Image (Context.Doc.Rules.Length));
+--        Ada.Text_IO.Put_Line ("CSS values      : " & Natural'Image (Context.Doc.Values.Length));
+--        Ada.Text_IO.Put_Line ("CSS classes     : " & Count_Type'Image (Context.Class_Map.Length));
+--        Ada.Text_IO.Put_Line ("Duplicate rules : " & Count_Type'Image (Context.Dup_Rules.Length));
+--     end if;
    Ada.Command_Line.Set_Exit_Status (Status);
 
 exception
    when E : Invalid_Switch =>
       Ada.Text_IO.Put_Line ("Invalid option: " & Ada.Exceptions.Exception_Message (E));
-      Usage;
+      CSS.Commands.Driver.Usage (All_Args);
       Ada.Command_Line.Set_Exit_Status (2);
 
    when E : others =>
