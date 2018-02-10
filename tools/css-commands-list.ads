@@ -21,18 +21,18 @@ package CSS.Commands.List is
    --  List Command
    --  ------------------------------
    --  This command lists some information about the CSS files.
-   type Command is new Gen.Commands.Command with null record;
+   type Command is new CSS.Commands.Command with null record;
 
    --  Execute the command with the arguments.
    overriding
-   procedure Execute (Cmd       : in Command;
-                      Name      : in String;
-                      Args      : in Argument_List'Class;
-                      Generator : in out Gen.Generator.Handler);
+   procedure Execute (Cmd     : in Command;
+                      Name    : in String;
+                      Args    : in Argument_List'Class;
+                      Context : in out CSS.Commands.Context_Type);
 
    --  Write the help associated with the command.
    overriding
-   procedure Help (Cmd       : in Command;
-                   Generator : in out Gen.Generator.Handler);
+   procedure Help (Cmd     : in Command;
+                   Context : in out CSS.Commands.Context_Type);
 
 end CSS.Commands.List;
