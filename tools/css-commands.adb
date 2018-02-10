@@ -38,6 +38,23 @@ package body CSS.Commands is
    end Load;
 
    --  ------------------------------
+   --  Initialize the context.
+   --  ------------------------------
+   procedure Initialize (Context : in out Context_Type) is
+   begin
+      Driver.Set_Description ("csstools - CSS Analysis tools");
+      Driver.Set_Usage ("[-adpqv] [-o file] [-r file] [-c dir] file..." & ASCII.LF &
+                          "  -a       Analyze the CSS file" & ASCII.LF &
+                          "  -d       Turn on debugging" & ASCII.LF &
+                          "  -v       Verbose mode" & ASCII.LF &
+                          "  -q       Quiet mode" & ASCII.LF &
+                          "  -p       Pretty print CSS output" & ASCII.LF &
+                          "  -o file  Generate the CSS output file" & ASCII.LF &
+                          "  -r file  Generate a report about the CSS file" & ASCII.LF &
+                          "  -c dir   Define the path for the configuration directory");
+   end Initialize;
+
+   --  ------------------------------
    --  Print csstools short usage.
    --  ------------------------------
    procedure Short_Help_Usage is
