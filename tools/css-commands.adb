@@ -25,6 +25,7 @@ package body CSS.Commands is
 
    Analyze_Command : aliased CSS.Commands.Analyze.Command;
    List_Command    : aliased CSS.Commands.List.Command;
+   Help_Command    : aliased CSS.Commands.Drivers.Help_Command_Type;
 
    --  ------------------------------
    --  Load the CSS files.
@@ -58,6 +59,7 @@ package body CSS.Commands is
                           "  -o file  Generate the CSS output file" & ASCII.LF &
                           "  -r file  Generate a report about the CSS file" & ASCII.LF &
                           "  -c dir   Define the path for the configuration directory");
+      Driver.Add_Command ("help", Help_Command'Access);
       Driver.Add_Command ("analyze", Analyze_Command'Access);
       Driver.Add_Command ("list", List_Command'Access);
    end Initialize;
