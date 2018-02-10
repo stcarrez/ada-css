@@ -58,6 +58,7 @@ infix_ali=@ADA_ALI_BASE@
 includedir=${prefix}/${infix_inc}
 projectdir=${prefix}/${infix_prj}
 bindir=${prefix}/bin
+sharedir=${prefix}/share
 libdir=${prefix}/${infix_lib}
 alidir=${prefix}/${infix_ali}
 
@@ -73,10 +74,10 @@ endif
 
 ifeq (${BUILDS_SHARED},yes)
 all:     static shared tools
-install: install_static install_shared install-info
+install: install_static install_shared install-tool install-info
 else
 all:     static tools
-install: install_static install-info
+install: install_static install-tool install-info
 endif
 
 # Build executables for all mains defined by the project.
@@ -229,6 +230,12 @@ else
 endif
 endif
 endif
+
+install-tool:
+	${MKDIR} -p ${bindir} ${sharedir}/csstools
+	$(INSTALL) bin/csstools ${bindir}/csstools
+	-rm -rf ${sharedir}/csstools
+	$(CP) -r config ${sharedir}/csstools
 
 install-info:
 ifeq (${GPRINSTALL},)
