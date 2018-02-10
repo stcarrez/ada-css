@@ -46,6 +46,9 @@ package CSS.Commands is
    procedure Load (Args    : in out Argument_List'Class;
                    Context : in out Context_Type);
 
+   --  Initialize the context.
+   procedure Initialize (Context : in out Context_Type);
+
    --  Print csstools short usage.
    procedure Short_Help_Usage;
 
