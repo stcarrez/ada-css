@@ -40,8 +40,9 @@ package body CSS.Commands.List is
    overriding
    procedure Help (Cmd     : in Command;
                    Context : in out CSS.Commands.Context_Type) is
+      Console : constant CSS.Commands.Console_Access := Context.Console;
    begin
-      null;
+      Console.Notice (N_HELP, "list: list information about the CSS files");
    end Help;
 
 end CSS.Commands.List;
