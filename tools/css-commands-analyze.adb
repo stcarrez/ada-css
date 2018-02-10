@@ -39,10 +39,11 @@ package body CSS.Commands.Analyze is
    --  Write the help associated with the command.
    --  ------------------------------
    overriding
-   procedure Help (Cmd       : in Command;
+   procedure Help (Cmd     : in Command;
                    Context : in out CSS.Commands.Context_Type) is
+      Console : constant CSS.Commands.Console_Access := Context.Console;
    begin
-      null;
+      Console.Notice (N_HELP, "analyze: analyze the CSS files");
    end Help;
 
 end CSS.Commands.Analyze;
