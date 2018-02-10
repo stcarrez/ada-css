@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-core-values -- Representation of CSS property value(s).
---  Copyright (C) 2017 Stephane Carrez
+--  Copyright (C) 2017, 2018 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -321,6 +321,20 @@ package body CSS.Core.Values is
    begin
       return Natural (Repository.Root.Length);
    end Length;
+
+   --  ------------------------------
+   --  Iterate over the list of properties and call the <tt>Process</tt> procedure.
+   --  ------------------------------
+   procedure Iterate (Repository : in Repository_Type;
+                      Process    : not null access procedure (Value : in Value_Type)) is
+      procedure Process_Value (Pos : in CSS.Core.Values.Value_Sets.Cursor);
+      procedure Process_Value (Pos : in CSS.Core.Values.Value_Sets.Cursor) is
+      begin
+         Process (CSS.Core.Values.Value_Sets.Element (Pos));
+      end Process_Value;
+   begin
+      Repository.Root.Iterate (Process_Value'Access);
+   end Iterate;
 
    --  ------------------------------
    --  Release the storage held by the selector sub-tree.
