@@ -29,7 +29,8 @@ package CSS.Commands is
    type Notice_Type is (N_HELP, N_USAGE, N_INFO);
 
    --  The possible fields.
-   type Field_Type is (F_CLASS_NAME);
+   type Field_Type is (F_CLASS_NAME, F_COLOR,
+                       F_VALUE_1, F_VALUE_2, F_VALUE_3, F_VALUE_4, F_VALUE_LAST);
 
    --  Make the generic abstract console interface.
    package Consoles is
