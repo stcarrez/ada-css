@@ -103,6 +103,23 @@ package body CSS.Analysis.Rules is
    end Print;
 
    --  ------------------------------
+   --  Returns True if the two rules refer to the same rule definition.
+   --  ------------------------------
+   function Is_Rule (Rule1, Rule2 : access Rule_Type'Class) return Boolean is
+   begin
+      if Rule1 = Rule2 then
+         return True;
+      end if;
+      if Rule1.all in Definition_Rule_Type'Class then
+         return Is_Rule (Definition_Rule_Type'Class (Rule1.all).rule, Rule2);
+      end if;
+      if Rule2.all in Definition_Rule_Type'Class then
+         return Is_Rule (Rule1, Definition_Rule_Type'Class (Rule2.all).rule);
+      end if;
+      return False;
+   end Is_Rule;
+
+   --  ------------------------------
    --  Check if the value matches the rule.
    --  ------------------------------
    function Match (Rule  : in Rule_Type;
@@ -702,20 +719,6 @@ package body CSS.Analysis.Rules is
       Repository.Resolve;
       Sheet.Iterate_Properties (Process'Access);
    end Analyze;
-
-   function Is_Rule (Rule1, Rule2 : access Rule_Type'Class) return Boolean is
-   begin
-      if Rule1 = Rule2 then
-         return True;
-      end if;
-      if Rule1.all in Definition_Rule_Type'Class then
-         return Is_Rule (Definition_Rule_Type'Class (Rule1.all).rule, Rule2);
-      end if;
-      if Rule2.all in Definition_Rule_Type'Class then
-         return Is_Rule (Rule1, Definition_Rule_Type'Class (Rule2.all).rule);
-      end if;
-      return False;
-   end Is_Rule;
 
    --  ------------------------------
    --  Search for properties that use the given rule and call the Process procedure
