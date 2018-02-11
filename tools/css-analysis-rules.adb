@@ -697,21 +697,6 @@ package body CSS.Analysis.Rules is
                                   & Prop.Value.To_String (1, Match_Count)
                                   & "' for property " & Prop.Name.all);
                end if;
-            elsif not Result.List.Is_Empty then
-               Report.Warning (Prop.Location, "Match " & Natural'Image (Natural (Result.List.Length)));
-               for M of Result.List loop
-                  if M.Rule.all in Definition_Rule_Type'Class then
-                     Report.Warning (Prop.Location, " -> " &
-                                       Definition_Rule_Type'Class (M.Rule.all).Ident);
-                     Log.Error ("Match {0} - {1} - {2}",
-                                Natural'Image (M.First),
-                                Natural'Image (M.Last),
-                                Definition_Rule_Type'Class (M.Rule.all).Ident);
-                  else
-                     Report.Warning (Prop.Location, " -> ?");
-                     Log.Error ("Match ?");
-                  end if;
-               end loop;
             end if;
          end if;
       end Process;
