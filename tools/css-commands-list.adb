@@ -99,7 +99,24 @@ package body CSS.Commands.List is
          Context.Class_Map.Iterate (Process'Access);
       end if;
       if Name = "list-colors" then
+         Values.Clear;
          Rule := CSS.Analysis.Rules.Main.Rule_Repository.Create_Definition ("<color>", Loc);
+         Expect := CSS.Core.Values.VALUE_COLOR;
+         Console.Start_Title;
+         Console.Print_Title (F_VALUE_1, "", 20);
+         Console.Print_Title (F_VALUE_2, "", 20);
+         Console.Print_Title (F_VALUE_3, "", 20);
+         Console.Print_Title (F_VALUE_4, "", 20);
+         Console.End_Title;
+         CSS.Analysis.Rules.Main.Rule_Repository.Search (Context.Doc, Rule, Process_Search'Access);
+
+         for V of Values loop
+            Report_Value (V);
+         end loop;
+      end if;
+      if Name = "list-length" then
+         Values.Clear;
+         Rule := CSS.Analysis.Rules.Main.Rule_Repository.Create_Definition ("<length>", Loc);
          Expect := CSS.Core.Values.VALUE_COLOR;
          Console.Start_Title;
          Console.Print_Title (F_VALUE_1, "", 20);
