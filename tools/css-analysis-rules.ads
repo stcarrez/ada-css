@@ -21,6 +21,7 @@ private with Ada.Containers.Indefinite_Ordered_Maps;
 
 with CSS.Core.Errors;
 with CSS.Core.Values;
+with CSS.Core.Properties;
 with CSS.Printer;
 with CSS.Core.Sheets;
 
@@ -135,6 +136,14 @@ package CSS.Analysis.Rules is
    procedure Analyze (Repository : in out Repository_Type;
                       Sheet      : in CSS.Core.Sheets.CSSStylesheet;
                       Report     : in out CSS.Core.Errors.Error_Handler'Class);
+
+   --  Search for properties that use the given rule and call the Process procedure
+   --  for each property that uses the rule definition.
+   procedure Search (Repository : in out Repository_Type;
+                     Sheet      : in CSS.Core.Sheets.CSSStylesheet;
+                     Rule       : access Rule_Type'Class;
+                     Process    : access procedure (Prop  : in CSS.Core.Properties.CSSProperty;
+                                                    Match : in Match_Result));
 
    --  Print the repository rule definitions to the print stream.
    procedure Print (Stream     : in out CSS.Printer.File_Type'Class;
