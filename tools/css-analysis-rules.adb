@@ -324,8 +324,8 @@ package body CSS.Analysis.Rules is
             Match_Count := Match_Count + N;
             Repeat := Repeat + 1;
          end loop;
-         if Result /= null then
-            Result.List.Append ((Pos, Pos + Match_Count, Rule.all'Access));
+         if Result /= null and Match_Count /= 0 then
+            Result.List.Append ((Pos, Pos + Match_Count - 1, Rule.all'Access));
          end if;
          return Match_Count;
       end if;
