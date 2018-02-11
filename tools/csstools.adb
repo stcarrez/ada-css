@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  csstools -- CSS Tools Command
---  Copyright (C) 2017 Stephane Carrez
+--  Copyright (C) 2017, 2018 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -176,8 +176,6 @@ begin
       end;
    end if;
 
-   CSS.Parser.Lexer_dfa.aflex_debug := Debug;
-   CSS.Analysis.Parser.Lexer_dfa.aflex_debug := Debug;
    if Length (Config_Path) > 0 then
       CSS.Analysis.Parser.Load (To_String (Config_Path), CSS.Analysis.Rules.Main.Rule_Repository);
    end if;
@@ -185,6 +183,8 @@ begin
       CSS.Analysis.Parser.Load_All (To_String (Config_Dir) & "/rules",
                                     CSS.Analysis.Rules.Main.Rule_Repository);
    end if;
+   CSS.Parser.Lexer_dfa.aflex_debug := Debug;
+   CSS.Analysis.Parser.Lexer_dfa.aflex_debug := Debug;
 
    if Length (Output_Path) > 0 then
       Ada.Text_IO.Create (Output.File, Ada.Text_IO.Out_File, To_String (Output_Path));
@@ -210,6 +210,8 @@ begin
    if Context.Err_Handler.Get_Error_Count > 0 then
       Status := Failure;
    end if;
+   Context.Err_Handler.Iterate (Print_Message'Access);
+
 --     loop
 --        declare
 --           Path : constant String := Get_Argument;
