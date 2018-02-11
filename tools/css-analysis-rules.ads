@@ -78,6 +78,9 @@ package CSS.Analysis.Rules is
       List : Match_Info_Vectors.Vector;
    end record;
 
+   --  Returns True if the two rules refer to the same rule definition.
+   function Is_Rule (Rule1, Rule2 : access Rule_Type'Class) return Boolean;
+
    --  Rule that describes an identifier such as 'left' or 'right'.
    type Ident_Rule_Type (Len : Natural) is new Rule_Type with private;
 
