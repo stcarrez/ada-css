@@ -230,17 +230,28 @@ medium :
 media_query :
      media_condition 
   |
-     T_NOT spaces T_IDENT spaces media_optional_condition
-        { Set_String ($$, "not ", $1.Line, $1.Column); Append_String ($$, $3, $5); }
+     media_term media_optional_condition
+        { Append_String ($$, $1, $2); }
+  ;
+
+media_term :
+     T_NOT spaces media_in_parens
+        { Set_String ($$, "not ", $1.Line, $1.Column); Append_String ($$, $3); }
   |
-     T_ONLY spaces T_IDENT spaces media_optional_condition
-        { Set_String ($$, "only ", $1.Line, $1.Column); Append_String ($$, $3, $5); }
+     T_NOT spaces T_IDENT spaces
+        { Set_String ($$, "not ", $1.Line, $1.Column); Append_String ($$, $3); }
+  |
+     T_ONLY spaces T_IDENT spaces
+        { Set_String ($$, "only ", $1.Line, $1.Column); Append_String ($$, $3); }
   |
      T_IDENT spaces media_optional_condition
         { $$ := $1; Append_String ($$, $3); }
   ;
 
+
 media_optional_condition :
+    media_optional_condition media_optional_condition
+  |
     T_AND spaces media_condition_no_or
         { Set_String ($$, " and ", $1.Line, $1.Column); Append_String ($$, $3); }
   |
@@ -249,20 +260,12 @@ media_optional_condition :
   ;
 
 media_condition :
-     T_NOT spaces media_in_parens
-        { Set_String ($$, "not ", $1.Line, $1.Column); Append_String ($$, $3); }
-  |
-     media_in_parens
-  |
      media_and_list
   |
      media_or_list
   ;
 
 media_condition_no_or :
-     T_NOT spaces media_in_parens
-        { Set_String ($$, "not ", $1.Line, $1.Column); Append_String ($$, $3); }
-  |
      media_in_parens media_and_list
         { $$ := $1; Append_String ($$, " "); Append_String ($$, $2); }
   |
@@ -273,7 +276,7 @@ media_and_list :
     media_and_list media_and
         { $$ := $1; Append_String ($$, " "); Append_String ($$, $2); }
   |
-    media_and
+    media_in_parens
   ;
 
 media_and :
