@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-analysis-rules -- CSS Analysis Rules
---  Copyright (C) 2017 Stephane Carrez
+--  Copyright (C) 2017, 2018 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Ada.Finalization;
+with Ada.Containers.Vectors;
 private with Ada.Containers.Indefinite_Ordered_Maps;
-private with Ada.Containers.Vectors;
 
 with CSS.Core.Errors;
 with CSS.Core.Values;
@@ -33,6 +33,7 @@ package CSS.Analysis.Rules is
 
    subtype Location is CSS.Core.Location;
 
+   type Match_Result;
    type Rule_Type is limited new Ada.Finalization.Limited_Controlled with private;
    type Rule_Type_Access is access all Rule_Type'Class;
 
@@ -58,9 +59,23 @@ package CSS.Analysis.Rules is
                    Value : in CSS.Core.Values.Value_Type) return Boolean;
 
    --  Check if the value matches the identifier defined by the rule.
-   function Match (Rule  : in Rule_Type;
-                   Value : in CSS.Core.Values.Value_List;
-                   Pos   : in Positive := 1) return Natural;
+   function Match (Rule   : access Rule_Type;
+                   Value  : in CSS.Core.Values.Value_List;
+                   Result : access Match_Result;
+                   Pos    : in Positive := 1) return Natural;
+
+   type Match_Info_Type is record
+      First : Natural := 0;
+      Last  : Natural := 0;
+      Rule  : access Rule_Type'Class;
+   end record;
+   package Match_Info_Vectors is
+     new Ada.Containers.Vectors (Index_Type   => Positive,
+                                 Element_Type => Match_Info_Type);
+
+   type Match_Result is record
+      List : Match_Info_Vectors.Vector;
+   end record;
 
    --  Rule that describes an identifier such as 'left' or 'right'.
    type Ident_Rule_Type (Len : Natural) is new Rule_Type with private;
@@ -172,9 +187,10 @@ private
 
    --  Check if the value matches the identifier defined by the rule.
    overriding
-   function Match (Rule  : in Definition_Rule_Type;
-                   Value : in CSS.Core.Values.Value_List;
-                   Pos   : in Positive := 1) return Natural;
+   function Match (Rule   : access Definition_Rule_Type;
+                   Value  : in CSS.Core.Values.Value_List;
+                   Result : access Match_Result;
+                   Pos    : in Positive := 1) return Natural;
 
    type Group_Rule_Type is new Rule_Type with record
       List       : Rule_Type_Access;
@@ -194,9 +210,10 @@ private
 
    --  Check if the value matches the identifier defined by the rule.
    overriding
-   function Match (Group : in Group_Rule_Type;
-                   Value : in CSS.Core.Values.Value_List;
-                   Pos   : in Positive := 1) return Natural;
+   function Match (Group  : access Group_Rule_Type;
+                   Value  : in CSS.Core.Values.Value_List;
+                   Result : access Match_Result;
+                   Pos    : in Positive := 1) return Natural;
 
    overriding
    procedure Finalize (Rule : in out Group_Rule_Type);
@@ -212,9 +229,10 @@ private
 
    --  Check if the value matches the function with its parameters.
    overriding
-   function Match (Rule  : in Function_Rule_Type;
-                   Value : in CSS.Core.Values.Value_List;
-                   Pos   : in Positive := 1) return Natural;
+   function Match (Rule   : access Function_Rule_Type;
+                   Value  : in CSS.Core.Values.Value_List;
+                   Result : access Match_Result;
+                   Pos    : in Positive := 1) return Natural;
 
    package Rule_Maps is
       new Ada.Containers.Indefinite_Ordered_Maps (Key_Type     => String,
