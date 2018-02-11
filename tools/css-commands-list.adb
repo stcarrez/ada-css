@@ -16,8 +16,18 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Ada.Text_IO;
+with Ada.Containers.Ordered_Sets;
 with CSS.Core.Values;
+with CSS.Core.Properties;
+with CSS.Analysis.Rules.Main;
 package body CSS.Commands.List is
+
+   --  The Value_Sets package represents a set of values all of
+   --  them being strictly different.
+   package Value_Sets is
+      new Ada.Containers.Ordered_Sets (Element_Type => CSS.Core.Values.Value_Type,
+                                       "<"          => CSS.Core.Values."<",
+                                       "="          => CSS.Core.Values.Compare);
 
    --  ------------------------------
    --  Execute the command with the arguments.
@@ -33,6 +43,11 @@ package body CSS.Commands.List is
       procedure Process_Value (Value : in CSS.Core.Values.Value_Type);
 
       Console : constant CSS.Commands.Console_Access := Context.Console;
+      Expect  : CSS.Core.Values.Value_Kind;
+      Column  : Field_Type := F_VALUE_1;
+      Rule    : CSS.Analysis.Rules.Rule_Type_Access;
+      Loc     : CSS.Core.Location;
+      Values  : Value_Sets.Set;
 
       procedure Process (Pos : in CSS.Analysis.Classes.Cursor) is
       begin
@@ -41,10 +56,42 @@ package body CSS.Commands.List is
 
       procedure Process_Value (Value : in CSS.Core.Values.Value_Type) is
       begin
-         if CSS.Core.Values.Get_Type (Value) = CSS.Core.Values.VALUE_COLOR then
-            Ada.Text_IO.Put_Line (CSS.Core.Values.To_String (Value));
+         if Column < F_VALUE_1 or Column > F_VALUE_4 then
+            if Column > F_VALUE_4 then
+               Console.End_Row;
+            end if;
+            Console.Start_Row;
+            Column := F_VALUE_1;
          end if;
+         Console.Print_Field (Column, CSS.Core.Values.To_String (Value));
+         Column := Field_Type'Succ (Column);
       end Process_Value;
+
+      procedure Report_Value (Value : in CSS.Core.Values.Value_Type) is
+      begin
+         if Column < F_VALUE_1 or Column > F_VALUE_4 then
+            if Column > F_VALUE_4 then
+               Console.End_Row;
+            end if;
+            Console.Start_Row;
+            Column := F_VALUE_1;
+         end if;
+         Console.Print_Field (Column, CSS.Core.Values.To_String (Value));
+         Column := Field_Type'Succ (Column);
+      end Report_Value;
+
+      procedure Process_Search (Prop : in CSS.Core.Properties.CSSProperty;
+                                Match : in CSS.Analysis.Rules.Match_Result) is
+      begin
+         for M of Match.List loop
+            if CSS.Analysis.Rules.Is_Rule (M.Rule, Rule) then
+               for I in M.First .. M.Last loop
+                  Values.Include (CSS.Core.Values.Get_Value (Prop.Value, I));
+               end loop;
+            end if;
+         end loop;
+      end Process_Search;
+
    begin
       CSS.Commands.Load (Args, Context);
       if Name = "list" then
@@ -52,7 +99,19 @@ package body CSS.Commands.List is
          Context.Class_Map.Iterate (Process'Access);
       end if;
       if Name = "list-colors" then
-         Context.Doc.Values.Iterate (Process_Value'Access);
+         Rule := CSS.Analysis.Rules.Main.Rule_Repository.Create_Definition ("<color>", Loc);
+         Expect := CSS.Core.Values.VALUE_COLOR;
+         Console.Start_Title;
+         Console.Print_Title (F_VALUE_1, "", 20);
+         Console.Print_Title (F_VALUE_2, "", 20);
+         Console.Print_Title (F_VALUE_3, "", 20);
+         Console.Print_Title (F_VALUE_4, "", 20);
+         Console.End_Title;
+         CSS.Analysis.Rules.Main.Rule_Repository.Search (Context.Doc, Rule, Process_Search'Access);
+
+         for V of Values loop
+            Report_Value (V);
+         end loop;
       end if;
    end Execute;
 
