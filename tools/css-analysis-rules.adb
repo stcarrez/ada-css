@@ -115,14 +115,15 @@ package body CSS.Analysis.Rules is
    --  ------------------------------
    --  Check if the value matches the identifier defined by the rule.
    --  ------------------------------
-   function Match (Rule  : in Rule_Type;
-                   Value : in CSS.Core.Values.Value_List;
-                   Pos   : in Positive := 1) return Natural is
+   function Match (Rule   : access Rule_Type;
+                   Value  : in CSS.Core.Values.Value_List;
+                   Result : access Match_Result;
+                   Pos    : in Positive := 1) return Natural is
       Count : constant Natural := Value.Get_Count;
       Match_Count : Natural := 0;
    begin
       for I in Pos .. Count loop
-         if not Rule_Type'Class (Rule).Match (Value.Get_Value (I)) then
+         if not Rule_Type'Class (Rule.all).Match (Value.Get_Value (I)) then
             return Match_Count;
          end if;
          Match_Count := Match_Count + 1;
@@ -289,9 +290,10 @@ package body CSS.Analysis.Rules is
    end Match;
 
    overriding
-   function Match (Rule  : in Definition_Rule_Type;
-                   Value : in CSS.Core.Values.Value_List;
-                   Pos   : in Positive := 1) return Natural is
+   function Match (Rule   : access Definition_Rule_Type;
+                   Value  : in CSS.Core.Values.Value_List;
+                   Result : access Match_Result;
+                   Pos    : in Positive := 1) return Natural is
       N           : Natural;
       Repeat      : Natural := 0;
       Match_Count : Natural := 0;
@@ -300,11 +302,14 @@ package body CSS.Analysis.Rules is
          return 0;
       else
          while Repeat < Rule.Max_Repeat loop
-            N := Rule.Rule.Match (Value, Pos + Match_Count);
+            N := Rule.Rule.Match (Value, Result, Pos + Match_Count);
             exit when N = 0;
             Match_Count := Match_Count + N;
             Repeat := Repeat + 1;
          end loop;
+         if Result /= null then
+            Result.List.Append ((Pos, Pos + Match_Count, Rule.all'Access));
+         end if;
          return Match_Count;
       end if;
    end Match;
@@ -372,9 +377,10 @@ package body CSS.Analysis.Rules is
 
    --  Check if the value matches the identifier defined by the rule.
    overriding
-   function Match (Group : in Group_Rule_Type;
-                   Value : in CSS.Core.Values.Value_List;
-                   Pos   : in Positive := 1) return Natural is
+   function Match (Group  : access Group_Rule_Type;
+                   Value  : in CSS.Core.Values.Value_List;
+                   Result : access Match_Result;
+                   Pos    : in Positive := 1) return Natural is
       Count       : constant Natural := Value.Get_Count;
       Rule        : Rule_Type_Access;
       Match_Count : Natural := 0;
@@ -386,7 +392,7 @@ package body CSS.Analysis.Rules is
          loop
             Rule := Group.List;
             while Rule /= null loop
-               N := Rule.Match (Value, Cur_Pos);
+               N := Rule.Match (Value, Result, Cur_Pos);
                if N > 0 then
                   Repeat := Repeat + 1;
                   Match_Count := Match_Count + N;
@@ -416,7 +422,7 @@ package body CSS.Analysis.Rules is
                Rule := Group.List;
                while Rule /= null loop
                   if not (for some J in M'Range => M (J) = Rule) then
-                     N := Rule.Match (Value, Cur_Pos);
+                     N := Rule.Match (Value, Result, Cur_Pos);
                      if N > 0 then
                         Cur_Pos := Cur_Pos + N;
                         M (I) := Rule;
@@ -458,7 +464,7 @@ package body CSS.Analysis.Rules is
                Found := False;
                for I in 1 .. Cnt loop
                   Rule := M (I);
-                  N := Rule.Match (Value, Cur_Pos);
+                  N := Rule.Match (Value, Result, Cur_Pos);
                   if N > 0 then
                      Match_Count := Match_Count + N;
                      if I /= Cnt then
@@ -482,7 +488,7 @@ package body CSS.Analysis.Rules is
             Rule := Group.List;
             while Cur_Pos <= Count loop
                exit when Rule = null;
-               N := Rule.Match (Value, Cur_Pos);
+               N := Rule.Match (Value, Result, Cur_Pos);
                if N = 0 and Rule.Min_Repeat > 0 then
                   return 0;
                end if;
@@ -538,9 +544,10 @@ package body CSS.Analysis.Rules is
 
    --  Check if the value matches the function with its parameters.
    overriding
-   function Match (Rule  : in Function_Rule_Type;
-                   Value : in CSS.Core.Values.Value_List;
-                   Pos   : in Positive := 1) return Natural is
+   function Match (Rule   : access Function_Rule_Type;
+                   Value  : in CSS.Core.Values.Value_List;
+                   Result : access Match_Result;
+                   Pos    : in Positive := 1) return Natural is
       use type CSS.Core.Values.Value_Kind, CSS.Core.Values.Value_List_Access;
 
       Func   : constant CSS.Core.Values.Value_Type := Value.Get_Value (Pos);
@@ -565,7 +572,7 @@ package body CSS.Analysis.Rules is
       begin
          while Cur_Pos <= Count loop
             exit when R = null;
-            N := R.Match (Params.all, Cur_Pos);
+            N := R.Match (Params.all, Result, Cur_Pos);
             if N = 0 and Rule.Min_Repeat > 0 then
                return 0;
             end if;
@@ -646,12 +653,13 @@ package body CSS.Analysis.Rules is
          R           : constant Rule_Type_Access := Repository.Find_Property (Prop.Name.all);
          Match_Count : Natural;
          Count       : Natural;
+         Result      : aliased Match_Result;
       begin
          if R = null then
             Report.Warning (Prop.Location, "Invalid property: " & Prop.Name.all);
          else
             Count := Prop.Value.Get_Count;
-            Match_Count := R.Match (Prop.Value);
+            Match_Count := R.Match (Prop.Value, Result'Access);
             if Match_Count /= Count then
                if Count = 1 then
                   Report.Warning (Prop.Location, "Invalid value '"
@@ -672,6 +680,21 @@ package body CSS.Analysis.Rules is
                                   & Prop.Value.To_String (1, Match_Count)
                                   & "' for property " & Prop.Name.all);
                end if;
+            elsif not Result.List.Is_Empty then
+               Report.Warning (Prop.Location, "Match " & Natural'Image (Natural (Result.List.Length)));
+               for M of Result.List loop
+                  if M.Rule.all in Definition_Rule_Type'Class then
+                     Report.Warning (Prop.Location, " -> " &
+                                       Definition_Rule_Type'Class (M.Rule.all).Ident);
+                     Log.Error ("Match {0} - {1} - {2}",
+                                Natural'Image (M.First),
+                                Natural'Image (M.Last),
+                                Definition_Rule_Type'Class (M.Rule.all).Ident);
+                  else
+                     Report.Warning (Prop.Location, " -> ?");
+                     Log.Error ("Match ?");
+                  end if;
+               end loop;
             end if;
          end if;
       end Process;
