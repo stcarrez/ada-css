@@ -703,6 +703,56 @@ package body CSS.Analysis.Rules is
       Sheet.Iterate_Properties (Process'Access);
    end Analyze;
 
+   function Is_Rule (Rule1, Rule2 : access Rule_Type'Class) return Boolean is
+   begin
+      if Rule1 = Rule2 then
+         return True;
+      end if;
+      if Rule1.all in Definition_Rule_Type'Class then
+         return Is_Rule (Definition_Rule_Type'Class (Rule1.all).rule, Rule2);
+      end if;
+      if Rule2.all in Definition_Rule_Type'Class then
+         return Is_Rule (Rule1, Definition_Rule_Type'Class (Rule2.all).rule);
+      end if;
+      return False;
+   end Is_Rule;
+
+   --  ------------------------------
+   --  Search for properties that use the given rule and call the Process procedure
+   --  for each property that uses the rule definition.
+   --  ------------------------------
+   procedure Search (Repository : in out Repository_Type;
+                     Sheet      : in CSS.Core.Sheets.CSSStylesheet;
+                     Rule       : access Rule_Type'Class;
+                     Process    : access procedure (Prop  : in CSS.Core.Properties.CSSProperty;
+                                                    Match : in Match_Result)) is
+      procedure Process_Property (Def  : in CSS.Core.Styles.CSSStyleRule'Class;
+                                  Prop : in CSS.Core.Properties.CSSProperty);
+
+      procedure Process_Property (Def  : in CSS.Core.Styles.CSSStyleRule'Class;
+                                  Prop : in CSS.Core.Properties.CSSProperty) is
+         pragma Unreferenced (Def);
+
+         R           : constant Rule_Type_Access := Repository.Find_Property (Prop.Name.all);
+         Match_Count : Natural;
+         Count       : Natural;
+         Result      : aliased Match_Result;
+      begin
+         if R /= null then
+            Count := Prop.Value.Get_Count;
+            Match_Count := R.Match (Prop.Value, Result'Access);
+            if not Result.List.Is_Empty then
+               if (for some M of Result.List => Is_Rule (M.Rule, Rule)) then
+                  Process (Prop, Result);
+               end if;
+            end if;
+         end if;
+      end Process_Property;
+   begin
+      Repository.Resolve;
+      Sheet.Iterate_Properties (Process_Property'Access);
+   end Search;
+
    --  ------------------------------
    --  Erase all the rules that have been loaded in the repository.
    --  ------------------------------
