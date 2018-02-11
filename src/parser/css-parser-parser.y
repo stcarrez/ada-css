@@ -89,6 +89,8 @@ stylesheet_rule :
   |
     font_face_rule
   |
+    charset
+  |
     spaces_or_comments
   ;
 
