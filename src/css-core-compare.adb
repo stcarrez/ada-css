@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-core-compare -- Comparision on CSS rule references
---  Copyright (C) 2017 Stephane Carrez
+--  Copyright (C) 2017, 2020 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,18 @@ package body CSS.Core.Compare is
 
    function "=" (Left, Right : in CSS.Core.Refs.Ref) return Boolean is
    begin
-      return Left.Value = Right.Value;
+      if Left.Is_Null then
+         return Right.Is_Null;
+      elsif Right.Is_Null then
+         return False;
+      else
+        declare
+            Left_Rule  : constant CSS.Core.Refs.Element_Accessor := Left.Value;
+            Right_Rule : constant CSS.Core.Refs.Element_Accessor := Right.Value;
+         begin
+            return Left_Rule.Element = Right_Rule.Element;
+         end;
+      end if;
    end "=";
 
    --  ------------------------------
@@ -30,15 +41,18 @@ package body CSS.Core.Compare is
    --  contain unique rules.
    --  ------------------------------
    function "<" (Left, Right : in CSS.Core.Refs.Ref) return Boolean is
-      Left_Rule  : constant CSSRule_Access := Left.Value;
-      Right_Rule : constant CSSRule_Access := Right.Value;
    begin
-      if Left_Rule = null then
+      if Left.Is_Null then
          return False;
-      elsif Right_Rule = null then
+      elsif Right.Is_Null then
          return True;
       else
-         return Left_Rule.Get_Location < Right_Rule.Get_Location;
+         declare
+            Left_Rule  : constant CSS.Core.Refs.Element_Accessor := Left.Value;
+            Right_Rule : constant CSS.Core.Refs.Element_Accessor := Right.Value;
+         begin
+            return Left_Rule.Get_Location < Right_Rule.Get_Location;
+         end;
       end if;
    end "<";
 
