@@ -1,4 +1,7 @@
-Version 0.2.0   - 
+Version 0.3.0   -
+  - Cleanup the build and configure, use Ada Utility Library 2.0.0
+
+Version 0.2.0   - Mar 2018
   - Refactor csstools with sub-commands
   - New csstools command 'list' to list information about CSS files
 
