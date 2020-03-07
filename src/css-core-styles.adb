@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-core-styles -- Core CSS API definition
---  Copyright (C) 2017 Stephane Carrez
+--  Copyright (C) 2017, 2020 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,10 +38,10 @@ package body CSS.Core.Styles is
          return null;
       else
          declare
-            V : constant CSS.Core.CSSRule_Access := Ref.Value;
+            V : constant CSS.Core.Refs.Element_Accessor := Ref.Value;
          begin
-            if V.all in CSSStyleRule'Class then
-               return CSSStyleRule'Class (V.all)'Access;
+            if V in CSSStyleRule'Class then
+               return CSSStyleRule'Class (V.Element.all)'Unchecked_Access;
             else
                return null;
             end if;
