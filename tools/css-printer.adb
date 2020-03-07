@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-printer -- CSS printer tools
---  Copyright (C) 2017 Stephane Carrez
+--  Copyright (C) 2017, 2020 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +18,11 @@
 with CSS.Core.Selectors;
 with CSS.Core.Vectors;
 with CSS.Core.Medias;
+with CSS.Core.Refs;
 package body CSS.Printer is
 
    procedure Print (Stream : in out File_Type'Class;
-                    Rule   : in CSS.Core.Medias.CSSMediaRule_Access);
+                    Rule   : in CSS.Core.Medias.CSSMediaRule'Class);
 
    procedure Do_Indent (Stream : in out File_Type'Class) is
    begin
@@ -52,13 +53,13 @@ package body CSS.Printer is
    end Print;
 
    procedure Print (Stream : in out File_Type'Class;
-                    Rule   : in CSS.Core.Medias.CSSMediaRule_Access) is
+                    Rule   : in CSS.Core.Medias.CSSMediaRule'Class) is
       procedure Process (Pos : in CSS.Core.Vectors.Cursor);
 
       procedure Process (Pos : in CSS.Core.Vectors.Cursor) is
          Rule : constant CSS.Core.Styles.CSSStyleRule_Access := CSS.Core.Styles.Element (Pos);
       begin
-         Print (Stream, Rule);
+         Print (Stream, Rule.all);
       end Process;
       Need_Comma : Boolean := False;
    begin
@@ -98,7 +99,7 @@ package body CSS.Printer is
    end Print;
 
    procedure Print (Stream : in out File_Type'Class;
-                    Rule   : in CSS.Core.Styles.CSSStyleRule_Access) is
+                    Rule   : in CSS.Core.Styles.CSSStyleRule'Class) is
       procedure Print (Prop : in CSS.Core.Properties.CSSProperty);
       procedure Print_Selector (Sel : in CSS.Core.Selectors.CSSSelector);
 
@@ -155,14 +156,15 @@ package body CSS.Printer is
       procedure Process (Pos : in CSS.Core.Vectors.Cursor);
 
       procedure Process (Pos : in CSS.Core.Vectors.Cursor) is
-         Rule : constant CSS.Core.CSSRule_Access := CSS.Core.Vectors.Element (Pos).Value;
+         Rule : constant CSS.Core.Refs.Element_Accessor
+           := CSS.Core.Vectors.Element (Pos).Value;
       begin
          case Rule.Get_Type is
             when CSS.Core.STYLE_RULE =>
-               Print (Stream, CSS.Core.Styles.Element (Pos));
+               Print (Stream, CSS.Core.Styles.Element (Pos).all);
 
             when CSS.Core.MEDIA_RULE =>
-               Print (Stream, CSS.Core.Medias.CSSMediaRule'Class (Rule.all)'Access);
+               Print (Stream, CSS.Core.Medias.CSSMediaRule'Class (Rule.Element.all));
 
             when others =>
                null;
