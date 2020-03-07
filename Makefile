@@ -10,15 +10,23 @@ SHARED_MAKE_ARGS += -XLIBRARY_TYPE=relocatable
 
 include Makefile.defaults
 
+configdir=bindir?=${prefix}/share/csstools
+
 # Build executables for all mains defined by the project.
 build-test::	setup
 	$(GNATMAKE) $(GPRFLAGS) -p -P$(NAME)_tests $(MAKE_ARGS)
 
 build:: tools
 
+tools:  tools/css-tools-configs.ads
+	$(GNATMAKE) $(GPRFLAGS) -p -P$(NAME)_tools $(MAKE_ARGS)
+
 tools/css-tools-configs.ads:   Makefile.conf tools/css-tools-configs.gpb
-	gnatprep -DCONFIG_DIR='"${configdir}"' -DVERSION='"@CSS_VERSION@"' \
+	gnatprep -DCONFIG_DIR='"${configdir}"' -DVERSION='"${VERSION}"' \
 		  tools/css-tools-configs.gpb tools/css-tools-configs.ads
+
+clean::
+	rm tools/css-tools-configs.ads
 
 install::
 	mkdir -p $(DESTDIR)$(prefix)/bin
