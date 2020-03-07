@@ -1,8 +1,8 @@
 with "@UTIL_DIR@config";
-with "@UTIL_DIR@util";
+with "@UTIL_DIR@utilada_sys";
 with "cssada";
 
-project Css_Tools is
+project CssAda_Tools is
 
    for Languages use ("Ada");
 
@@ -33,4 +33,4 @@ project Css_Tools is
    end Compiler;
    package Linker renames Config.Linker;
 
-end Css_Tools;
+end CssAda_Tools;
