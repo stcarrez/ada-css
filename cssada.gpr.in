@@ -1,10 +1,10 @@
 with "@UTIL_DIR@config";
-with "@UTIL_DIR@util";
+with "@UTIL_DIR@utilada_sys";
 
 project CssAda is
 
    Version := "@CSS_VERSION@";
-   Library_Dir := "@CSS_LIBDIR@";
+   Library_Dir := "lib";
    Library_Type : Config.Library_Type_Type := external ("CSS_LIBRARY_TYPE", "static");
 
    for Source_Dirs use ("src", "src/parser");
