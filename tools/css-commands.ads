@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-commands -- Commands for CSS tools
---  Copyright (C) 2018 Stephane Carrez
+--  Copyright (C) 2018, 2020 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Util.Commands.Drivers;
+with Util.Commands.Parsers;
 with Util.Commands.Consoles;
 with Util.Commands.Consoles.Text;
 with CSS.Printer.Text_IO;
@@ -55,7 +56,8 @@ package CSS.Commands is
 
    package Drivers is
      new Util.Commands.Drivers (Context_Type => Context_Type,
-                                Driver_Name  => "gen-commands");
+                                Driver_Name  => "gen-commands",
+                                Config_Parser => Util.Commands.Parsers.No_Parser);
 
    subtype Command is Drivers.Command_Type;
    subtype Command_Access is Drivers.Command_Access;
