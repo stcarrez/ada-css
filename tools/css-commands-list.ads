@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-commands-list -- List command for CSS tools
---  Copyright (C) 2018 Stephane Carrez
+--  Copyright (C) 2018, 2020 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,14 +25,15 @@ package CSS.Commands.List is
 
    --  Execute the command with the arguments.
    overriding
-   procedure Execute (Cmd     : in Command;
+   procedure Execute (Cmd     : in out Command;
                       Name    : in String;
                       Args    : in Argument_List'Class;
                       Context : in out CSS.Commands.Context_Type);
 
    --  Write the help associated with the command.
    overriding
-   procedure Help (Cmd     : in Command;
+   procedure Help (Cmd     : in out Command;
+                   Name    : in String;
                    Context : in out CSS.Commands.Context_Type);
 
 end CSS.Commands.List;

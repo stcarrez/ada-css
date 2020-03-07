@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  csstools -- CSS Tools Command
---  Copyright (C) 2017, 2018 Stephane Carrez
+--  Copyright (C) 2017, 2018, 2020 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -158,7 +158,7 @@ begin
 
    exception
       when others =>
-         CSS.Commands.Driver.Usage (All_Args);
+         CSS.Commands.Driver.Usage (All_Args, Context);
          Ada.Command_Line.Set_Exit_Status (2);
          return;
 
@@ -197,7 +197,7 @@ begin
    end if;
    if First >= Ada.Command_Line.Argument_Count then
       Ada.Text_IO.Put_Line ("Missing command name to execute.");
-      CSS.Commands.Driver.Usage (All_Args);
+      CSS.Commands.Driver.Usage (All_Args, Context);
       Ada.Command_Line.Set_Exit_Status (Ada.Command_Line.Failure);
       return;
    end if;
@@ -255,7 +255,7 @@ begin
 exception
    when E : Invalid_Switch =>
       Ada.Text_IO.Put_Line ("Invalid option: " & Ada.Exceptions.Exception_Message (E));
-      CSS.Commands.Driver.Usage (All_Args);
+      CSS.Commands.Driver.Usage (All_Args, Context);
       Ada.Command_Line.Set_Exit_Status (2);
 
    when E : others =>

@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-commands-analyze -- List command for CSS tools
---  Copyright (C) 2018 Stephane Carrez
+--  Copyright (C) 2018, 2020 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,24 +23,30 @@ package body CSS.Commands.Analyze is
    --  Execute the command with the arguments.
    --  ------------------------------
    overriding
-   procedure Execute (Cmd       : in Command;
+   procedure Execute (Cmd       : in out Command;
                       Name      : in String;
                       Args      : in Argument_List'Class;
                       Context : in out CSS.Commands.Context_Type) is
+      pragma Unreferenced (Cmd, Name);
    begin
       CSS.Commands.Load (Args, Context);
-      CSS.Analysis.Duplicates.Analyze (Context.Doc.Rules, Context.Err_Handler, Context.Dup_Rules);
+      CSS.Analysis.Duplicates.Analyze (Context.Doc.Rules, Context.Err_Handler,
+                                       Context.Dup_Rules);
       CSS.Analysis.Rules.Main.Analyze (Context.Doc, Context.Err_Handler);
 --        Err_Handler.Iterate (Print_Message'Access);
-      CSS.Analysis.Classes.Analyze (Context.Doc, Context.Class_Map, Context.Err_Handler);
+      CSS.Analysis.Classes.Analyze (Context.Doc, Context.Class_Map,
+                                    Context.Err_Handler);
    end Execute;
 
    --  ------------------------------
    --  Write the help associated with the command.
    --  ------------------------------
    overriding
-   procedure Help (Cmd     : in Command;
+   procedure Help (Cmd     : in out Command;
+                   Name    : in String;
                    Context : in out CSS.Commands.Context_Type) is
+      pragma Unreferenced (Cmd, Name);
+
       Console : constant CSS.Commands.Console_Access := Context.Console;
    begin
       Console.Notice (N_HELP, "analyze: analyze the CSS files");
