@@ -1,5 +1,5 @@
 dnl Autoconf configure script for Ada CSS Library
-dnl Copyright (C) 2017, 2018 Stephane Carrez
+dnl Copyright (C) 2017, 2018, 2020 Stephane Carrez
 dnl Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 dnl
 dnl  Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,22 +18,11 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_INIT(src/css.ads)
 
-AC_CANONICAL_SYSTEM
-dnl AM_MAINTAINER_MODE
-
 # Current release settings
 CSS_MAJOR_VERSION=0
-CSS_MINOR_VERSION=2
+CSS_MINOR_VERSION=3
 CSS_MICRO_VERSION=0
 CSS_VERSION=$CSS_MAJOR_VERSION.$CSS_MINOR_VERSION.$CSS_MICRO_VERSION
-
-AM_GNAT_CHECK_GPRBUILD
-
-# checking for local tools
-AC_PROG_CC
-AC_PROG_MAKE_SET
-AC_PROG_INSTALL
-AC_PROG_LN_S
 
 # Set the version number of Ada Server Faces
 AC_SUBST(CSS_VERSION)
@@ -41,32 +30,9 @@ AC_SUBST(CSS_MAJOR_VERSION)
 AC_SUBST(CSS_MINOR_VERSION)
 AC_SUBST(CSS_MICRO_VERSION)
 
-CSS_LIBDIR="lib"
-AC_SUBST(CSS_LIBDIR)
-
-AC_MSG_CHECKING([number of processors])
-NR_CPUS=`getconf _NPROCESSORS_CONF 2>/dev/null || getconf NPROCESSORS_CONF 2>/dev/null || echo 1`
-AC_MSG_RESULT($NR_CPUS)
-AC_SUBST(NR_CPUS)
-
-##########################################
-# Check to enable/disable shared library
-##########################################
-AM_SHARED_LIBRARY_SUPPORT
-
-##########################################
-# Ada Util library
-##########################################
-AM_GNAT_FIND_PROJECT([ada-util],[Ada Utility Library],[util],
-  [git@github.com:stcarrez/ada-util.git],
-  [Building Ada CSS requires the Ada Utility Library.],
-  [
-    UTIL_DIR=${gnat_project_dir_util}
-  ])
-AC_SUBST(UTIL_DIR)
-
-AM_UTIL_CHECK_INSTALL
+AM_GNAT_LIBRARY_PROJECT(cssada)
+AM_GNAT_FIND_ADA_UTIL([Ada CSS])
 
 AC_OUTPUT(
-Makefile cssada.gpr css_tests.gpr css_tools.gpr
+Makefile.conf cssada.gpr cssada_tests.gpr cssada_tools.gpr
 )
