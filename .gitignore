@@ -1,8 +1,8 @@
 *~
 *.log
-Makefile
 config.status
 CHANGES
+Makefile.conf
 *.cproject
 *.gb_project
 *.project
@@ -10,9 +10,9 @@ CHANGES
 ChangeLog
 .settings
 configure.lineno
-Makefile
 cssada.gpr
 cssada_tests.gpr
+cssada_tools.gpr
 tests.xml
 cssada-tests.xml
 autom4te.cache
