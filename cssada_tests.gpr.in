@@ -1,10 +1,10 @@
 with "@UTIL_DIR@config";
-with "@UTIL_DIR@util";
-with "@UTIL_DIR@util_unit";
+with "@UTIL_DIR@utilada_sys";
+with "@UTIL_DIR@utilada_unit";
 with "cssada";
-with "css_tools";
+with "cssada_tools";
 
-project Css_Tests is
+project CssAda_Tests is
 
    for Languages use ("Ada");
 
@@ -36,4 +36,4 @@ project Css_Tests is
    package Builder renames Config.Builder;
    package Linker renames Config.Linker;
 
-end Css_Tests;
+end CssAda_Tests;
