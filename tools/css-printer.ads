@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-printer -- CSS printer tools
---  Copyright (C) 2017 Stephane Carrez
+--  Copyright (C) 2017, 2020 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,7 +37,7 @@ package CSS.Printer is
                     Content : in Character) is abstract;
 
    procedure Print (Stream : in out File_Type'Class;
-                    Rule   : in CSS.Core.Styles.CSSStyleRule_Access);
+                    Rule   : in CSS.Core.Styles.CSSStyleRule'Class);
 
    procedure Print (Stream : in out File_Type'Class;
                     Prop   : in CSS.Core.Properties.CSSProperty);
