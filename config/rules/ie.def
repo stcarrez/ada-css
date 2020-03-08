@@ -1,0 +1,7 @@
+
+-ms-touch-action := auto | none | [ [ pan-x | pan-left | pan-right ] || [ pan-y | pan-up | pan-down ] || pinch-zoom ] | manipulation
+
+-ms-interpolation-mode := nearest-neighbor | bicubic
+
+word-wrap := normal | pre | nowrap | pre-wrap | pre-line | break-spaces | break-word
+
