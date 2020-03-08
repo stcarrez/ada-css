@@ -10,6 +10,7 @@ SHARED_MAKE_ARGS += -XLIBRARY_TYPE=relocatable
 
 include Makefile.defaults
 
+sharedir=${prefix}/share
 configdir=bindir?=${prefix}/share/csstools
 
 # Build executables for all mains defined by the project.
@@ -29,14 +30,10 @@ clean::
 	rm tools/css-tools-configs.ads
 
 install::
-	mkdir -p $(DESTDIR)$(prefix)/bin
-	$(INSTALL) bin/akt $(DESTDIR)$(prefix)/bin/akt
-	mkdir -p $(DESTDIR)$(prefix)/share/man/man1
-	$(INSTALL) docs/akt.1 $(DESTDIR)$(prefix)/share/man/man1/akt.1
-	(cd share && tar --exclude='*~' -cf - .) \
-       | (cd $(DESTDIR)$(prefix)/share/ && tar xf -)
-	mkdir -p $(DESTDIR)$(prefix)/share/locale/fr/LC_MESSAGES
-	$(INSTALL) po/fr.mo $(DESTDIR)$(prefix)/share/locale/fr/LC_MESSAGES/akt.mo
+	mkdir -p $(DESTDIR)$(prefix)/bin $(DESTDIR)$(sharedir)/csstools
+	$(INSTALL) bin/csstools $(DESTDIR)$(prefix)/bin/csstools
+	-rm -rf $(DESTDIR)${sharedir}/csstools
+	$(CP) -r config $(DESTDIR)${sharedir}/csstools
 
 # Build and run the unit tests
 test:	build
