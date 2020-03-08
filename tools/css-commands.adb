@@ -25,6 +25,8 @@ package body CSS.Commands is
 
    Analyze_Command : aliased CSS.Commands.Analyze.Command;
    List_Command    : aliased CSS.Commands.List.Command;
+   List_Colors_Command    : aliased CSS.Commands.List.Command;
+   List_Length_Command    : aliased CSS.Commands.List.Command;
    Help_Command    : aliased CSS.Commands.Drivers.Help_Command_Type;
 
    --  ------------------------------
@@ -61,8 +63,8 @@ package body CSS.Commands is
       Driver.Add_Command ("help", Help_Command'Access);
       Driver.Add_Command ("analyze", Analyze_Command'Access);
       Driver.Add_Command ("list", List_Command'Access);
-      Driver.Add_Command ("list-colors", List_Command'Access);
-      Driver.Add_Command ("list-length", List_Command'Access);
+      Driver.Add_Command ("list-colors", List_Colors_Command'Access);
+      Driver.Add_Command ("list-length", List_Length_Command'Access);
    end Initialize;
 
    --  ------------------------------
