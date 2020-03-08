@@ -1,6 +1,6 @@
 
 pragma Style_Checks (Off);
-with Interfaces;
+--with Interfaces;
 with CSS.Parser.Parser_Goto;
 with CSS.Parser.Parser_Tokens; 
 with CSS.Parser.Parser_Shift_Reduce;
@@ -17,8 +17,8 @@ package body CSS.Parser.Parser is
    use CSS.Parser.Lexer;
    use CSS.Core.Selectors;
    use CSS.Parser.Lexer_Dfa;
-   use type Ada.Text_IO.Count;
-   use type Interfaces.Unsigned_64;
+--   use type Ada.Text_IO.Count;
+--   use type Interfaces.Unsigned_64;
 
    procedure yyparse;
 
@@ -30,7 +30,6 @@ package body CSS.Parser.Parser is
    Current_Media : CSS.Core.Medias.CSSMediaRule_Access;
 
    procedure yyerror (Message : in String := "syntax error") is
-      pragma Unreferenced (Message);
    begin
       error_count := error_count + 1;
       Error (CSS.Parser.Lexer_Dfa.yylineno, CSS.Parser.Lexer_Dfa.yylinecol, Message);
