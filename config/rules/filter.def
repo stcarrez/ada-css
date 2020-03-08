@@ -22,4 +22,4 @@
   | <saturate()>
 
 <filter-function-list> = [ <filter-function> | <url> ]+
-filter := none | <filter-function-list>
+filter := none | inherit | <filter-function-list>

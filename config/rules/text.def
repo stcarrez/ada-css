@@ -67,3 +67,5 @@ resize := none | both | horizontal | vertical
 
 unicode-bidi := normal | embed | isolate | bidi-override | isolate-override | plaintext
 writing-mode := horizontal-tb | vertical-rl | vertical-lr | sideways-rl | sideways-lr
+
+quotes := none | auto | [ <string> <string> ]+

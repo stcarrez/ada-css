@@ -22,3 +22,5 @@
 -moz-border-radius-bottomright
 -moz-border-radius-topright
 -moz-border-radius-topleft := <length-percentage>{1,2}
+-moz-box-sizing := content-box | border-box
+

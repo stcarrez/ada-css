@@ -10,3 +10,5 @@ cursor := [
 
 pointer-events := auto | none | visiblePainted | visibleFill | visibleStroke
     | visible | painted | fill | stroke | all | inherit
+
+touch-action := auto | none | [ [ pan-x | pan-left | pan-right ] || [ pan-y | pan-up | pan-down ] || pinch-zoom ] | manipulation

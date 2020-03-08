@@ -76,5 +76,7 @@ background-origin := <box>#
 background-color := <color>
 background-image := <bg-image>#
 
+background-clip := <box>#
+
 <shadow> = inset? && <length>{2,4} && <color>?
 box-shadow := none | <shadow>#

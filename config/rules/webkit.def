@@ -19,3 +19,8 @@
 -webkit-border-top-right-radius := <length-percentage>{1,2}
 
 -webkit-box-shadow := none | <shadow>#
+
+-webkit-box-sizing := content-box | border-box
+-webkit-overflow-scrolling := auto | touch
+
+-webkit-touch-callout := default | none
