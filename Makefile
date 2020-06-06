@@ -37,7 +37,7 @@ install::
 
 # Build and run the unit tests
 test:	build
-	$(GNATMAKE) $(MAKE_ARGS) -p -Pcss_tests
+	$(GNATMAKE) $(MAKE_ARGS) -p -Pcssada_tests
 	bin/css_harness -xml css-aunit.xml
 
 clean::
