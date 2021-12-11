@@ -2,7 +2,6 @@
 --           It is useless to modify it. Change the ".Y" & ".L" files instead.
 
 
-with Ada.Strings.Unbounded;
 with CSS.Analysis.Parser.Parser_Tokens;
 package CSS.Analysis.Parser.Lexer is
 
