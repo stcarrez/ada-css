@@ -88,10 +88,9 @@ package body CSS.Analysis.Rules.Tests is
       function Create_Test (Name    : in String;
                             Path    : in String) return Test_Case_Access;
 
-      Result_Dir  : constant String := "regtests/result/rules/";
       Expect_Dir  : constant String := "regtests/expect/rules/";
       Expect_Path : constant String := Util.Tests.Get_Path (Expect_Dir);
-      Result_Path : constant String := Util.Tests.Get_Test_Path (Result_Dir);
+      Result_Path : constant String := Util.Tests.Get_Test_Path ("rules");
       Search      : Search_Type;
       Filter      : constant Filter_Type := (others => True);
       Ent         : Directory_Entry_Type;
@@ -129,7 +128,7 @@ package body CSS.Analysis.Rules.Tests is
                then
                   Tst := Create_Test (Name, Path & "/" & Simple);
                   if Tst /= null then
-                     Ada.Directories.Create_Path (Result_Dir);
+                     Ada.Directories.Create_Path (Result_Path);
                      Tst.Has_Error := Has_Error;
                      Suite.Add_Test (Tst.all'Access);
                   end if;

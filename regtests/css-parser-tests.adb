@@ -81,10 +81,9 @@ package body CSS.Parser.Tests is
       function Create_Test (Name    : in String;
                             Path    : in String) return Test_Case_Access;
 
-      Result_Dir  : constant String := "regtests/result/";
       Expect_Dir  : constant String := "regtests/expect/";
       Expect_Path : constant String := Util.Tests.Get_Path (Expect_Dir);
-      Result_Path : constant String := Util.Tests.Get_Test_Path (Result_Dir);
+      Result_Path : constant String := Util.Tests.Get_Test_Path ("");
       Search      : Search_Type;
       Filter      : constant Filter_Type := (others => True);
       Ent         : Directory_Entry_Type;
