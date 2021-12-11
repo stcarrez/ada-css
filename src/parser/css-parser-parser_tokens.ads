@@ -1,35 +1,34 @@
-pragma Style_Checks (Off);
 package CSS.Parser.Parser_Tokens is
 
 
-   subtype yystype is CSS.Parser.YYstype;
+   subtype YYSType is CSS.Parser.YYstype;
 
-    YYLVal, YYVal : YYSType; 
-    type Token is
-        (End_Of_Input, Error, T_Name, T_Class,
-         T_Ident, T_Atkeyword, T_Atimport,
-         T_Atmedia, T_Number, T_Real,
-         T_Unit, T_String, T_Url,
-         T_Uri, T_Length, T_Ems,
-         T_Exs, T_Time, T_Freq,
-         T_Calc, T_Toggle, T_Attr,
-         T_Important_Sym, T_Or, T_And,
-         T_Not, T_Only, '(',
+   YYLVal, YYVal : YYSType;
+   type Token is
+        (END_OF_INPUT, ERROR, T_NAME, T_CLASS,
+         T_IDENT, T_ATKEYWORD, T_ATIMPORT,
+         T_ATMEDIA, T_NUMBER, T_REAL,
+         T_UNIT, T_STRING, T_URL,
+         T_URI, T_LENGTH, T_EMS,
+         T_EXS, T_TIME, T_FREQ,
+         T_CALC, T_TOGGLE, T_ATTR,
+         T_IMPORTANT_SYM, T_OR, T_AND,
+         T_NOT, T_ONLY, '(',
          ')', '[', ']',
          '@', '=', '.',
          '!', '~', '%',
-         '<', '>', T_Import_Sym,
-         T_Charset_Sym, T_Media_Sym, T_Page,
-         S, T_Cdo, T_Cdc,
-         T_Hash, T_Function, T_Angle,
-         T_Includes, T_Page_Sym, T_Font_Face_Sym,
-         T_Percentage, T_Dashmatch, T_Dimension,
-         T_Bad_String, T_Bad_Uri, T_Prefixmatch,
-         T_Suffixmatch, T_Substringmatch, ';',
+         '<', '>', T_IMPORT_SYM,
+         T_CHARSET_SYM, T_MEDIA_SYM, T_PAGE,
+         S, T_CDO, T_CDC,
+         T_HASH, T_FUNCTION, T_ANGLE,
+         T_INCLUDES, T_PAGE_SYM, T_FONT_FACE_SYM,
+         T_PERCENTAGE, T_DASHMATCH, T_DIMENSION,
+         T_BAD_STRING, T_BAD_URI, T_PREFIXMATCH,
+         T_SUFFIXMATCH, T_SUBSTRINGMATCH, ';',
          '{', '}', ',',
          ':', '/', '+',
-         '-', '|', '*' );
+         '-', '|', '*');
 
-    Syntax_Error : exception;
+   Syntax_Error : exception;
 
 end CSS.Parser.Parser_Tokens;
