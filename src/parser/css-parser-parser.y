@@ -57,7 +57,7 @@
 --  %left '+' '-' '/' S
 
 {
-   subtype yystype is CSS.Parser.YYstype;
+   subtype YYSType is CSS.Parser.YYstype;
 }
 
 %%
@@ -766,7 +766,7 @@ hexcolor :
 with CSS.Core.Sheets;
 package CSS.Parser.Parser is
 
-   error_count : Natural := 0;
+   Error_Count : Natural := 0;
 
    function Parse (Content  : in String;
                    Document : in CSS.Core.Sheets.CSSStylesheet_Access) return Integer;
@@ -776,13 +776,12 @@ package CSS.Parser.Parser is
 
 end CSS.Parser.Parser;
 
-pragma Style_Checks (Off);
 with CSS.Parser.Parser_Goto;
-with CSS.Parser.Parser_Tokens; 
+with CSS.Parser.Parser_Tokens;
 with CSS.Parser.Parser_Shift_Reduce;
-with CSS.Parser.Lexer_IO;
+with CSS.Parser.Lexer_io;
 with CSS.Parser.Lexer;
-with CSS.Parser.Lexer_Dfa;
+with CSS.Parser.Lexer_dfa;
 with CSS.Core.Selectors;
 with CSS.Core.Styles;
 with CSS.Core.Medias;
@@ -792,9 +791,9 @@ package body CSS.Parser.Parser is
    use Ada;
    use CSS.Parser.Lexer;
    use CSS.Core.Selectors;
-   use CSS.Parser.Lexer_Dfa;
+   use CSS.Parser.Lexer_dfa;
 
-   procedure yyparse;
+   procedure YYParse;
 
    procedure yyerror (Message : in String := "syntax error");
 
@@ -805,7 +804,7 @@ package body CSS.Parser.Parser is
 
    procedure yyerror (Message : in String := "syntax error") is
    begin
-      error_count := error_count + 1;
+      Error_Count := Error_Count + 1;
       Error (CSS.Parser.Lexer_Dfa.yylineno, CSS.Parser.Lexer_Dfa.yylinecol, Message);
    end yyerror;
 
@@ -820,7 +819,7 @@ package body CSS.Parser.Parser is
       Current_Rule := null;
       Current_Media := null;
       Current_Page := null;
-      yyparse;
+      YYParse;
       Current_Rule := null;
       Current_Media := null;
       Current_Page := null;
