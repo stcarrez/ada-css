@@ -60,7 +60,7 @@ dist::
 # Do not call these unless you modify the lex/yacc grammar.
 parser:	
 	cd src/parser && \
-	   ayacc -n 256 -s -v -e .ada css-parser-parser.y && \
+	   ayacc -n 256 -k -s -v -e .ada css-parser-parser.y && \
 	   gnatchop -w css-parser-parser.ada && \
 	   rm -f css-parser-parser.ada
 	#-rm -f src/parser/css-parser-lexer_io.ads
@@ -69,14 +69,14 @@ parser:
 
 lexer:
 	cd src/parser; \
-	aflex -ms -L css-parser-lexer.l
+	/src/awa/aflex/bin/aflex -ms -L css-parser-lexer.l
 	cd src/parser && \
 	  gnatchop -w css-parser-lexer.ada && \
 	  rm -f css-parser-lexer.ada
 
 parser-tools:
 	cd tools/parser && \
-	   ayacc -n 256 -s -v -e .ada css-analysis-parser-parser.y && \
+	   ayacc -n 256 -k -s -E -v -e .ada css-analysis-parser-parser.y && \
 	   gnatchop -w css-analysis-parser-parser.ada && \
 	   rm -f css-analysis-parser-parser.ada
 	#-rm -f src/parser/css-parser-lexer_io.ads
