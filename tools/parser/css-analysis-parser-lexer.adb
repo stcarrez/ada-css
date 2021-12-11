@@ -22,7 +22,7 @@ package body CSS.Analysis.Parser.Lexer is
       YY_END_OF_BUFFER : constant := 29;
       subtype yy_state_type is Integer;
       yy_current_state : yy_state_type;
-INITIAL : constant := 0;
+      INITIAL : constant := 0;
       yy_accept : constant array (0 .. 137) of Short :=
           (0,
         0,    0,   29,   27,   17,   17,   14,   11,   27,    6,
@@ -489,57 +489,54 @@ INITIAL : constant := 0;
              Error (yylineno, yylinecol, "Illegal character '" & YYText & "'"); 
 
          when 28 =>
-                        raise AFLEX_SCANNER_JAMMED;
+            raise AFLEX_SCANNER_JAMMED;
          when YY_END_OF_BUFFER + INITIAL + 1 =>
-               return End_Of_Input;
-            when YY_END_OF_BUFFER =>
-               --  undo the effects of YY_DO_BEFORE_ACTION
-               yy_ch_buf (yy_cp) := yy_hold_char;
+            return End_Of_Input;
+         when YY_END_OF_BUFFER =>
+            --  undo the effects of YY_DO_BEFORE_ACTION
+            yy_ch_buf (yy_cp) := yy_hold_char;
 
-               yytext_ptr := yy_bp;
+            yytext_ptr := yy_bp;
 
-               case yy_get_next_buffer is
-                  when EOB_ACT_END_OF_FILE =>
-                     if yyWrap then
-                        --  note: because we've taken care in
-                        --  yy_get_next_buffer() to have set up yytext,
-                        --  we can now set up yy_c_buf_p so that if some
-                        --  total hoser (like aflex itself) wants
-                        --  to call the scanner after we return the
-                        --  End_Of_Input, it'll still work - another
-                        --  End_Of_Input will get returned.
+            case yy_get_next_buffer is
+               when EOB_ACT_END_OF_FILE =>
+                  if yyWrap then
+                     --  note: because we've taken care in
+                     --  yy_get_next_buffer() to have set up yytext,
+                     --  we can now set up yy_c_buf_p so that if some
+                     --  total hoser (like aflex itself) wants
+                     --  to call the scanner after we return the
+                     --  End_Of_Input, it'll still work - another
+                     --  End_Of_Input will get returned.
 
-                        yy_c_buf_p := yytext_ptr;
-
-                        yy_act := YY_STATE_EOF ((yy_start - 1) / 2);
-
-                        goto do_action;
-                     else
-                        --  start processing a new file
-                        yy_init := True;
-                        goto new_file;
-                     end if;
-
-                  when EOB_ACT_RESTART_SCAN =>
                      yy_c_buf_p := yytext_ptr;
-                     yy_hold_char := yy_ch_buf (yy_c_buf_p);
 
-                  when EOB_ACT_LAST_MATCH =>
-                     yy_c_buf_p := yy_n_chars;
-                     yy_current_state := yy_get_previous_state;
+                     yy_act := YY_STATE_EOF ((yy_start - 1) / 2);
 
-                     yy_cp := yy_c_buf_p;
-                     yy_bp := yytext_ptr;
-                     goto next_action;
-                  when others =>
-                     null;
-               end case; --  case yy_get_next_buffer()
+                     goto do_action;
+                  else
+                     --  start processing a new file
+                     yy_init := True;
+                     goto new_file;
+                  end if;
 
-            when others =>
-               Text_IO.Put ("action # ");
-               Text_IO.Put (Integer'Image (yy_act));
-               Text_IO.New_Line;
-               raise AFLEX_INTERNAL_ERROR;
+               when EOB_ACT_RESTART_SCAN =>
+                  yy_c_buf_p := yytext_ptr;
+                  yy_hold_char := yy_ch_buf (yy_c_buf_p);
+
+               when EOB_ACT_LAST_MATCH =>
+                  yy_c_buf_p := yy_n_chars;
+                  yy_current_state := yy_get_previous_state;
+                  yy_cp := yy_c_buf_p;
+                  yy_bp := yytext_ptr;
+                  goto next_action;
+            end case; --  case yy_get_next_buffer()
+
+         when others =>
+            Text_IO.Put ("action # ");
+            Text_IO.Put (Integer'Image (yy_act));
+            Text_IO.New_Line;
+            raise AFLEX_INTERNAL_ERROR;
          end case; --  case (yy_act)
       end loop; --  end of loop waiting for end of file
    end YYLex;
