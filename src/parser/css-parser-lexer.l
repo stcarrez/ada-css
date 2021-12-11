@@ -95,9 +95,9 @@ Z               z|\\0{0,4}(5a|7a)(\r\n|[ \t\r\n\f])?|\\z
 "or"                    { return T_OR; }
 "only"                  { return T_ONLY; }
 "not"                   { return T_NOT; }
-{string}		{ Set_String (yylval, YYText, yylineno, yylinecol); return T_STRING; }
-{badstring}             { Set_String (yylval, YYText, yylineno, yylinecol); return T_BAD_STRING; }
-{ident}			{ Set_Ident (yylval, YYText, yylineno, yylinecol); return T_IDENT; }
+{string}		{ Set_String (YYLVal, YYText, yylineno, yylinecol); return T_STRING; }
+{badstring}             { Set_String (YYLVal, YYText, yylineno, yylinecol); return T_BAD_STRING; }
+{ident}			{ Set_Ident (YYLVal, YYText, yylineno, yylinecol); return T_IDENT; }
 
 @{I}{M}{P}{O}{R}{T}	{ return T_IMPORT_SYM; }
 @{P}{A}{G}{E}		{ return T_PAGE_SYM; }
@@ -108,48 +108,48 @@ Z               z|\\0{0,4}(5a|7a)(\r\n|[ \t\r\n\f])?|\\z
 
 "!"({w}|{comment})*{I}{M}{P}{O}{R}{T}{A}{N}{T}	{return T_IMPORTANT_SYM; }
 
-{num}{E}{M}		{ Set_Number (yylval, YYText, UNIT_EM, yylineno, yylinecol); return T_EMS; }
-{num}{E}{X}		{ Set_Number (yylval, YYText, UNIT_EX, yylineno, yylinecol); return T_EXS; }
-{num}{R}{E}{M}		{ Set_Number (yylval, YYText, UNIT_REM, yylineno, yylinecol); return T_LENGTH; }
-{num}{R}{L}{H}		{ Set_Number (yylval, YYText, UNIT_RLH, yylineno, yylinecol); return T_LENGTH; }
-{num}{L}{H}		{ Set_Number (yylval, YYText, UNIT_LH, yylineno, yylinecol); return T_LENGTH; }
-{num}{I}{C}		{ Set_Number (yylval, YYText, UNIT_IC, yylineno, yylinecol); return T_LENGTH; }
-{num}{V}{W}		{ Set_Number (yylval, YYText, UNIT_VW, yylineno, yylinecol); return T_LENGTH; }
-{num}{V}{H}		{ Set_Number (yylval, YYText, UNIT_VH, yylineno, yylinecol); return T_LENGTH; }
-{num}{V}{I}		{ Set_Number (yylval, YYText, UNIT_VI, yylineno, yylinecol); return T_LENGTH; }
-{num}{V}{B}		{ Set_Number (yylval, YYText, UNIT_VB, yylineno, yylinecol); return T_LENGTH; }
-{num}{V}{M}{I}{N}	{ Set_Number (yylval, YYText, UNIT_VMIN, yylineno, yylinecol); return T_LENGTH; }
-{num}{V}{M}{A}{X}	{ Set_Number (yylval, YYText, UNIT_VMAX, yylineno, yylinecol); return T_LENGTH; }
-{num}{P}{X}		{ Set_Number (yylval, YYText, UNIT_PX, yylineno, yylinecol); return T_LENGTH; }
-{num}{C}{M}		{ Set_Number (yylval, YYText, UNIT_CM, yylineno, yylinecol); return T_LENGTH; }
-{num}{M}{M}		{ Set_Number (yylval, YYText, UNIT_MM, yylineno, yylinecol); return T_LENGTH; }
-{num}{I}{N}		{ Set_Number (yylval, YYText, UNIT_IN, yylineno, yylinecol); return T_LENGTH; }
-{num}{P}{T}		{ Set_Number (yylval, YYText, UNIT_PT, yylineno, yylinecol); return T_LENGTH; }
-{num}{P}{C}		{ Set_Number (yylval, YYText, UNIT_PC, yylineno, yylinecol); return T_LENGTH; }
-{num}{D}{P}{I}		{ Set_Number (yylval, YYText, UNIT_DPI, yylineno, yylinecol); return T_LENGTH; }
-{num}{D}{P}{C}{M}	{ Set_Number (yylval, YYText, UNIT_DPCM, yylineno, yylinecol); return T_LENGTH; }
-{num}{D}{P}{P}{X}	{ Set_Number (yylval, YYText, UNIT_DPPX, yylineno, yylinecol); return T_LENGTH; }
-{num}{D}{E}{G}		{ Set_Number (yylval, YYText, UNIT_DEG, yylineno, yylinecol); return T_ANGLE; }
-{num}{R}{A}{D}		{ Set_Number (yylval, YYText, UNIT_RAD, yylineno, yylinecol); return T_ANGLE; }
-{num}{G}{R}{A}{D}	{ Set_Number (yylval, YYText, UNIT_GRAD, yylineno, yylinecol); return T_ANGLE; }
-{num}{M}{S}		{ Set_Number (yylval, YYText, UNIT_MS, yylineno, yylinecol); return T_TIME; }
-{num}{S}		{ Set_Number (yylval, YYText, UNIT_SEC, yylineno, yylinecol); return T_TIME; }
-{num}{H}{Z}		{ Set_Number (yylval, YYText, UNIT_HZ, yylineno, yylinecol); return T_FREQ; }
-{num}{K}{H}{Z}		{ Set_Number (yylval, YYText, UNIT_KHZ, yylineno, yylinecol); return T_FREQ; }
-{num}{ident}		{ Set_Number (yylval, YYText, UNIT_NONE, yylineno, yylinecol); return T_DIMENSION; }
+{num}{E}{M}		{ Set_Number (YYLVal, YYText, UNIT_EM, yylineno, yylinecol); return T_EMS; }
+{num}{E}{X}		{ Set_Number (YYLVal, YYText, UNIT_EX, yylineno, yylinecol); return T_EXS; }
+{num}{R}{E}{M}		{ Set_Number (YYLVal, YYText, UNIT_REM, yylineno, yylinecol); return T_LENGTH; }
+{num}{R}{L}{H}		{ Set_Number (YYLVal, YYText, UNIT_RLH, yylineno, yylinecol); return T_LENGTH; }
+{num}{L}{H}		{ Set_Number (YYLVal, YYText, UNIT_LH, yylineno, yylinecol); return T_LENGTH; }
+{num}{I}{C}		{ Set_Number (YYLVal, YYText, UNIT_IC, yylineno, yylinecol); return T_LENGTH; }
+{num}{V}{W}		{ Set_Number (YYLVal, YYText, UNIT_VW, yylineno, yylinecol); return T_LENGTH; }
+{num}{V}{H}		{ Set_Number (YYLVal, YYText, UNIT_VH, yylineno, yylinecol); return T_LENGTH; }
+{num}{V}{I}		{ Set_Number (YYLVal, YYText, UNIT_VI, yylineno, yylinecol); return T_LENGTH; }
+{num}{V}{B}		{ Set_Number (YYLVal, YYText, UNIT_VB, yylineno, yylinecol); return T_LENGTH; }
+{num}{V}{M}{I}{N}	{ Set_Number (YYLVal, YYText, UNIT_VMIN, yylineno, yylinecol); return T_LENGTH; }
+{num}{V}{M}{A}{X}	{ Set_Number (YYLVal, YYText, UNIT_VMAX, yylineno, yylinecol); return T_LENGTH; }
+{num}{P}{X}		{ Set_Number (YYLVal, YYText, UNIT_PX, yylineno, yylinecol); return T_LENGTH; }
+{num}{C}{M}		{ Set_Number (YYLVal, YYText, UNIT_CM, yylineno, yylinecol); return T_LENGTH; }
+{num}{M}{M}		{ Set_Number (YYLVal, YYText, UNIT_MM, yylineno, yylinecol); return T_LENGTH; }
+{num}{I}{N}		{ Set_Number (YYLVal, YYText, UNIT_IN, yylineno, yylinecol); return T_LENGTH; }
+{num}{P}{T}		{ Set_Number (YYLVal, YYText, UNIT_PT, yylineno, yylinecol); return T_LENGTH; }
+{num}{P}{C}		{ Set_Number (YYLVal, YYText, UNIT_PC, yylineno, yylinecol); return T_LENGTH; }
+{num}{D}{P}{I}		{ Set_Number (YYLVal, YYText, UNIT_DPI, yylineno, yylinecol); return T_LENGTH; }
+{num}{D}{P}{C}{M}	{ Set_Number (YYLVal, YYText, UNIT_DPCM, yylineno, yylinecol); return T_LENGTH; }
+{num}{D}{P}{P}{X}	{ Set_Number (YYLVal, YYText, UNIT_DPPX, yylineno, yylinecol); return T_LENGTH; }
+{num}{D}{E}{G}		{ Set_Number (YYLVal, YYText, UNIT_DEG, yylineno, yylinecol); return T_ANGLE; }
+{num}{R}{A}{D}		{ Set_Number (YYLVal, YYText, UNIT_RAD, yylineno, yylinecol); return T_ANGLE; }
+{num}{G}{R}{A}{D}	{ Set_Number (YYLVal, YYText, UNIT_GRAD, yylineno, yylinecol); return T_ANGLE; }
+{num}{M}{S}		{ Set_Number (YYLVal, YYText, UNIT_MS, yylineno, yylinecol); return T_TIME; }
+{num}{S}		{ Set_Number (YYLVal, YYText, UNIT_SEC, yylineno, yylinecol); return T_TIME; }
+{num}{H}{Z}		{ Set_Number (YYLVal, YYText, UNIT_HZ, yylineno, yylinecol); return T_FREQ; }
+{num}{K}{H}{Z}		{ Set_Number (YYLVal, YYText, UNIT_KHZ, yylineno, yylinecol); return T_FREQ; }
+{num}{ident}		{ Set_Number (YYLVal, YYText, UNIT_NONE, yylineno, yylinecol); return T_DIMENSION; }
 
-{num}%			{ Set_Number (yylval, YYText, UNIT_NONE, yylineno, yylinecol); return T_PERCENTAGE; }
-{num}			{ Set_Number (yylval, YYText, UNIT_NONE, yylineno, yylinecol); return T_NUMBER; }
+{num}%			{ Set_Number (YYLVal, YYText, UNIT_NONE, yylineno, yylinecol); return T_PERCENTAGE; }
+{num}			{ Set_Number (YYLVal, YYText, UNIT_NONE, yylineno, yylinecol); return T_NUMBER; }
 
-"url("{w}{string}{w}")" { Set_Uri (yylval, YYText, yylineno, yylinecol); return T_URI; }
-"url("{w}{url}{w}")"    { Set_Uri (yylval, YYText, yylineno, yylinecol); return T_URI; }
-{baduri}                { Set_Uri (yylval, YYText, yylineno, yylinecol); return T_BAD_URI; }
+"url("{w}{string}{w}")" { Set_Uri (YYLVal, YYText, yylineno, yylinecol); return T_URI; }
+"url("{w}{url}{w}")"    { Set_Uri (YYLVal, YYText, yylineno, yylinecol); return T_URI; }
+{baduri}                { Set_Uri (YYLVal, YYText, yylineno, yylinecol); return T_BAD_URI; }
 
 \:not"("                { return T_NOT; }
-{ident}"("		{ Set_Ident (yylval, YYText, yylineno, yylinecol); return T_FUNCTION; }
+{ident}"("		{ Set_Ident (YYLVal, YYText, yylineno, yylinecol); return T_FUNCTION; }
 
-"#"{name}		{ Set_Ident (yylval, YYText, yylineno, yylinecol); return T_HASH; }
-\.{name}	        { Set_Ident (yylval, YYText, yylineno, yylinecol); return T_CLASS; }
+"#"{name}		{ Set_Ident (YYLVal, YYText, yylineno, yylinecol); return T_HASH; }
+\.{name}	        { Set_Ident (YYLVal, YYText, yylineno, yylinecol); return T_CLASS; }
 
 \!              return '!';
 
@@ -181,7 +181,7 @@ end CSS.Parser.Lexer;
 with CSS.Core;
 with Ada.Text_IO;
 with CSS.Parser.Lexer_dfa;
-with CSS.Parser.Lexer_IO;
+with CSS.Parser.Lexer_io;
 with CSS.Core.Values;
 package body CSS.Parser.Lexer is
 
