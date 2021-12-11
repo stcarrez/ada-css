@@ -17,6 +17,7 @@
 -----------------------------------------------------------------------
 with GNAT.Command_Line;  use GNAT.Command_Line;
 with GNAT.Traceback.Symbolic;
+with Ada.Containers;
 with Ada.Strings.Unbounded;
 with Ada.Text_IO;
 with Ada.Command_Line;
