@@ -60,7 +60,7 @@ dist::
 # Do not call these unless you modify the lex/yacc grammar.
 parser:	
 	cd src/parser && \
-	   ayacc -n 256 -k -s -v -e .ada css-parser-parser.y && \
+	   ayacc -n 256 -k -s -e .ada css-parser-parser.y && \
 	   gnatchop -w css-parser-parser.ada && \
 	   rm -f css-parser-parser.ada
 	#-rm -f src/parser/css-parser-lexer_io.ads
