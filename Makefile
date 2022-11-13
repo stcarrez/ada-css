@@ -27,7 +27,7 @@ tools/css-tools-configs.ads:   Makefile.conf tools/css-tools-configs.gpb
 		  tools/css-tools-configs.gpb tools/css-tools-configs.ads
 
 clean::
-	rm tools/css-tools-configs.ads
+	rm -f tools/css-tools-configs.ads
 
 install::
 	mkdir -p $(DESTDIR)$(prefix)/bin $(DESTDIR)$(sharedir)/csstools
