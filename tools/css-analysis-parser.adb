@@ -25,13 +25,13 @@ package body CSS.Analysis.Parser is
    use Ada.Strings.Unbounded;
 
    Current_File       : Util.Log.Locations.File_Info_Access;
-   Current_Repository : access CSS.Analysis.Rules.Repository_Type;
+   Current_Repository : CSS.Analysis.Rules.Repository_Access;
 
    --  ------------------------------
    --  Load all the rule definition files stored in the given directory.
    --  ------------------------------
    procedure Load_All (Path       : in String;
-                       Repository : access Rules.Repository_Type) is
+                       Repository : in Rules.Repository_Access) is
       use Ada.Directories;
 
       Search      : Search_Type;
@@ -64,7 +64,7 @@ package body CSS.Analysis.Parser is
    --  Load the rule definition file and populate the rule repository.
    --  ------------------------------
    procedure Load (Path       : in String;
-                   Repository : access Rules.Repository_Type) is
+                   Repository : Rules.Repository_Access) is
       Res : Integer;
    begin
       Log.Info ("Loading rule definition file {0}", Path);

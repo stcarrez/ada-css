@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-analysis-rules -- CSS Analysis Rules
---  Copyright (C) 2017, 2018 Stephane Carrez
+--  Copyright (C) 2017, 2018, 2022 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -95,6 +95,7 @@ package CSS.Analysis.Rules is
                    Value : in CSS.Core.Values.Value_Type) return Boolean;
 
    type Repository_Type is limited new Ada.Finalization.Limited_Controlled with private;
+   type Repository_Access is access all Repository_Type'Class;
 
    --  Find a rule that describes a property.
    --  Returns the rule or null if there is no rule for the property.
