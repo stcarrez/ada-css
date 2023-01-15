@@ -1,4 +1,4 @@
-package CSS.Parser.Parser_Goto is
+private package CSS.Parser.Parser_Goto is
 
 
    type Rule        is new Natural;
