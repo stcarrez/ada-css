@@ -107,7 +107,7 @@ package body CSS.Parser.Parser is
          --  current input symbol and action the parser is on
          action             : Integer;
          rule_id            : Rule;
-         input_symbol       : yy_tokens.Token := Error;
+         input_symbol       : yy_tokens.Token := ERROR;
 
          --  error recovery flag
          error_flag : Natural := 0;
@@ -173,7 +173,7 @@ package body CSS.Parser.Parser is
                Text_IO.Put_Line ("  -- Ayacc.YYParse: Error Recovery Clobbers "
                                  & yy_tokens.Token'Image (yy.input_symbol));
             end if;
-            if yy.input_symbol = yy_tokens.End_Of_Input then  -- don't discard,
+            if yy.input_symbol = yy_tokens.END_OF_INPUT then  -- don't discard,
                if yy.debug then
                   Text_IO.Put_Line ("  -- Ayacc.YYParse: Can't discard END_OF_INPUT, quiting...");
                end if;
@@ -201,7 +201,7 @@ package body CSS.Parser.Parser is
                Text_IO.Put_Line ("  -- Ayacc.YYParse: Examining State "
                                  & yy.parse_state'Image (yy.state_stack (yy.tos)));
             end if;
-            temp_action := parse_action (yy.state_stack (yy.tos), Error);
+            temp_action := parse_action (yy.state_stack (yy.tos), ERROR);
 
             if temp_action >= yy.first_shift_entry then
                if yy.tos = yy.stack_size then

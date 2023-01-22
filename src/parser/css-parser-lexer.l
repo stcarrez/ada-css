@@ -1,6 +1,8 @@
 %unit CSS.Parser.Lexer
 %option case-insensitive
 %option yylineno
+%option nooutput
+%option nounput
 
 %x COMMENT
 %x QUOTE

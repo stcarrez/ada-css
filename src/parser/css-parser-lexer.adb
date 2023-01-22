@@ -15,16 +15,14 @@ package body CSS.Parser.Lexer is
 
    pragma Style_Checks (Off);
    pragma Warnings (Off);
+
    function YYLex return Token is
       subtype Short is Integer range -32768 .. 32767;
-      yy_act : Integer;
-      yy_c   : Short;
 
       --  returned upon end-of-file
       YY_END_TOK : constant Integer := 0;
-      YY_END_OF_BUFFER : constant := 93;
       subtype yy_state_type is Integer;
-      yy_current_state : yy_state_type;
+      YY_END_OF_BUFFER : constant := 93;
       INITIAL : constant := 0;
       COMMENT : constant := 1;
       QUOTE : constant := 2;
@@ -5981,9 +5979,11 @@ package body CSS.Parser.Lexer is
      3732, 3732, 3732, 3732, 3732, 3732, 3732, 3732, 3732
        );
 
+      yy_act : Integer;
+      yy_c   : Short;
+      yy_current_state : yy_state_type;
 
       --  copy whatever the last rule matched to the standard output
-
 
       --  enter a start condition.
       --  Using procedure requires a () after the ENTER, but makes everything
@@ -6008,12 +6008,6 @@ package body CSS.Parser.Lexer is
          yy_c_buf_p := yy_cp;
          YY_DO_BEFORE_ACTION; -- set up yytext again
       end yyless;
-
-      --  redefine this if you have something you want each time.
-      procedure YY_USER_ACTION is
-      begin
-         null;
-      end YY_USER_ACTION;
 
       --  yy_get_previous_state - get the state just before the EOB char was reached
 
@@ -6045,7 +6039,7 @@ package body CSS.Parser.Lexer is
 
       procedure yyrestart (input_file : File_Type) is
       begin
-         Open_Input (Text_IO.Name (input_file));
+         Open_Input (Ada.Text_IO.Name (input_file));
       end yyrestart;
 
    begin -- of YYLex
@@ -6080,7 +6074,6 @@ package body CSS.Parser.Lexer is
       end if; -- yy_init
 
       loop                -- loops until end-of-file is reached
-
 
          yy_cp := yy_c_buf_p;
 
@@ -6125,17 +6118,16 @@ package body CSS.Parser.Lexer is
    <<next_action>>
          yy_act := yy_accept (yy_current_state);
          YY_DO_BEFORE_ACTION;
-         YY_USER_ACTION;
 
          if aflex_debug then  -- output acceptance info. for (-d) debug mode
-            Text_IO.Put (Standard_Error, "  -- Aflex.YYLex accept rule #");
-            Text_IO.Put (Standard_Error, Integer'Image (yy_act));
-            Text_IO.Put_Line (Standard_Error, "(""" & YYText & """)");
+            Ada.Text_IO.Put (Standard_Error, "  -- Aflex.YYLex accept rule #");
+            Ada.Text_IO.Put (Standard_Error, Integer'Image (yy_act));
+            Ada.Text_IO.Put_Line (Standard_Error, "(""" & YYText & """)");
          end if;
-
 
    <<do_action>>   -- this label is used only to access EOF actions
          case yy_act is
+
             when 0 => -- must backtrack
             -- undo the effects of YY_DO_BEFORE_ACTION
             yy_ch_buf (yy_cp) := yy_hold_char;
@@ -6431,6 +6423,7 @@ Text_IO.Put_Line ("End of comment error!"); ENTER(INITIAL);
          when YY_END_OF_BUFFER + INITIAL + 1 |
               YY_END_OF_BUFFER + QUOTE + 1 =>
             return End_Of_Input;
+
          when YY_END_OF_BUFFER =>
             --  undo the effects of YY_DO_BEFORE_ACTION
             yy_ch_buf (yy_cp) := yy_hold_char;
@@ -6472,13 +6465,14 @@ Text_IO.Put_Line ("End of comment error!"); ENTER(INITIAL);
             end case; --  case yy_get_next_buffer()
 
          when others =>
-            Text_IO.Put ("action # ");
-            Text_IO.Put (Integer'Image (yy_act));
-            Text_IO.New_Line;
+            Ada.Text_IO.Put ("action # ");
+            Ada.Text_IO.Put (Integer'Image (yy_act));
+            Ada.Text_IO.New_Line;
             raise AFLEX_INTERNAL_ERROR;
          end case; --  case (yy_act)
       end loop; --  end of loop waiting for end of file
    end YYLex;
+
    pragma Style_Checks (On);
 
 end CSS.Parser.Lexer;
