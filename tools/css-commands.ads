@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-commands -- Commands for CSS tools
---  Copyright (C) 2018, 2020 Stephane Carrez
+--  Copyright (C) 2018, 2020, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +15,12 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
+with Util.Strings;
 with Util.Commands.Drivers;
 with Util.Commands.Parsers;
 with Util.Commands.Consoles;
 with Util.Commands.Consoles.Text;
+with Util.Commands.Text_IO;
 with CSS.Printer.Text_IO;
 with CSS.Core.Sets;
 with CSS.Core.Sheets;
@@ -36,13 +38,18 @@ package CSS.Commands is
    --  Make the generic abstract console interface.
    package Consoles is
      new Util.Commands.Consoles (Field_Type  => Field_Type,
-                                 Notice_Type => Notice_Type);
+                                 Notice_Type => Notice_Type,
+                                 Element_Type => Character,
+                                 Input_Type   => String,
+                                 To_Input     => Util.Strings.Image);
 
    subtype Console_Access is Consoles.Console_Access;
 
+   function To_String (S : in String) return String is (S);
+
    --  And the text console to write on stdout (a Gtk console could be done someday).
    package Text_Consoles is
-      new Consoles.Text;
+      new Consoles.Text (IO => Util.Commands.Text_IO, To_String => To_String);
 
    type Context_Type is limited record
       Doc         : aliased CSS.Core.Sheets.CSSStylesheet;
@@ -55,9 +62,10 @@ package CSS.Commands is
    end record;
 
    package Drivers is
-     new Util.Commands.Drivers (Context_Type => Context_Type,
-                                Driver_Name  => "gen-commands",
-                                Config_Parser => Util.Commands.Parsers.No_Parser);
+     new Util.Commands.Drivers (Context_Type  => Context_Type,
+                                Driver_Name   => "gen-commands",
+                                Config_Parser => Util.Commands.Parsers.No_Parser,
+                                IO            => Util.Commands.Text_IO);
 
    subtype Command is Drivers.Command_Type;
    subtype Command_Access is Drivers.Command_Access;
