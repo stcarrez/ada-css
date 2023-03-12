@@ -6101,7 +6101,7 @@ package body CSS.Parser.Lexer is
                yy_current_state := yy_nxt (yy_base (yy_current_state) + yy_c);
             if yy_ch_buf (yy_cp) = ASCII.LF then
                yylineno := yylineno + 1;
-               yylinecol := 1;
+               yylinecol := 0;
             else
                yylinecol := yylinecol + 1;
             end if;

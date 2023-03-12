@@ -193,6 +193,7 @@ package body CSS.Parser.Lexer_IO is
    begin
       yy_init := True;
       Ada.Text_IO.Open (user_input_file, Ada.Text_IO.In_File, fname);
+      yylineno  := 1;
    end Open_Input;
 
    procedure Close_Input is
@@ -201,6 +202,5 @@ package body CSS.Parser.Lexer_IO is
          Ada.Text_IO.Close (user_input_file);
       end if;
    end Close_Input;
-
 
 end CSS.Parser.Lexer_IO;
