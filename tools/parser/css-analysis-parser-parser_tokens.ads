@@ -1,6 +1,5 @@
 package CSS.Analysis.Parser.Parser_Tokens is
 
-
    subtype yystype is CSS.Analysis.Parser.YYstype;
 
    YYLVal, YYVal : YYSType;
