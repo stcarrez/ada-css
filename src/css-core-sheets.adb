@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-core-sheets -- CSS stylesheet representation
---  Copyright (C) 2017 Stephane Carrez
+--  Copyright (C) 2017, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,7 +46,7 @@ package body CSS.Core.Sheets is
    --  ------------------------------
    function Create_Rule (Document : in CSSStylesheet) return Medias.CSSMediaRule_Access is
       Result : constant Medias.CSSMediaRule_Access := new Medias.CSSMediaRule;
-      File   : constant Util.Log.Locations.File_Info_Access := Document.File;
+      --  File   : constant Util.Log.Locations.File_Info_Access := Document.File;
    begin
       --  Result.Style.Set_File_Info (File);
       return Result;

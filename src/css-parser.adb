@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css -- Ada CSS Library
---  Copyright (C) 2017 Stephane Carrez
+--  Copyright (C) 2017, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +28,14 @@ package body CSS.Parser is
 
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("CSS.Parser");
 
+   function Get_Property_Name (Document : in CSS.Core.Sheets.CSSStylesheet_Access;
+                               Prop     : in YYstype) return CSS.Core.CSSProperty_Name;
+
+   procedure Set_Type (Into   : in out YYstype;
+                       Kind   : in Node_Type;
+                       Line   : in Natural;
+                       Column : in Natural);
+
    Report_Handler : CSS.Core.Errors.Error_Handler_Access;
    Current_Sheet  : CSS.Core.Sheets.CSSStylesheet_Access;
 
@@ -41,6 +49,7 @@ package body CSS.Parser is
       Res := CSS.Parser.Parser.Parse (Path, Sheet);
       Report_Handler := null;
       Current_Sheet := null;
+      Log.Debug ("Parser result {0}", Res'Image);
 
    exception
       when Parser_Tokens.Syntax_Error =>
@@ -184,7 +193,8 @@ package body CSS.Parser is
       if Value = "0.0" then
          Ada.Strings.Unbounded.Set_Unbounded_String (Into.Node.Str_Value, "0");
       elsif Value'Length > 2 and then Value (Value'First .. Value'First + 1) = "0." then
-         Ada.Strings.Unbounded.Set_Unbounded_String (Into.Node.Str_Value, Value (Value'First + 1 .. Value'Last));
+         Ada.Strings.Unbounded.Set_Unbounded_String
+            (Into.Node.Str_Value, Value (Value'First + 1 .. Value'Last));
       else
          Ada.Strings.Unbounded.Set_Unbounded_String (Into.Node.Str_Value, Value);
       end if;
@@ -258,7 +268,7 @@ package body CSS.Parser is
    procedure Append_Property (Into     : in out CSS.Core.Styles.CSSStyle_Declaration;
                               Document : in CSS.Core.Sheets.CSSStylesheet_Access;
                               Prop     : in YYstype) is
-      Name  : CSS.Core.CSSProperty_Name := Get_Property_Name (Document, Prop);
+      Name  : constant CSS.Core.CSSProperty_Name := Get_Property_Name (Document, Prop);
    begin
       if Prop.Node = null then
          Log.Debug ("Property has an invalid name and is dropped");

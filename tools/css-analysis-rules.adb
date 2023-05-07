@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-analysis-rules -- CSS Analysis Rules
---  Copyright (C) 2017 Stephane Carrez
+--  Copyright (C) 2017, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,13 +15,11 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with System.Address_Image;
 with Ada.Unchecked_Deallocation;
 with Util.Log.Loggers;
 with Util.Strings;
 
 with CSS.Core.Styles;
-with CSS.Core.Properties;
 with CSS.Analysis.Rules.Types;
 package body CSS.Analysis.Rules is
 
@@ -74,7 +72,7 @@ package body CSS.Analysis.Rules is
    begin
       if Rule.Comma_Sep then
          Stream.Print ("#");
-         if Rule.Min_Repeat /= 1 and Rule.Max_Repeat /= 1 then
+         if Rule.Min_Repeat /= 1 and then Rule.Max_Repeat /= 1 then
             Stream.Print ("{");
             Stream.Print (Util.Strings.Image (Rule.Min_Repeat));
             if Rule.Min_Repeat /= Rule.Max_Repeat then
@@ -83,13 +81,13 @@ package body CSS.Analysis.Rules is
             end if;
             Stream.Print ("}");
          end if;
-      elsif Rule.Min_Repeat = 0 and Rule.Max_Repeat = 1 then
+      elsif Rule.Min_Repeat = 0 and then Rule.Max_Repeat = 1 then
          Stream.Print ("?");
-      elsif Rule.Min_Repeat = 1 and Rule.Max_Repeat = Natural'Last then
+      elsif Rule.Min_Repeat = 1 and then Rule.Max_Repeat = Natural'Last then
          Stream.Print ("+");
-      elsif Rule.Min_Repeat = 0 and Rule.Max_Repeat = Natural'Last then
+      elsif Rule.Min_Repeat = 0 and then Rule.Max_Repeat = Natural'Last then
          Stream.Print ("*");
-      elsif Rule.Min_Repeat /= 1 and Rule.Max_Repeat /= 1 then
+      elsif Rule.Min_Repeat /= 1 and then Rule.Max_Repeat /= 1 then
          Stream.Print ("{");
          Stream.Print (Util.Strings.Image (Rule.Min_Repeat));
          if Rule.Min_Repeat /= Rule.Max_Repeat then
@@ -111,10 +109,10 @@ package body CSS.Analysis.Rules is
          return True;
       end if;
       if Rule1.all in Definition_Rule_Type'Class then
-         return Is_Rule (Definition_Rule_Type'Class (Rule1.all).rule, Rule2);
+         return Is_Rule (Definition_Rule_Type'Class (Rule1.all).Rule, Rule2);
       end if;
       if Rule2.all in Definition_Rule_Type'Class then
-         return Is_Rule (Rule1, Definition_Rule_Type'Class (Rule2.all).rule);
+         return Is_Rule (Rule1, Definition_Rule_Type'Class (Rule2.all).Rule);
       end if;
       return False;
    end Is_Rule;
@@ -324,7 +322,7 @@ package body CSS.Analysis.Rules is
             Match_Count := Match_Count + N;
             Repeat := Repeat + 1;
          end loop;
-         if Result /= null and Match_Count /= 0 then
+         if Result /= null and then Match_Count /= 0 then
             Result.List.Append ((Pos, Pos + Match_Count - 1, Rule.all'Access));
          end if;
          return Match_Count;
@@ -418,7 +416,9 @@ package body CSS.Analysis.Rules is
                end if;
                Rule := Rule.Next;
             end loop;
-            if Rule = null or Repeat = Group.Max_Repeat or Cur_Pos > Count then
+            if Rule = null or else Repeat = Group.Max_Repeat
+              or else Cur_Pos > Count
+            then
                if Repeat < Group.Min_Repeat then
                   return 0;
                end if;
@@ -450,7 +450,7 @@ package body CSS.Analysis.Rules is
                   Rule := Rule.Next;
                end loop;
                Match_Count := Match_Count + N;
-               exit when N = 0 or I = M'Last + 1;
+               exit when N = 0 or else I = M'Last + 1;
             end loop;
             Rule := Group.List;
             while Rule /= null loop
@@ -493,7 +493,7 @@ package body CSS.Analysis.Rules is
                      exit;
                   end if;
                end loop;
-               exit when Cnt = 0 or not Found;
+               exit when Cnt = 0 or else not Found;
             end loop;
             return Match_Count;
          end;
@@ -506,7 +506,7 @@ package body CSS.Analysis.Rules is
             while Cur_Pos <= Count loop
                exit when Rule = null;
                N := Rule.Match (Value, Result, Cur_Pos);
-               if N = 0 and Rule.Min_Repeat > 0 then
+               if N = 0 and then Rule.Min_Repeat > 0 then
                   return 0;
                end if;
                Match_Count := Match_Count + N;
@@ -590,7 +590,7 @@ package body CSS.Analysis.Rules is
          while Cur_Pos <= Count loop
             exit when R = null;
             N := R.Match (Params.all, Result, Cur_Pos);
-            if N = 0 and Rule.Min_Repeat > 0 then
+            if N = 0 and then Rule.Min_Repeat > 0 then
                return 0;
             end if;
             Match_Count := Match_Count + N;

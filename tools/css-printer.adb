@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-printer -- CSS printer tools
---  Copyright (C) 2017, 2020 Stephane Carrez
+--  Copyright (C) 2017, 2020, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -64,7 +64,7 @@ package body CSS.Printer is
       Need_Comma : Boolean := False;
    begin
       Stream.Print ("@media");
-      if not Stream.Compress or not Rule.Medias.Is_Empty then
+      if not Stream.Compress or else not Rule.Medias.Is_Empty then
          Stream.Print (' ');
       end if;
       for S of Rule.Medias loop
@@ -122,7 +122,7 @@ package body CSS.Printer is
          Stream.Print (CSS.Core.Selectors.To_String (Sel));
       end Print_Selector;
 
-      Sel : constant String := CSS.Core.Selectors.To_String (Rule.Selectors);
+      --  Sel : constant String := CSS.Core.Selectors.To_String (Rule.Selectors);
    begin
       Do_Indent (Stream);
       CSS.Core.Selectors.Iterate (Rule.Selectors, Print_Selector'Access);

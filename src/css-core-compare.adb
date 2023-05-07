@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-core-compare -- Comparision on CSS rule references
---  Copyright (C) 2017, 2020 Stephane Carrez
+--  Copyright (C) 2017, 2020, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +25,7 @@ package body CSS.Core.Compare is
       elsif Right.Is_Null then
          return False;
       else
-        declare
+         declare
             Left_Rule  : constant CSS.Core.Refs.Element_Accessor := Left.Value;
             Right_Rule : constant CSS.Core.Refs.Element_Accessor := Right.Value;
          begin
@@ -41,6 +41,7 @@ package body CSS.Core.Compare is
    --  contain unique rules.
    --  ------------------------------
    function "<" (Left, Right : in CSS.Core.Refs.Ref) return Boolean is
+      use type Util.Log.Locations.Line_Info;
    begin
       if Left.Is_Null then
          return False;

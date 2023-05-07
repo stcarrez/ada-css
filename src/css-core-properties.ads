@@ -27,7 +27,6 @@ package CSS.Core.Properties is
    subtype Value_Type is CSS.Core.Values.Value_Type;
    subtype Value_List is CSS.Core.Values.Value_List;
    use type CSS.Core.Values.Value_List;
-   use type CSS.Core.Values.Value_Type;
 
    type CSSProperty is record
       Rule     : CSSRule_Access;

@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-core-medias -- CSS rule to represent a media rule
---  Copyright (C) 2017 Stephane Carrez
+--  Copyright (C) 2017, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 -----------------------------------------------------------------------
 
 with CSS.Core.Groups;
-with CSS.Core.Vectors;
 with Util.Strings.Vectors;
 package CSS.Core.Medias is
 

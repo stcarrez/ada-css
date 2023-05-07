@@ -32,7 +32,6 @@ package body CSS.Analysis.Duplicates is
                       Dups   : in out CSS.Core.Sets.Set) is
       procedure Process (Pos : in CSS.Core.Vectors.Cursor);
 
-      use type CSS.Core.CSSRule_Type;
       use CSS.Core.Properties;
       use CSS.Core.Styles;
 
@@ -49,7 +48,7 @@ package body CSS.Analysis.Duplicates is
                Ref   : constant CSS.Core.Refs.Ref := CSS.Core.Vectors.Element (Iter);
                Match : constant CSSStyleRule_Access := Element (Iter);
             begin
-               if Match /= null and not Dups.Contains (Ref) then
+               if Match /= null and then not Dups.Contains (Ref) then
                   if CSSProperty_List (Rule.Style) = CSSProperty_List (Match.Style) then
                      Dups.Insert (Ref);
                      Report.Warning (Match.Get_Location,

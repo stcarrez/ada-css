@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-analysis-rules-types -- Rules for CSS pre-defined value types
---  Copyright (C) 2017 Stephane Carrez
+--  Copyright (C) 2017, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,6 +23,7 @@ package body CSS.Analysis.Rules.Types is
    --  ------------------------------
    --  Print the rule definition to the print stream.
    --  ------------------------------
+   overriding
    procedure Print (Rule   : in Builtin_Rule_Type;
                     Stream : in out CSS.Printer.File_Type'Class) is
    begin
@@ -37,7 +38,8 @@ package body CSS.Analysis.Rules.Types is
                    Value : in CSS.Core.Values.Value_Type) return Boolean is
       pragma Unreferenced (Rule);
    begin
-      return Get_Type (Value) = VALUE_NUMBER and Get_Unit (Value) = UNIT_NONE;
+      return Get_Type (Value) = VALUE_NUMBER
+         and then Get_Unit (Value) = UNIT_NONE;
    end Match;
 
    --  ------------------------------
@@ -48,7 +50,8 @@ package body CSS.Analysis.Rules.Types is
                    Value : in CSS.Core.Values.Value_Type) return Boolean is
       pragma Unreferenced (Rule);
    begin
-      return Get_Type (Value) = VALUE_NUMBER and Get_Unit (Value) = UNIT_NONE;
+      return Get_Type (Value) = VALUE_NUMBER
+         and then Get_Unit (Value) = UNIT_NONE;
    end Match;
 
    --  ------------------------------
@@ -59,7 +62,8 @@ package body CSS.Analysis.Rules.Types is
                    Value : in CSS.Core.Values.Value_Type) return Boolean is
       pragma Unreferenced (Rule);
    begin
-      return Get_Type (Value) = VALUE_NUMBER and Get_Unit (Value) = UNIT_NONE;
+      return Get_Type (Value) = VALUE_NUMBER
+         and then Get_Unit (Value) = UNIT_NONE;
    end Match;
 
    --  ------------------------------
@@ -90,7 +94,8 @@ package body CSS.Analysis.Rules.Types is
                    Value : in CSS.Core.Values.Value_Type) return Boolean is
       pragma Unreferenced (Rule);
    begin
-      return Get_Type (Value) = VALUE_NUMBER and Get_Unit (Value) in Time_Unit_Type;
+      return Get_Type (Value) = VALUE_NUMBER
+         and then Get_Unit (Value) in Time_Unit_Type;
    end Match;
 
    --  ------------------------------
@@ -101,7 +106,8 @@ package body CSS.Analysis.Rules.Types is
                    Value : in CSS.Core.Values.Value_Type) return Boolean is
       pragma Unreferenced (Rule);
    begin
-      return Get_Type (Value) = VALUE_NUMBER and Get_Unit (Value) = UNIT_PI;
+      return Get_Type (Value) = VALUE_NUMBER
+         and then Get_Unit (Value) = UNIT_PI;
    end Match;
 
    --  ------------------------------
@@ -112,7 +118,8 @@ package body CSS.Analysis.Rules.Types is
                    Value : in CSS.Core.Values.Value_Type) return Boolean is
       pragma Unreferenced (Rule);
    begin
-      return Get_Type (Value) = VALUE_NUMBER and Get_Unit (Value) in Angle_Unit_Type;
+      return Get_Type (Value) = VALUE_NUMBER
+         and then Get_Unit (Value) in Angle_Unit_Type;
    end Match;
 
    --  ------------------------------
@@ -166,6 +173,7 @@ package body CSS.Analysis.Rules.Types is
                                Name       : in String;
                                Rule       : in Builtin_Rule_Type_Access;
                                Kind       : in CSS.Core.Values.Value_Kind) is
+      pragma Unreferenced (Kind);
    begin
       Rule.Name := Ada.Strings.Unbounded.To_Unbounded_String (Name);
       Repository.Types.Insert (Name, Rule.all'Access);

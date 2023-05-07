@@ -50,6 +50,7 @@ package CSS.Core.Selectors is
    function "<" (Left, Right : in CSSSelector) return Boolean;
 
    --  Compare the two CSS selectors.
+   overriding
    function "=" (Left, Right : in CSSSelector) return Boolean;
 
    --  Get a printable representation of the CSS selector.
@@ -211,5 +212,7 @@ private
    type CSSSelector_List is limited record
       List : Selector_List.List;
    end record;
+
+   procedure Finalize (Tree : in Selector_Tree_Node_Access);
 
 end CSS.Core.Selectors;

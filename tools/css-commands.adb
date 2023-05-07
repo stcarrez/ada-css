@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-commands -- Commands for CSS tools
---  Copyright (C) 2018 Stephane Carrez
+--  Copyright (C) 2018, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,7 +41,8 @@ package body CSS.Commands is
          begin
             exit when Path'Length = 0;
             Context.Doc.Set_Href (Path);
-            CSS.Parser.Load (Path, Context.Doc'Unchecked_Access, Context.Err_Handler'Unchecked_Access);
+            CSS.Parser.Load (Path, Context.Doc'Unchecked_Access,
+                             Context.Err_Handler'Unchecked_Access);
          end;
       end loop;
    end Load;
@@ -50,6 +51,7 @@ package body CSS.Commands is
    --  Initialize the context.
    --  ------------------------------
    procedure Initialize (Context : in out Context_Type) is
+      pragma Unreferenced (Context);
    begin
       Driver.Set_Description (CSS.Tools.Configs.RELEASE);
       Driver.Set_Usage ("[-dpqv] [-o file] [-r file] [-c dir] command file..." & ASCII.LF &

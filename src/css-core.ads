@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-core -- Core CSS API definition
---  Copyright (C) 2017 Stephane Carrez
+--  Copyright (C) 2017, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,7 +31,6 @@ package CSS.Core is
    type CSSProperty_Name is access all String;
    subtype CSSProperty_Value is CSSProperty_Name;
    subtype Location is Util.Log.Locations.Line_Info;
-   use type Util.Log.Locations.Line_Info;
 
    --  Get the line number.
    function Get_Line (Loc : in Location) return Natural renames Util.Log.Locations.Line;

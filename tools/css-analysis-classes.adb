@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-analysis-classes -- CSS Class Analysis
---  Copyright (C) 2017 Stephane Carrez
+--  Copyright (C) 2017, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,6 +30,7 @@ package body CSS.Analysis.Classes is
    procedure Analyze (Sheet   : in CSS.Core.Sheets.CSSStylesheet;
                       Result  : in out Class_Maps.Map;
                       Report  : in out CSS.Core.Errors.Error_Handler'Class) is
+      pragma Unreferenced (Report);
       use CSS.Core.Styles;
       use CSS.Core.Selectors;
 

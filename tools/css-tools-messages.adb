@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-tools-messages -- CSS tools messages
---  Copyright (C) 2017 Stephane Carrez
+--  Copyright (C) 2017, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -97,7 +97,7 @@ package body CSS.Tools.Messages is
    begin
       while Message_Sets.Has_Element (Iter) loop
          declare
-            Loc : CSS.Core.Location := Message_Sets.Key (Iter);
+            Loc : constant CSS.Core.Location := Message_Sets.Key (Iter);
             Msg : Message_Type_Access := Message_Sets.Element (Iter);
          begin
             while Msg /= null loop

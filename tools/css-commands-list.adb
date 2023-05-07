@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-commands-list -- List command for CSS tools
---  Copyright (C) 2018, 2020 Stephane Carrez
+--  Copyright (C) 2018, 2020, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,6 +41,9 @@ package body CSS.Commands.List is
       use type CSS.Core.Values.Value_Kind;
       procedure Process (Pos : in CSS.Analysis.Classes.Cursor);
       procedure Process_Value (Value : in CSS.Core.Values.Value_Type);
+      procedure Report_Value (Value : in CSS.Core.Values.Value_Type);
+      procedure Process_Search (Prop  : in CSS.Core.Properties.CSSProperty;
+                                Match : in CSS.Analysis.Rules.Match_Result);
 
       Console : constant CSS.Commands.Console_Access := Context.Console;
       Expect  : CSS.Core.Values.Value_Kind;
@@ -56,7 +59,7 @@ package body CSS.Commands.List is
 
       procedure Process_Value (Value : in CSS.Core.Values.Value_Type) is
       begin
-         if Column < F_VALUE_1 or Column > F_VALUE_4 then
+         if Column < F_VALUE_1 or else Column > F_VALUE_4 then
             if Column > F_VALUE_4 then
                Console.End_Row;
             end if;
@@ -69,7 +72,7 @@ package body CSS.Commands.List is
 
       procedure Report_Value (Value : in CSS.Core.Values.Value_Type) is
       begin
-         if Column < F_VALUE_1 or Column > F_VALUE_4 then
+         if Column < F_VALUE_1 or else Column > F_VALUE_4 then
             if Column > F_VALUE_4 then
                Console.End_Row;
             end if;
@@ -80,7 +83,7 @@ package body CSS.Commands.List is
          Column := Field_Type'Succ (Column);
       end Report_Value;
 
-      procedure Process_Search (Prop : in CSS.Core.Properties.CSSProperty;
+      procedure Process_Search (Prop  : in CSS.Core.Properties.CSSProperty;
                                 Match : in CSS.Analysis.Rules.Match_Result) is
       begin
          for M of Match.List loop

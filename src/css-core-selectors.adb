@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-core-selectors -- Core CSS API definition
---  Copyright (C) 2017 Stephane Carrez
+--  Copyright (C) 2017, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +20,11 @@ with Ada.Strings.Unbounded;
 package body CSS.Core.Selectors is
 
    use Ada.Strings.Unbounded;
+
+   procedure To_String (Into     : in out Unbounded_String;
+                        Selector : in Selector_Node_Access);
+   procedure To_String (Into     : in out Unbounded_String;
+                        Selector : in CSSSelector);
 
    --  ------------------------------
    --  Compare the two CSS selectors.
@@ -43,6 +48,7 @@ package body CSS.Core.Selectors is
    --  ------------------------------
    --  Compare the two CSS selectors.
    --  ------------------------------
+   overriding
    function "=" (Left, Right : in CSSSelector) return Boolean is
    begin
       for I in Left.Sel'Range loop
@@ -349,7 +355,8 @@ package body CSS.Core.Selectors is
       if Left = null or else Right = null then
          return False;
       end if;
-      return Left.Kind = Right.Kind and Left.Selector.Value = Right.Selector.Value;
+      return Left.Kind = Right.Kind
+         and then Left.Selector.Value = Right.Selector.Value;
    end Compare;
 
    --  ------------------------------
@@ -370,7 +377,7 @@ package body CSS.Core.Selectors is
       end if;
    end Finalize;
 
-   procedure Finalize (Tree : in out Selector_Tree_Node_Access) is
+   procedure Finalize (Tree : in Selector_Tree_Node_Access) is
    begin
       if Tree.Child /= null then
          Finalize (Tree.Child);

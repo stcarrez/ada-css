@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-core-properties -- Core CSS API definition
---  Copyright (C) 2017 Stephane Carrez
+--  Copyright (C) 2017, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,7 +39,8 @@ package body CSS.Core.Properties is
                   Result.Name  := P.Name;
                   Result.Value := P.Value;
                   Result.Rule  := List.Parent;
-                  Result.Location := Util.Log.Locations.Create_Line_Info (List.File, P.Line, P.Column);
+                  Result.Location := Util.Log.Locations.Create_Line_Info
+                     (List.File, P.Line, P.Column);
                end return;
             end if;
          end loop;
@@ -142,7 +143,6 @@ package body CSS.Core.Properties is
       Free (List.Properties);
       List.Properties := New_List;
    end Append;
-
 
    --  ------------------------------
    --  Iterate over the list of properties and call the <tt>Process</tt> procedure.

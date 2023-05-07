@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  csstools -- CSS Tools Command
---  Copyright (C) 2017, 2018, 2020 Stephane Carrez
+--  Copyright (C) 2017, 2018, 2020, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 -----------------------------------------------------------------------
 with GNAT.Command_Line;  use GNAT.Command_Line;
 with GNAT.Traceback.Symbolic;
-with Ada.Containers;
 with Ada.Strings.Unbounded;
 with Ada.Text_IO;
 with Ada.Command_Line;
@@ -26,7 +25,7 @@ with Ada.Exceptions;
 with Util.Log.Loggers;
 with Util.Files;
 with Util.Commands;
-with CSS.Parser.Lexer_dfa;
+with CSS.Parser.Lexer_DFA;
 with CSS.Analysis.Parser.Lexer_dfa;
 with CSS.Core;
 with CSS.Tools.Messages;
@@ -38,7 +37,6 @@ with CSS.Commands;
 procedure CssTools is
 
    use Ada.Strings.Unbounded;
-   use Ada.Containers;
    use Ada.Directories;
    use Ada.Command_Line;
 
@@ -184,7 +182,7 @@ begin
       CSS.Analysis.Parser.Load_All (To_String (Config_Dir) & "/rules",
                                     CSS.Analysis.Rules.Main.Rule_Repository);
    end if;
-   CSS.Parser.Lexer_dfa.aflex_debug := Debug;
+   CSS.Parser.Lexer_DFA.aflex_debug := Debug;
    CSS.Analysis.Parser.Lexer_dfa.aflex_debug := Debug;
 
    if Length (Output_Path) > 0 then
@@ -212,45 +210,6 @@ begin
       Status := Failure;
    end if;
    Context.Err_Handler.Iterate (Print_Message'Access);
-
---     loop
---        declare
---           Path : constant String := Get_Argument;
---        begin
---           exit when Path'Length = 0;
---           Doc.Set_Href (Path);
---           CSS.Parser.Load (Path, Doc'Unchecked_Access, Err_Handler'Unchecked_Access);
---           if Analyze_Flag then
---              CSS.Analysis.Duplicates.Analyze (Doc.Rules, Err_Handler, Dup_Rules);
---              CSS.Analysis.Rules.Main.Analyze (Doc, Err_Handler);
---           end if;
---           Err_Handler.Iterate (Print_Message'Access);
---           if Length (Output_Path) > 0 then
---              Output.Print (Doc);
---           end if;
---           if Err_Handler.Get_Error_Count > 0 then
---              Status := Failure;
---           end if;
---           if Analyze_Flag then
---              CSS.Analysis.Classes.Analyze (Doc, Class_Map, Err_Handler);
---           end if;
---        end;
---     end loop;
---     if Length (Report_Path) > 0 then
---        CSS.Reports.Docs.Print (Report, Class_Map);
---     end if;
---     if not Quiet then
---        if Verbose then
---           Ada.Text_IO.Put_Line ("Comments: ");
---           Ada.Text_IO.Put_Line (Ada.Strings.Unbounded.To_String (CSS.Parser.Lexer.Current_Comment));
---        end if;
---        Ada.Text_IO.Put_Line ("Errors          : " & Natural'Image (Context.Err_Handler.Get_Error_Count));
---        Ada.Text_IO.Put_Line ("Warnings        : " & Natural'Image (Context.Err_Handler.Get_Warning_Count));
---        Ada.Text_IO.Put_Line ("CSS rules       : " & Count_Type'Image (Context.Doc.Rules.Length));
---        Ada.Text_IO.Put_Line ("CSS values      : " & Natural'Image (Context.Doc.Values.Length));
---        Ada.Text_IO.Put_Line ("CSS classes     : " & Count_Type'Image (Context.Class_Map.Length));
---        Ada.Text_IO.Put_Line ("Duplicate rules : " & Count_Type'Image (Context.Dup_Rules.Length));
---     end if;
    Ada.Command_Line.Set_Exit_Status (Status);
 
 exception

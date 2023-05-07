@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-core-values -- Representation of CSS property value(s).
---  Copyright (C) 2017, 2018 Stephane Carrez
+--  Copyright (C) 2017, 2018, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -174,11 +174,11 @@ package body CSS.Core.Values is
       if Left = Right then
          return True;
       end if;
-      if Left = null or Right = null then
+      if Left = null or else Right = null then
          return False;
       end if;
-      return Left.Kind = Right.Kind and Left.Unit = Right.Unit
-         and Left.Len = Right.Len and Left.Value = Right.Value;
+      return Left.Kind = Right.Kind and then Left.Unit = Right.Unit
+         and then Left.Len = Right.Len and then Left.Value = Right.Value;
    end Compare;
 
    function Create_Value (Repository : in out Repository_Type;

@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-analysis-rules-types -- Rules for CSS pre-defined value types
---  Copyright (C) 2017 Stephane Carrez
+--  Copyright (C) 2017, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,6 +29,7 @@ private
    type Builtin_Rule_Type_Access is access all Builtin_Rule_Type'Class;
 
    --  Print the rule definition to the print stream.
+   overriding
    procedure Print (Rule   : in Builtin_Rule_Type;
                     Stream : in out CSS.Printer.File_Type'Class);
 

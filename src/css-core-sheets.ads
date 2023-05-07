@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-core-sheets -- CSS stylesheet representation
---  Copyright (C) 2017 Stephane Carrez
+--  Copyright (C) 2017, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,20 +23,20 @@ with CSS.Core.Properties;
 with CSS.Core.Medias;
 package CSS.Core.Sheets is
 
-   type CSSStylesheet is new CSS.Core.StyleSheet with record
+   type CSSStylesheet is new CSS.Core.Stylesheet with record
       Rules  : CSS.Core.Vectors.Vector;
       Values : CSS.Core.Values.Repository_Type;
    end record;
    type CSSStylesheet_Access is access all CSSStylesheet'Class;
 
    --  Create a CSS rule.
-   function Create_Rule (Document : in CSSStyleSheet) return Styles.CSSStyleRule_Access;
+   function Create_Rule (Document : in CSSStylesheet) return Styles.CSSStyleRule_Access;
 
    --  Create a CSS font-face rule.
-   function Create_Rule (Document : in CSSStyleSheet) return Styles.CSSFontfaceRule_Access;
+   function Create_Rule (Document : in CSSStylesheet) return Styles.CSSFontfaceRule_Access;
 
    --  Create a CSS media rule.
-   function Create_Rule (Document : in CSSStyleSheet) return Medias.CSSMediaRule_Access;
+   function Create_Rule (Document : in CSSStylesheet) return Medias.CSSMediaRule_Access;
 
    --  Append the CSS rule to the document.
    procedure Append (Document : in out CSSStylesheet;

@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-comments -- CSS comments recording
---  Copyright (C) 2017 Stephane Carrez
+--  Copyright (C) 2017, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,6 +43,7 @@ package body CSS.Comments is
    --  ------------------------------
    function Get_Text (Comment : in Comment_Type;
                       Strip   : in Boolean := False) return String is
+      pragma Unreferenced (Strip);
    begin
       return Comment.Object.Text;
    end Get_Text;
@@ -63,12 +64,12 @@ package body CSS.Comments is
          if Strip then
             while Start <= Finish loop
                exit when Comment.Object.Text (Start) /= ' '
-                 and Comment.Object.Text (Start) /= ASCII.HT;
+                 and then Comment.Object.Text (Start) /= ASCII.HT;
                Start := Start + 1;
             end loop;
             while Start <= Finish loop
                exit when Comment.Object.Text (Finish) /= ' '
-                 and Comment.Object.Text (Finish) /= ASCII.HT;
+                 and then Comment.Object.Text (Finish) /= ASCII.HT;
                Finish := Finish - 1;
             end loop;
          end if;
