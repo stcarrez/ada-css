@@ -22,8 +22,7 @@
 %token '/'
 %token S
 
-{
-   subtype yystype is CSS.Analysis.Parser.YYstype;
+{   subtype yystype is CSS.Analysis.Parser.YYstype;
 }
 
 %%

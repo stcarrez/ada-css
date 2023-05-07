@@ -59,14 +59,13 @@ package CSS.Analysis.Parser.Lexer is
 end CSS.Analysis.Parser.Lexer;
 
 with Ada.Text_IO;
-with CSS.Analysis.Parser.Lexer_dfa;
+with CSS.Analysis.Parser.Lexer_DFA;
 with CSS.Analysis.Parser.Lexer_IO;
 package body CSS.Analysis.Parser.Lexer is
 
    use Ada.Text_IO;
-   use Ada.Strings.Unbounded;
    use Ada;
-   use CSS.Analysis.Parser.Lexer_dfa;
+   use CSS.Analysis.Parser.Lexer_DFA;
    use CSS.Analysis.Parser.Lexer_IO;
 
    pragma Style_Checks (Off);
@@ -75,5 +74,3 @@ package body CSS.Analysis.Parser.Lexer is
    pragma Style_Checks (On);
 
 end CSS.Analysis.Parser.Lexer;
-
-
