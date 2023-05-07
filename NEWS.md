@@ -1,4 +1,4 @@
-Version 0.3.0   -
+Version 0.3.0   - Mar 2020
   - Cleanup the build and configure, use Ada Utility Library 2.0.0
 
 Version 0.2.0   - Mar 2018
