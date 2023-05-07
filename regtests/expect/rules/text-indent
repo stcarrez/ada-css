@@ -1,3 +1,3 @@
-text-indent:11:15: error: Unexpected value '23px' after '1%' for property text-indent
-text-indent:26:15: error: Unexpected value 'each-lines' after '1% hanging' for property text-indent
-text-indent:32:15: error: Unexpected value 'hanging' after '1% hanging' for property text-indent
+text-indent:11:14: error: Unexpected value '23px' after '1%' for property text-indent
+text-indent:26:14: error: Unexpected value 'each-lines' after '1% hanging' for property text-indent
+text-indent:32:14: error: Unexpected value 'hanging' after '1% hanging' for property text-indent

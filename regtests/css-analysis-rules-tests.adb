@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  css-analysis-rules-tests -- Unit tests for CSS rule analyzer
---  Copyright (C) 2017 Stephane Carrez
+--  Copyright (C) 2017, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -90,7 +90,7 @@ package body CSS.Analysis.Rules.Tests is
 
       Expect_Dir  : constant String := "regtests/expect/rules/";
       Expect_Path : constant String := Util.Tests.Get_Path (Expect_Dir);
-      Result_Path : constant String := Util.Tests.Get_Test_Path ("rules");
+      Result_Path : constant String := Util.Tests.Get_Test_Path ("rules/");
       Search      : Search_Type;
       Filter      : constant Filter_Type := (others => True);
       Ent         : Directory_Entry_Type;

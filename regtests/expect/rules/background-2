@@ -1,2 +1,2 @@
-background-2:5:22: error: Unexpected value 'right' after 'left' for property background-position
-background-2:8:22: error: Invalid value 'bad-label' for property background-position
+background-2:5:21: error: Unexpected value 'right' after 'left' for property background-position
+background-2:8:21: error: Invalid value 'bad-label' for property background-position

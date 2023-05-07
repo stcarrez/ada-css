@@ -1,1 +1,1 @@
-color:8:8: error: Invalid value 'rouge' for property color
+color:8:7: error: Invalid value 'rouge' for property color

@@ -1,1 +1,1 @@
-font:2:14: error: Unexpected value 'sans-serif' after '"Courier"' for property font-family
+font:2:13: error: Unexpected value 'sans-serif' after '"Courier"' for property font-family
