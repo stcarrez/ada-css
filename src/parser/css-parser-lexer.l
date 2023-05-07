@@ -182,15 +182,15 @@ end CSS.Parser.Lexer;
 
 with CSS.Core;
 with Ada.Text_IO;
-with CSS.Parser.Lexer_dfa;
-with CSS.Parser.Lexer_io;
+with CSS.Parser.Lexer_DFA;
+with CSS.Parser.Lexer_IO;
 with CSS.Core.Values;
 package body CSS.Parser.Lexer is
 
    use Ada.Text_IO;
    use Ada.Strings.Unbounded;
    use Ada;
-   use CSS.Parser.Lexer_dfa;
+   use CSS.Parser.Lexer_DFA;
    use CSS.Parser.Lexer_IO;
    use CSS.Core.Values;
 
@@ -200,5 +200,3 @@ package body CSS.Parser.Lexer is
    pragma Style_Checks (On);
 
 end CSS.Parser.Lexer;
-
-
