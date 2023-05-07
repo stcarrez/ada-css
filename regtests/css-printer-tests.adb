@@ -88,7 +88,6 @@ package body CSS.Printer.Tests is
                             Path    : in String;
                             Prefix  : in String) return Test_Case_Access;
 
-      Result_Dir  : constant String := "regtests/result/";
       Expect_Dir  : constant String := "regtests/expect/";
       Expect_Path : constant String := Util.Tests.Get_Path (Expect_Dir);
       Result_Path : constant String := Util.Tests.Get_Test_Path ("");
