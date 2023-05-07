@@ -1,5 +1,5 @@
 dnl Autoconf configure script for Ada CSS Library
-dnl Copyright (C) 2017, 2018, 2020 Stephane Carrez
+dnl Copyright (C) 2017, 2018, 2020, 2023 Stephane Carrez
 dnl Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 dnl
 dnl  Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@ AC_INIT(src/css.ads)
 
 # Current release settings
 CSS_MAJOR_VERSION=0
-CSS_MINOR_VERSION=3
+CSS_MINOR_VERSION=4
 CSS_MICRO_VERSION=0
 CSS_VERSION=$CSS_MAJOR_VERSION.$CSS_MINOR_VERSION.$CSS_MICRO_VERSION
 
