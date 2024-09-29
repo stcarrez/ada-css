@@ -1,4 +1,4 @@
-project Config is
+project CssAda_Config is
    for Source_Dirs use ();
 
    type Yes_No is ("yes", "no");
@@ -6,10 +6,10 @@ project Config is
    type Library_Type_Type is ("relocatable", "static");
 
    type Mode_Type is ("distrib", "debug", "optimize", "profile");
-   Mode : Mode_Type := external ("MODE", "debug");
+   Mode : Mode_Type := external ("CSS_BUILD", "debug");
 
    Coverage : Yes_No := External ("COVERAGE", "no");
-   Processors := External ("PROCESSORS", "1");
+   Processors := External ("PROCESSORS", "0");
 
    package Builder is
        case Mode is
@@ -85,4 +85,4 @@ project Config is
       for VCS_Kind use "Subversion";
    end Ide;
 
-end Config;
+end CssAda_Config;

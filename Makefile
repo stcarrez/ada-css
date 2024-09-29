@@ -1,4 +1,10 @@
 NAME=cssada
+VERSION=1.0.0
+
+DIST_DIR=ada-css-$(VERSION)
+DIST_FILE=ada-css-$(VERSION).tar.gz
+
+MAKE_ARGS += -XCSS_BUILD=$(BUILD)
 
 -include Makefile.conf
 
@@ -14,17 +20,13 @@ sharedir=${prefix}/share
 configdir=bindir?=${prefix}/share/csstools
 
 # Build executables for all mains defined by the project.
-build-test::	setup
-	$(GNATMAKE) $(GPRFLAGS) -p -P$(NAME)_tests $(MAKE_ARGS)
+build-test::	lib-setup
+	cd regtests && $(BUILD_COMMAND) $(GPRFLAGS) $(MAKE_ARGS)
 
 build:: tools
 
-tools:  tools/css-tools-configs.ads
-	$(GNATMAKE) $(GPRFLAGS) -p -P$(NAME)_tools $(MAKE_ARGS)
-
-tools/css-tools-configs.ads:   Makefile.conf tools/css-tools-configs.gpb
-	gnatprep -DCONFIG_DIR='"${configdir}"' -DVERSION='"${VERSION}"' \
-		  tools/css-tools-configs.gpb tools/css-tools-configs.ads
+tools:
+	cd tools && $(BUILD_COMMAND) $(GPRFLAGS) $(MAKE_ARGS)
 
 clean::
 	rm -f tools/css-tools-configs.ads
@@ -36,25 +38,13 @@ install::
 	$(CP) -r config $(DESTDIR)${sharedir}/csstools
 
 # Build and run the unit tests
-test:	build
-	$(GNATMAKE) $(MAKE_ARGS) -p -Pcssada_tests
+test:	build-test
 	bin/css_harness -xml css-aunit.xml
 
 clean::
 	rm -f stamp-test-setup tests.log
 
-$(eval $(call ada_library,$(NAME)))
-
-DIST_DIRS=ada-util
-dist::
-	rm -f $(DIST_FILE)
-	git archive -o $(DIST_DIR).tar --prefix=$(DIST_DIR)/ HEAD
-	for i in $(DIST_DIRS); do \
-	   cd $$i && git archive -o ../$$i.tar --prefix=$(DIST_DIR)/$$i/ HEAD ; \
-           cd .. && tar --concatenate --file=$(DIST_DIR).tar $$i.tar ; \
-           rm -f $$i.tar; \
-        done
-	gzip $(DIST_DIR).tar
+$(eval $(call ada_library,$(NAME),.))
 
 # Development targets that requires ayacc and aflex to be installed.
 # Do not call these unless you modify the lex/yacc grammar.

@@ -1,0 +1,26 @@
+with "cssada_config";
+with "utilada_sys";
+
+project CssAda is
+
+   Version := "0.3.0";
+   Library_Dir := "lib";
+   Library_Type : CssAda_Config.Library_Type_Type := external ("CSS_LIBRARY_TYPE", "static");
+
+   for Source_Dirs use ("src", "src/parser");
+   for Library_Name use "ada_css";
+   for Library_Kind use Library_Type;
+   for Library_Version use "lib" & Project'Library_Name & ".so." & Version;
+  
+   for Library_Dir use Library_Dir & "/css/" & Project'Library_Kind;
+   for Object_Dir use "./" & CssAda_Config'Object_Dir & "/obj/css/" & Project'Library_Kind;
+
+   package Binder renames CssAda_Config.Binder;
+   package Builder renames CssAda_Config.Builder;
+   package Compiler is
+      for Default_Switches ("Ada") use
+             CssAda_Config.Compiler'Default_Switches ("Ada") & ("-gnat2012");
+   end Compiler;
+   package Ide      renames CssAda_Config.Ide;
+
+end CssAda;
