@@ -16,7 +16,7 @@ check the syntax, analyze, optimize and make various reports on CSS files.
 
 To use Ada CSS library, configure as follows:
 ```
-   ./configure
+   make setup BUILD=debug PREFIX=/opt
    make
 ```
 For the installation, use the following command:
