@@ -1,6 +1,5 @@
 *~
 *.log
-config.status
 CHANGES
 Makefile.conf
 *.cproject
@@ -9,17 +8,13 @@ Makefile.conf
 *.log
 ChangeLog
 .settings
-configure.lineno
-cssada.gpr
-cssada_tests.gpr
-cssada_tools.gpr
 tests.xml
 cssada-tests.xml
-autom4te.cache
+alire
 bin/
 obj/
 lib/
 cssada-aunit.xml
-tools/css-tools-configs.ads
+tools/src/css-tools-configs.ads
 regtests/results
 cover/
