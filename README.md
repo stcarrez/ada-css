@@ -1,8 +1,8 @@
 # Ada CSS Library and tools
 
-[![Build Status](https://img.shields.io/jenkins/s/https/jenkins.vacs.fr/Ada-CSS.svg)](https://jenkins.vacs.fr/job/Ada-CSS/)
-[![Test Status](https://img.shields.io/jenkins/t/https/jenkins.vacs.fr/Ada-CSS.svg)](https://jenkins.vacs.fr/job/Ada-CSS/)
-[![License](http://img.shields.io/badge/license-APACHE2-blue.svg)](LICENSE)
+[![Build Status](https://img.shields.io/endpoint?url=https://porion.vacs.fr/porion/api/v1/projects/ada-css/badges/build.json)](https://porion.vacs.fr/porion/projects/view/ada-css/summary)
+[![Test Status](https://img.shields.io/endpoint?url=https://porion.vacs.fr/porion/api/v1/projects/ada-css/badges/tests.json)](https://porion.vacs.fr/porion/projects/view/ada-css/xunits)
+[![Coverage](https://img.shields.io/endpoint?url=https://porion.vacs.fr/porion/api/v1/projects/ada-css/badges/coverage.json)](https://porion.vacs.fr/porion/projects/view/ada-css/summary)
 ![Commits](https://img.shields.io/github/commits-since/stcarrez/ada-css/0.2.0.svg)
 
 The Ada CSS library is an Ada 05 implementation of the
