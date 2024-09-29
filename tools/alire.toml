@@ -1,0 +1,52 @@
+description = "CSS Parser Tool"
+long-description = """
+
+[![Build Status](https://img.shields.io/endpoint?url=https://porion.vacs.fr/porion/api/v1/projects/ada-css/badges/build.json)](https://porion.vacs.fr/porion/projects/view/ada-css/summary)
+[![Test Status](https://img.shields.io/endpoint?url=https://porion.vacs.fr/porion/api/v1/projects/ada-css/badges/tests.json)](https://porion.vacs.fr/porion/projects/view/ada-css/xunits)
+[![Coverage](https://img.shields.io/endpoint?url=https://porion.vacs.fr/porion/api/v1/projects/ada-css/badges/coverage.json)](https://porion.vacs.fr/porion/projects/view/ada-css/summary)
+
+The Ada CSS library is an Ada 05 implementation of the
+[CSS Object Model (CSSOM)](https://www.w3.org/TR/2016/WD-cssom-1-20160317/).
+It provides a CSS parser that allows to read stylesheets and have them
+represented in memory.  The library provides operations to look at the
+CSS rules.
+
+The motivation to have such library is to provide tools that allows to
+check the syntax, analyze, optimize and make various reports on CSS files.
+
+"""
+name = "csstools"
+version = "1.0.0"
+authors = ["Stephane.Carrez@gmail.com"]
+licenses = "Apache-2.0"
+maintainers = ["Stephane.Carrez@gmail.com"]
+maintainers-logins = ["stcarrez"]
+tags = ["css", "parser"]
+website = "https://gitlab.com/stcarrez/ada-css"
+project-files = ["cssada_tools.gpr"]
+
+[[actions]]
+type = "post-fetch"
+command = ["gnatprep", "-DCONFIG_DIR=\"/usr/local\"", "-DVERSION=\"1.4.1\"",
+  "src/css-tools-configs.gpb",
+  "src/css-tools-configs.ads"
+]
+
+[[depends-on]]
+utilada = "^2.6.0"
+cssada = "*"
+intl = "^1.0.1"
+
+[gpr-externals]
+CSS_BUILD = ["distrib", "debug", "optimize", "profile", "coverage"]
+CSS_LIBRARY_TYPE = ["relocatable", "static", "static-pic"]
+
+[configuration]
+disabled = true
+
+[environment]
+PATH.prepend = "${CRATE_ROOT}/bin"
+MANPATH.prepend = "${CRATE_ROOT}/man"
+
+[[pins]]
+cssada= { path = '..' }

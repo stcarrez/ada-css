@@ -191,7 +191,7 @@ begin
    if Length (Report_Path) > 0 then
       Ada.Text_IO.Create (Report.File, Ada.Text_IO.Out_File, To_String (Report_Path));
    end if;
-   if Verbose then
+   if Verbose and then Length (Report_Path) > 0 then
       CSS.Analysis.Rules.Print (Report, CSS.Analysis.Rules.Main.Rule_Repository.all);
    end if;
    if First >= Ada.Command_Line.Argument_Count then
