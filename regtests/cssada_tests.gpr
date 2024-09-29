@@ -1,6 +1,6 @@
-with "@UTIL_DIR@config";
-with "@UTIL_DIR@utilada_sys";
-with "@UTIL_DIR@utilada_unit";
+with "cssada_config";
+with "utilada_sys";
+with "utilada_unit";
 with "cssada";
 with "cssada_tools";
 
@@ -10,20 +10,20 @@ project CssAda_Tests is
 
    Mains := ("css_harness.adb");
 
-   for Source_Dirs use ("regtests");
+   for Source_Dirs use ("src");
 
    for Main use Mains;
 
-   for Object_Dir use "./" & Config'Object_Dir & "/obj";
-   for Exec_Dir use "./" & Config'Exec_Dir & "/bin";
+   for Object_Dir use "../" & CssAda_Config'Object_Dir & "/obj/regtests";
+   for Exec_Dir use "../" & CssAda_Config'Exec_Dir & "/bin";
 
    package Compiler is
       for Default_Switches ("Ada") use
-             Config.Compiler'Default_Switches ("Ada") & ("-gnat2012");
+             CssAda_Config.Compiler'Default_Switches ("Ada") & ("-gnat2012");
    end Compiler;
 
    package Binder is
-      case Config.Mode is
+      case CssAda_Config.Mode is
          when "debug" =>
             for Default_Switches ("Ada") use ("-E", "-W8");
 
@@ -33,7 +33,7 @@ project CssAda_Tests is
       end case;
    end Binder;
 
-   package Builder renames Config.Builder;
-   package Linker renames Config.Linker;
+   package Builder renames CssAda_Config.Builder;
+   package Linker renames CssAda_Config.Linker;
 
 end CssAda_Tests;
